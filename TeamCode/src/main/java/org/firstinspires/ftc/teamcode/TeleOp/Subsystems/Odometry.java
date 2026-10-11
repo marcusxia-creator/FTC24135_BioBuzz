@@ -1,4 +1,6 @@
 package org.firstinspires.ftc.teamcode.TeleOp.Subsystems;
 
-public class Odometry {
+import com.seattlesolvers.solverslib.command.SubsystemBase;
+
+public class Odometry extends SubsystemBase {
 }

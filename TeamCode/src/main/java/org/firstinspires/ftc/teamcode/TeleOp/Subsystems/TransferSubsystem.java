@@ -1,4 +1,6 @@
 package org.firstinspires.ftc.teamcode.TeleOp.Subsystems;
 
-public class TransferSubsystem {
+import com.seattlesolvers.solverslib.command.SubsystemBase;
+
+public class TransferSubsystem extends SubsystemBase {
 }

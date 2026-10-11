@@ -22,7 +22,7 @@ public class RobotHardware{
     public Servo transferGateServo;
     public Servo rampServo;
     public Servo limelightAdjServo;
-    //public Servo ballControlServo;
+    public Servo transferLimitingServo;
     public DistanceSensor distanceSensor;
     public HardwareMap hardwareMap;
     public RobotHardware(HardwareMap hardwareMap) {
@@ -60,6 +60,7 @@ public class RobotHardware{
         rightShooterMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         ///Servos
         transferGateServo = hardwareMap.get(Servo.class, "Gate_Servo");
+        transferLimitingServo = hardwareMap.get(Servo.class, "Limit_Servo");
         rampServo = hardwareMap.get(Servo.class, "Ramp_Servo");
         limelightAdjServo = hardwareMap.get(Servo.class, "Limelight_Adj_Servo");
         ///Sensors
