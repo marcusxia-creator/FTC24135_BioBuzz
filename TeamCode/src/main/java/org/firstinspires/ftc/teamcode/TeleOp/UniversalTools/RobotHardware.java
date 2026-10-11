@@ -5,6 +5,8 @@ import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.DigitalChannel;
+import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 
@@ -14,11 +16,14 @@ public class RobotHardware{
     public DcMotorEx frontRightMotor;
     public DcMotorEx backRightMotor;
     public DcMotorEx intakeMotor;
-    public DcMotorEx shooterMotor;
-   // public CRServo leftSideRoller;
-    //public CRServo rightSideRoller;
-    public Servo Unknown;
-
+    public DcMotorEx leftShooterMotor;
+    public DcMotorEx rightShooterMotor;
+    //public DcMotorEx flowerMechMotor;
+    public Servo transferGateServo;
+    public Servo rampServo;
+    public Servo limelightAdjServo;
+    //public Servo ballControlServo;
+    public DistanceSensor distanceSensor;
     public HardwareMap hardwareMap;
     public RobotHardware(HardwareMap hardwareMap) {
        this.hardwareMap=hardwareMap;
@@ -44,18 +49,20 @@ public class RobotHardware{
         backLeftMotor.setDirection(DcMotorSimple.Direction.REVERSE);
         ///Intake
         intakeMotor = hardwareMap.get(DcMotorEx.class, "Intake_Motor");
-        /**
-
-        leftSideRoller = hardwareMap.get(CRServo.class, "Left_Side_Roller");
-        rightSideRoller = hardwareMap.get(CRServo.class, "Right_Side_Roller");
-
-        rightSideRoller.setDirection(DcMotorSimple.Direction.REVERSE);
-         */
 
         intakeMotor.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
         intakeMotor.setDirection(DcMotorSimple.Direction.REVERSE);
+        ///Shooter
+        leftShooterMotor = hardwareMap.get(DcMotorEx.class, "Left_Shooter_Motor");
+        rightShooterMotor = hardwareMap.get(DcMotorEx.class, "Right_Shooter_Motor");
 
-        shooterMotor = hardwareMap.get(DcMotorEx.class, "Shooter_Motor");
-
+        leftShooterMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        rightShooterMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        ///Servos
+        transferGateServo = hardwareMap.get(Servo.class, "Gate_Servo");
+        rampServo = hardwareMap.get(Servo.class, "Ramp_Servo");
+        limelightAdjServo = hardwareMap.get(Servo.class, "Limelight_Adj_Servo");
+        ///Sensors
+        distanceSensor = hardwareMap.get(DistanceSensor.class, "Distance_Sensor");
     }
 }
