@@ -1,6 +1,8 @@
 package org.firstinspires.ftc.teamcode.TeleOp;
 
+import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
+import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.qualcomm.hardware.limelightvision.LLResult;
 import com.qualcomm.hardware.limelightvision.Limelight3A;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
@@ -15,6 +17,7 @@ import com.qualcomm.robotcore.util.Range;
 public class limelight extends OpMode {
 
     private Limelight3A limelight;
+    private FtcDashboard dashboard;
 
     private DcMotorEx frontLeftMotor;
     private DcMotorEx frontRightMotor;
@@ -31,8 +34,9 @@ public class limelight extends OpMode {
     private double imageCenterX = 320.0;
     private double horizontalFOV = 54.5;
 
-    private double kP = 0.02;
-    private double deadBand = 0.7;
+    public static double kP = 0.03;
+    public static double deadBand = 1.0;
+    public static double forwardPower = 0.3;
 
 
     @Override
@@ -62,6 +66,9 @@ public class limelight extends OpMode {
         limelight.setPollRateHz(200);  // High refresh rate for responsive updates
         limelight.pipelineSwitch(5);   // Ensure this matches your Python pipeline index
         limelight.start();
+
+        dashboard = FtcDashboard.getInstance();
+        telemetry = new MultipleTelemetry(telemetry, dashboard.getTelemetry());
 
         telemetry.addData("Limelight", "Initialized on Pipeline 5");
         telemetry.update();
@@ -154,6 +161,7 @@ public class limelight extends OpMode {
                 telemetry.addData("Custom Radius", customRadius);
 
                 double turnPower;
+                double driveForwardPower = forwardPower;
 
                 if (Math.abs(customTxDeg) < deadBand) {
                     turnPower = 0;
@@ -164,14 +172,18 @@ public class limelight extends OpMode {
                 
                 turnPower = Range.clip(turnPower, -0.5, 0.5);
 
-                frontLeftMotor.setPower(turnPower);
-                backLeftMotor.setPower(turnPower);
-                frontRightMotor.setPower(-turnPower);
-                backRightMotor.setPower(-turnPower);
+                frontLeftMotor.setPower(Range.clip(turnPower + driveForwardPower, 0, 1));
+                backLeftMotor.setPower(Range.clip(turnPower + driveForwardPower, 0, 1));
+                frontRightMotor.setPower(Range.clip(-turnPower + driveForwardPower, 0, 1));
+                backRightMotor.setPower(Range.clip(-turnPower + driveForwardPower, 0, 1));
 
             }
             else {
                 telemetry.addData("Status", "CONNECTED - Python returned hasTarget = 0");
+                frontLeftMotor.setPower(0);
+                backLeftMotor.setPower(0);
+                frontRightMotor.setPower(0);
+                backRightMotor.setPower(0);
             }
         }
     }
