@@ -8,7 +8,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
 import org.firstinspires.ftc.teamcode.TeleOp.UniversalTools.RobotHardware;
-import org.firstinspires.ftc.teamcode.TeleOp.UniversalTools.RobotActionConfig.*;
+import static org.firstinspires.ftc.teamcode.TeleOp.UniversalTools.RobotActionConfig.*;
 
 @TeleOp
 public class Drive_N_Turn extends OpMode {
@@ -31,7 +31,10 @@ public class Drive_N_Turn extends OpMode {
         robot.initPinpoint();
 
         cells = new Pose2D[] {
-
+                blueAllianceCell1,
+                blueAllianceCell2,
+                redAllianceCell2,
+                redAllianceCell1
         };
     }
 
@@ -73,7 +76,7 @@ public class Drive_N_Turn extends OpMode {
 
         double turn;
 
-        if (gamepad1.guide) {
+        if (gamepad1.dpad_left) {
             turn = Math.abs(error) < HEADING_DEADBAND ? 0.0:
                     Range.clip(KP_TURN * error, -MAX_TURN_POWER, MAX_TURN_POWER);
         }
@@ -99,8 +102,11 @@ public class Drive_N_Turn extends OpMode {
         robot.backLeftMotor.setPower(backLeftPower / maxPower);
         robot.backRightMotor.setPower(backRightPower / maxPower);
 
-        telemetry.addData("Auto Facing", gamepad1.guide);
+        telemetry.addData("Auto Facing", gamepad1.dpad_left);
         telemetry.addData("Selected Cell", selectedCell + 1);
+        telemetry.addData("x", robot.pinpoint.getPosX(DistanceUnit.INCH));
+        telemetry.addData("y", robot.pinpoint.getPosY(DistanceUnit.INCH));
+        telemetry.addData("heading", robot.pinpoint.getHeading(AngleUnit.DEGREES));
         telemetry.update();
     }
 

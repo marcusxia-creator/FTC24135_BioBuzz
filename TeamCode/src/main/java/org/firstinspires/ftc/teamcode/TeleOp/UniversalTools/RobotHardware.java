@@ -68,12 +68,14 @@ public class RobotHardware{
         //rightLiftMotor.setDirection(DcMotorSimple.Direction.REVERSE);
 
         limelight = hardwareMap.get(Limelight3A.class, "limelight");
+        pinpoint = hardwareMap.get(GoBildaPinpointDriver.class, "pinpoint");
     }
 
     public void initPinpoint() {
-        pinpoint.setOffsets(38.1, -184.15, DistanceUnit.MM); //these are tuned for 3110-0002-0001 Product Insight #1
+        pinpoint.setOffsets(-157, -200, DistanceUnit.MM); //these are tuned for 3110-0002-0001 Product Insight #1
         pinpoint.setEncoderResolution(GoBildaPinpointDriver.GoBildaOdometryPods.goBILDA_4_BAR_POD);
         pinpoint.setEncoderDirections(GoBildaPinpointDriver.EncoderDirection.REVERSED, GoBildaPinpointDriver.EncoderDirection.REVERSED);
+        pinpoint.resetPosAndIMU();
         //pinpoint.resetPosAndIMU();
     }
 
