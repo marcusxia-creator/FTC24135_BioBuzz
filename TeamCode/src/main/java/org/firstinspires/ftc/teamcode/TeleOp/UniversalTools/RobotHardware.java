@@ -1,12 +1,15 @@
 package org.firstinspires.ftc.teamcode.TeleOp.UniversalTools;
 
 
+import com.qualcomm.hardware.gobilda.GoBildaPinpointDriver;
 import com.qualcomm.hardware.limelightvision.Limelight3A;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
+
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
 public class RobotHardware{
     public DcMotorEx frontLeftMotor;
@@ -18,14 +21,16 @@ public class RobotHardware{
     public DcMotorEx rightLiftMotor;
     public Servo linkagePTOServo;
     public Limelight3A limelight;
+    public GoBildaPinpointDriver pinpoint;
 
     public HardwareMap hardwareMap;
+
     public RobotHardware(HardwareMap hardwareMap) {
        this.hardwareMap=hardwareMap;
     }
     public void init(){
         ///PTO
-        linkagePTOServo = hardwareMap.get(Servo.class, "PTO_Servo");
+        //linkagePTOServo = hardwareMap.get(Servo.class, "PTO_Servo");
         ///Drive
         frontLeftMotor = hardwareMap.get(DcMotorEx.class, "FL_Motor");
         backLeftMotor = hardwareMap.get(DcMotorEx.class, "BL_Motor");
@@ -51,18 +56,25 @@ public class RobotHardware{
         intakeMotor.setDirection(DcMotorSimple.Direction.REVERSE);
 
         ///Lift
-        leftLiftMotor = hardwareMap.get(DcMotorEx.class,"Left_Lift_Motor");
-        rightLiftMotor = hardwareMap.get(DcMotorEx.class, "Right_Lift_Motor");
+        //leftLiftMotor = hardwareMap.get(DcMotorEx.class,"Left_Lift_Motor");
+        //rightLiftMotor = hardwareMap.get(DcMotorEx.class, "Right_Lift_Motor");
 
-        leftLiftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        rightLiftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        //leftLiftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        //rightLiftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
-        leftLiftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        rightLiftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        //leftLiftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        //rightLiftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
-        rightLiftMotor.setDirection(DcMotorSimple.Direction.REVERSE);
+        //rightLiftMotor.setDirection(DcMotorSimple.Direction.REVERSE);
 
         limelight = hardwareMap.get(Limelight3A.class, "limelight");
-
     }
+
+    public void initPinpoint() {
+        pinpoint.setOffsets(38.1, -184.15, DistanceUnit.MM); //these are tuned for 3110-0002-0001 Product Insight #1
+        pinpoint.setEncoderResolution(GoBildaPinpointDriver.GoBildaOdometryPods.goBILDA_4_BAR_POD);
+        pinpoint.setEncoderDirections(GoBildaPinpointDriver.EncoderDirection.REVERSED, GoBildaPinpointDriver.EncoderDirection.REVERSED);
+        //pinpoint.resetPosAndIMU();
+    }
+
 }

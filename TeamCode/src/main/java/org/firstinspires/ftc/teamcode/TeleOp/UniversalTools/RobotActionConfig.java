@@ -4,6 +4,8 @@ import com.acmerobotics.dashboard.config.Config;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
+
 public class RobotActionConfig {
     ///Lift Subsystem
     public static double Ticks_Per_Moto_Revolution = 145.1;
@@ -13,5 +15,10 @@ public class RobotActionConfig {
     public static final double Ticks_Per_MM = Actual_Ticks_Per_Revolution / Spool_Circumference_MM; //0.96
     public static double engagePTO = 0.2; ///PTO Servo connects for slides
     public static double disengagePTO = 0.0; ///PTO Servo disconnects --> deafult?
+
+    public static Pose2D redAllianceCell1 = new Pose2D(DistanceUnit.INCH, 0, 0, AngleUnit.DEGREES, 0);
+    public static Pose2D redAllianceCell2 = new Pose2D(DistanceUnit.INCH, 0, 0, AngleUnit.DEGREES, 0);
+    public static Pose2D blueAllianceCell1 = new Pose2D(DistanceUnit.INCH, 0, 0, AngleUnit.DEGREES, 0);
+    public static Pose2D blueAllianceCell2 = new Pose2D(DistanceUnit.INCH, 0, 0, AngleUnit.DEGREES, 0);
 
 }
