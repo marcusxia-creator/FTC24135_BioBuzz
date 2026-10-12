@@ -6,18 +6,14 @@ import org.firstinspires.ftc.teamcode.TeleOp.Subsystems.TransferSubsystem;
 
 public class IntakeCommand extends CommandBase {
     private final IntakeSubsystem intakeSubsystem;
-    private final TransferSubsystem transferSubsystem;
-
-    public IntakeCommand(IntakeSubsystem intakeSubsystem, TransferSubsystem transferSubsystem) {
+    public IntakeCommand(IntakeSubsystem intakeSubsystem) {
         this.intakeSubsystem = intakeSubsystem;
-        this.transferSubsystem = transferSubsystem;
-        addRequirements(intakeSubsystem, transferSubsystem);
+        addRequirements(intakeSubsystem);
     }
 
     @Override
     public void initialize() {
         intakeSubsystem.runRollers();
-        transferSubsystem.sweep();
     }
 
     @Override
@@ -28,6 +24,5 @@ public class IntakeCommand extends CommandBase {
     @Override
     public void end(boolean interrupted) {
         intakeSubsystem.stop();
-        transferSubsystem.stop();
     }
 }

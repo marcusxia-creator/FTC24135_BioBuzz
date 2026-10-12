@@ -36,7 +36,7 @@ public class GamepadControl extends GamepadDriver {
     private void configureButtonBindings(IntakeSubsystem intake, ShooterSubsystem shooter, TransferSubsystem transfer) {
         // Intake Button (Right Bumper): Starts intake AND automatically sweeps continuous transfer servo
         new GamepadButton(gamepadEx1, GamepadKeys.Button.RIGHT_BUMPER)
-                .whileHeld(new IntakeCommand(intake, transfer));
+                .whileHeld(new IntakeCommand(intake));
 
         new GamepadButton(gamepadEx1, GamepadKeys.Button.DPAD_UP)
                 .whenPressed(new InstantCommand(intake::increasePower, intake));
