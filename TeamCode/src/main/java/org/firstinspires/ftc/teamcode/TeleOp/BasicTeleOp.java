@@ -41,27 +41,7 @@ public class BasicTeleOp extends CommandOpMode {
                 () -> gamepad.getLeftX()
         ));
         ///------------------Gamepad-----------------------
-        ///Run intake
-        new GamepadButton(gamepad, GamepadKeys.Button.RIGHT_BUMPER)
-                .whileHeld(new RunCommand(intake :: runRollers,intake))
-                .whenReleased(new InstantCommand(intake :: stop,intake));
-        new GamepadButton (gamepad, GamepadKeys.Button.DPAD_UP)
-                .whenPressed (new InstantCommand(() -> intake.increasePower(), intake));
-        new GamepadButton (gamepad, GamepadKeys.Button.DPAD_DOWN)
-                .whenPressed(new InstantCommand(()-> intake.decreasePower(), intake));
-        ///RUN SHOOTER
-        new GamepadButton(gamepad, GamepadKeys.Button.X)
-                .whileHeld(new RunCommand(shooter :: runFlywheel, shooter))
-                .whenReleased(new InstantCommand(shooter :: stop, shooter));
-        new GamepadButton(gamepad, GamepadKeys.Button.DPAD_RIGHT)
-                .whenPressed(new InstantCommand (shooter :: increasePower, shooter));
-        new GamepadButton (gamepad, GamepadKeys.Button.DPAD_LEFT)
-                .whenPressed(new InstantCommand (shooter :: decreasePower, shooter));
-        ///STOP
-        new GamepadButton(gamepad, GamepadKeys.Button.B)
-                .whenPressed(new InstantCommand(() -> {shooter.stop();
-                    intake.stop();
-                }, shooter, intake));
+
 
     }
     @Override

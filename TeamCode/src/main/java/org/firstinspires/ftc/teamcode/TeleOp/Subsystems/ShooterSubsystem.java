@@ -11,9 +11,7 @@ public class ShooterSubsystem extends SubsystemBase {
     public ShooterSubsystem (RobotHardware robot){
         this.robot = robot;
     }
-    public void runFlywheel (){robot.shooterMotor.setPower(shooterPower);}
     public void increasePower (){Math.min (1.0, shooterPower + POWER_STEP);}
     public void decreasePower (){Math.max(0.0, shooterPower + POWER_STEP);}
-    public double getshooterPower (){return shooterPower; }
-    public void stop (){robot.shooterMotor.setPower(0);}
-}
+    public double getshooterPower (){return shooterPower;
+}}
