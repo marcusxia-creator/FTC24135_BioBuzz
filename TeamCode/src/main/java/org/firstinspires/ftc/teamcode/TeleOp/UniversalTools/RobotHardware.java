@@ -55,5 +55,6 @@ public class RobotHardware{
         shooterMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         ///Servos
         transferServo = hardwareMap.get(CRServo.class, "transferServo");
+        transferServo.setDirection(DcMotorSimple.Direction.REVERSE);
     }
 }
