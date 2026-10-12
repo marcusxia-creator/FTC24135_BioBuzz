@@ -46,7 +46,7 @@ public class GamepadControl extends GamepadDriver {
 
         // Shooter Button X: Starts shooter AND continuously sweeps continuous transfer servo
         new GamepadButton(gamepadEx1, GamepadKeys.Button.X)
-                .whileHeld(new ShooterCommand(shooter, transfer));
+                .whenPressed(new ShooterCommand(shooter, transfer));
 
         // Adjust shooter speed with DPad Left/Right
         new GamepadButton(gamepadEx1, GamepadKeys.Button.DPAD_RIGHT)
