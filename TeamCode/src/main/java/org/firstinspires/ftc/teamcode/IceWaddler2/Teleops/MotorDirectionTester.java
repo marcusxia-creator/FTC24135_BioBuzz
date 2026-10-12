@@ -14,7 +14,7 @@ public class MotorDirectionTester extends OpMode {
 
     @Override
     public void init() {
-        robot=new RobotHardware(hardwareMap);
+        robot=new RobotHardware();
         robot.init(hardwareMap);
         driveTrain=robot.driveTrain;
         driveTrain.init();

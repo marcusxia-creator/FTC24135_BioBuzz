@@ -29,7 +29,7 @@ public class IWTestAuto extends ScheduledOpMode {
 
     @Override
     public void init() {
-        robot=new RobotHardware(hardwareMap);
+        robot=new RobotHardware();
         robot.init(hardwareMap);
 
         waddler=new IceWaddler(robot.driveTrain, robot.localizer);

@@ -2,7 +2,11 @@ package org.firstinspires.ftc.teamcode.Subsystems;
 
 import static org.firstinspires.ftc.teamcode.IceWaddler2.src.Math.Measurement.Units.Unit.*;
 
+import com.arcrobotics.ftclib.hardware.ServoEx;
+import com.qualcomm.hardware.gobilda.GoBildaPinpointDriver;
+import com.qualcomm.hardware.gobilda.GoBildaPinpointDriver.*;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
+import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
@@ -12,9 +16,6 @@ import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
-import org.firstinspires.ftc.teamcode.Auto.lib.GoBildaPinpointDriver;
-import org.firstinspires.ftc.teamcode.Auto.lib.GoBildaPinpointDriver.*;
-import org.firstinspires.ftc.teamcode.IceWaddler.IceWaddler1;
 import org.firstinspires.ftc.teamcode.IceWaddler2.src.Hardware.Examples.ExampleDriveTrain;
 import org.firstinspires.ftc.teamcode.IceWaddler2.src.Hardware.Examples.goBildaOdoComputer;
 import org.firstinspires.ftc.teamcode.IceWaddler2.src.Hardware.IWDriveTrain;
@@ -68,6 +69,11 @@ Control hub
 
 public class RobotHardware {
     //Drive chassis motor
+    public DcMotorEx intakeMotor;
+
+    public DcMotorEx shooterMotor;
+    public CRServo transferServo;
+
     public DcMotorEx frontLeftMotor;
     public DcMotorEx backLeftMotor;
     public DcMotorEx frontRightMotor;
@@ -90,25 +96,19 @@ public class RobotHardware {
     public ArrayList <VoltageSensor> voltageSensors;
     //public SparkFunOTOS odo;
     public GoBildaPinpointDriver odo; //Gobilda Pinpoint if needed
-    public IceWaddler1.IWLocalizer IWodo;//legacy icewaddler for error management
 
     public IWLocalizer localizer;
     public IWDriveTrain driveTrain;
 
     public VoltageSensor voltageSensor;
 
-    private double vEma = 12.0;                 // EMA state
-    public  double vAlpha = 0.45;                // 0..1 (higher = faster response)
-    public  double vMinAccept = 10.5;            // discard anything below this as junk
-    public  double vDefault   = 12.0;           // fallback
-
-
-
-    public RobotHardware(HardwareMap hardwareMap) {
-    }
-
 
     public void init(HardwareMap hardwareMap) {
+        intakeMotor=hardwareMap.get(DcMotorEx.class,"intakeMotor");
+
+        shooterMotor=hardwareMap.get(DcMotorEx.class,"shooterMotor");
+        transferServo=hardwareMap.get(CRServo.class,"transferServo");
+
 
         this.hardwareMap = hardwareMap; // store the hardwareMap reference
         /**Set up motors**/
@@ -122,10 +122,10 @@ public class RobotHardware {
         //distanceSensor = hardwareMap.get(DistanceSensor.class, "colorSensor");
 
 
-        frontLeftMotor.setDirection(DcMotorSimple.Direction.FORWARD);
-        backLeftMotor.setDirection(DcMotorSimple.Direction.FORWARD);
-        frontRightMotor.setDirection(DcMotorSimple.Direction.REVERSE);
-        backRightMotor.setDirection(DcMotorSimple.Direction.REVERSE);
+        frontLeftMotor.setDirection(DcMotorSimple.Direction.REVERSE);
+        backLeftMotor.setDirection(DcMotorSimple.Direction.REVERSE);
+        frontRightMotor.setDirection(DcMotorSimple.Direction.FORWARD);
+        backRightMotor.setDirection(DcMotorSimple.Direction.FORWARD);
 
         //Webcam
         //webcam1 = hardwareMap.get(WebcamName.class, "Webcam 1");
@@ -164,7 +164,7 @@ public class RobotHardware {
         //IWodo = new IceWaddler1.IWLocalizer(odo);
 
         //localizer = new OTOS(new Position(new Vector(-0.45, -6.57, in), new NormalizedAngle(0, deg)),odo);
-        localizer = new goBildaOdoComputer(odo, new Scalar(0,mm),new Scalar(-170,mm), GoBildaOdometryPods.goBILDA_SWINGARM_POD, EncoderDirection.FORWARD, EncoderDirection.REVERSED);
+        localizer = new goBildaOdoComputer(odo, new Scalar(-163,mm),new Scalar(-183,mm), GoBildaOdometryPods.goBILDA_SWINGARM_POD, EncoderDirection.REVERSED, EncoderDirection.REVERSED);
         driveTrain = new ExampleDriveTrain(this);
     }// End of init
 

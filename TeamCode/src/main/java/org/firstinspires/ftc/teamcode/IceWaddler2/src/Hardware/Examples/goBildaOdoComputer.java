@@ -1,14 +1,13 @@
 package org.firstinspires.ftc.teamcode.IceWaddler2.src.Hardware.Examples;
 
-import static org.firstinspires.ftc.teamcode.IceWaddler2.src.Math.Measurement.Units.Unit.mm;
-import static org.firstinspires.ftc.teamcode.IceWaddler2.src.Math.Measurement.Units.Unit.rad;
-import static org.firstinspires.ftc.teamcode.IceWaddler2.src.Math.Measurement.Units.Unit.radiansPerSecond;
-import static org.firstinspires.ftc.teamcode.IceWaddler2.src.Math.Measurement.Units.Unit.s;
+import static org.firstinspires.ftc.teamcode.IceWaddler2.src.Math.Measurement.Units.Unit.*;
+
+import com.qualcomm.hardware.gobilda.GoBildaPinpointDriver;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
-import org.firstinspires.ftc.teamcode.Auto.lib.GoBildaPinpointDriver;
+import org.firstinspires.ftc.robotcore.external.navigation.UnnormalizedAngleUnit;
 import org.firstinspires.ftc.teamcode.IceWaddler2.src.Hardware.IWLocalizer;
 import org.firstinspires.ftc.teamcode.IceWaddler2.src.Math.Measurement.Scalar;
 import org.firstinspires.ftc.teamcode.IceWaddler2.src.Math.Measurement.SpecialMeasurements.NormalizedAngle;
@@ -22,7 +21,7 @@ public class goBildaOdoComputer implements IWLocalizer {
     GoBildaPinpointDriver odo;
     public goBildaOdoComputer(GoBildaPinpointDriver odo, Scalar odoXOffset, Scalar odoYOffset, GoBildaPinpointDriver.GoBildaOdometryPods pods, GoBildaPinpointDriver.EncoderDirection xEncoderDirection, GoBildaPinpointDriver.EncoderDirection yEncoderDirection){
         this.odo=odo;
-        odo.setOffsets(odoXOffset.getValue(mm), odoYOffset.getValue(mm));
+        odo.setOffsets(odoXOffset.getValue(mm), odoYOffset.getValue(mm),DistanceUnit.MM);
         odo.setEncoderResolution(pods);
         odo.setEncoderDirections(xEncoderDirection, yEncoderDirection);
     }
@@ -45,8 +44,8 @@ public class goBildaOdoComputer implements IWLocalizer {
     public Situation getSituation() {
         return new Situation(
                 null,
-                new Velocity(new Vector(-odo.getVelY(), odo.getVelX(), mm.div(s)), new Scalar(-odo.getHeadingVelocity(),radiansPerSecond)),
-                new Position(new Vector(-odo.getPosY(), odo.getPosX(), mm), new NormalizedAngle(-  odo.getHeading(), rad))
+                new Velocity(new Vector(-odo.getVelY(DistanceUnit.MM), odo.getVelX(DistanceUnit.MM), mm.div(s)), new Scalar(-odo.getHeadingVelocity(UnnormalizedAngleUnit.RADIANS),radiansPerSecond)),
+                new Position(new Vector(-odo.getPosY(DistanceUnit.MM), odo.getPosX(DistanceUnit.MM), mm), new NormalizedAngle(-  odo.getHeading(UnnormalizedAngleUnit.RADIANS), rad))
         );
     }
 }

@@ -27,7 +27,7 @@ import java.util.Queue;
 @TeleOp(name="Motor Power Calibration", group="IceWaddler")
 @Config
 public class MotorCalibration extends OpMode {
-    RobotHardware robot = new RobotHardware(hardwareMap);
+    RobotHardware robot = new RobotHardware();
 
     IceWaddler waddler;
 

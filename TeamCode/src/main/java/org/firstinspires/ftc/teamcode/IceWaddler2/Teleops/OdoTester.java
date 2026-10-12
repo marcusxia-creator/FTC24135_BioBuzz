@@ -5,6 +5,8 @@ import static org.firstinspires.ftc.teamcode.IceWaddler2.src.Math.Measurement.Un
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.UnnormalizedAngleUnit;
 import org.firstinspires.ftc.teamcode.IceWaddler2.src.IceWaddler;
 import org.firstinspires.ftc.teamcode.IceWaddler2.src.Math.Measurement.SpecialMeasurements.NormalizedAngle;
 import org.firstinspires.ftc.teamcode.IceWaddler2.src.Math.Measurement.SpecialMeasurements.Position;
@@ -19,7 +21,7 @@ public class OdoTester extends OpMode {
 
     @Override
     public void init() {
-        robot = new RobotHardware(hardwareMap);
+        robot = new RobotHardware();
         robot.init(hardwareMap);
 
         waddler = new IceWaddler(robot.driveTrain, robot.localizer);
@@ -47,9 +49,9 @@ public class OdoTester extends OpMode {
     @Override
     public void loop() {
         waddler.update();
-        telemetry.addData("rawXPos", robot.odo.getPosX());
-        telemetry.addData("rawYPos", robot.odo.getPosY());
-        telemetry.addData("rawHeading", robot.odo.getHeading());
+        telemetry.addData("rawXPos", robot.odo.getPosX(DistanceUnit.METER));
+        telemetry.addData("rawYPos", robot.odo.getPosY(DistanceUnit.METER));
+        telemetry.addData("rawHeading", robot.odo.getHeading(UnnormalizedAngleUnit.DEGREES));
 
         telemetry.addData("xPos", waddler.getCurrentSituation().getPosition().getX().getValueSI());
         telemetry.addData("yPos", waddler.getCurrentSituation().getPosition().getY().getValueSI());
