@@ -30,7 +30,7 @@ public class BasicTeleOp extends CommandOpMode {
         robotDrive = new RobotDriveSubsystem(robot);
         intake = new IntakeSubsystem(robot);
         shooter = new ShooterSubsystem(robot);
-        transfer = new TransferSubsystem();
+        transfer = new TransferSubsystem(robot);
         gamepad = new GamepadEx(gamepad1);
 
         // Initialize GamepadControl with subsystems; all button bindings live there now!
@@ -50,6 +50,8 @@ public class BasicTeleOp extends CommandOpMode {
         super.run();
         telemetry.addData("Intake Motor Power", intake.getIntakeMotorPower());
         telemetry.addData("Shooter Power", shooter.getshooterPower());
+        telemetry.addData("Target Velocity", shooter.getTargetVelocity());
+        telemetry.addData("Current Velocity", shooter.getCurrentVelocity());
         telemetry.update();
     }
 }

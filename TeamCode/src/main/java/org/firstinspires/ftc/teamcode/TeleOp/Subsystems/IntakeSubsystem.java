@@ -23,7 +23,6 @@ public class IntakeSubsystem extends SubsystemBase{
     public double getIntakeMotorPower() {
         return intakePower;
     }
-
     public void stop () {
         robot.intakeMotor.setPower(0);
     }

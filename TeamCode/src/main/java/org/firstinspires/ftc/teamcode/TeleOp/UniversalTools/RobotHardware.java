@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.TeleOp.UniversalTools;
 
 
+import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
@@ -14,10 +15,9 @@ public class RobotHardware{
     public DcMotorEx frontRightMotor;
     public DcMotorEx backRightMotor;
     public DcMotorEx intakeMotor;
-    public DcMotorEx leftShooterMotor;
-    public DcMotorEx rightShooterMotor;
+    public DcMotorEx shooterMotor;
     //public DcMotorEx flowerMechMotor;
-    public Servo transferServo;
+    public CRServo transferServo;
     public Servo rampServo;
     public Servo limelightAdjServo;
     public Servo transferLimitingServo;
@@ -46,19 +46,14 @@ public class RobotHardware{
         frontLeftMotor.setDirection(DcMotorSimple.Direction.REVERSE);
         backLeftMotor.setDirection(DcMotorSimple.Direction.REVERSE);
         ///Intake
-        intakeMotor = hardwareMap.get(DcMotorEx.class, "Intake_Motor");
+        intakeMotor = hardwareMap.get(DcMotorEx.class, "intakeMotor");
 
         intakeMotor.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
         intakeMotor.setDirection(DcMotorSimple.Direction.REVERSE);
         ///Shooter
-        leftShooterMotor = hardwareMap.get(DcMotorEx.class, "Left_Shooter_Motor");
-        rightShooterMotor = hardwareMap.get(DcMotorEx.class, "Right_Shooter_Motor");
-
-        leftShooterMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        rightShooterMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        shooterMotor = hardwareMap.get(DcMotorEx.class, "shooterMotor");
+        shooterMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         ///Servos
-        transferServo = hardwareMap.get(Servo.class, "Transfer_Servo");
-        ///Sensors
-        distanceSensor = hardwareMap.get(DistanceSensor.class, "Distance_Sensor");
+        transferServo = hardwareMap.get(CRServo.class, "transferServo");
     }
 }

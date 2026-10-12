@@ -1,19 +1,58 @@
 package org.firstinspires.ftc.teamcode.TeleOp.Subsystems;
 
+import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.util.Range;
 import com.seattlesolvers.solverslib.command.SubsystemBase;
-
+import com.seattlesolvers.solverslib.controller.PIDController;
 import org.firstinspires.ftc.teamcode.TeleOp.UniversalTools.RobotHardware;
 
 public class ShooterSubsystem extends SubsystemBase {
-    private RobotHardware robot;
-    private double shooterPower = 0.5;
-    private double POWER_STEP = 0.1;
-    public ShooterSubsystem (RobotHardware robot){
+    private final RobotHardware robot;
+    private double targetVelocity = 3500.0; // Target ticks per second
+    private final double VELOCITY_STEP = 200.0;
+
+    // Custom SolversLib Software PID Controller
+    private final PIDController pidController = new PIDController(0.02, 0.0, 0.0);
+
+    public ShooterSubsystem(RobotHardware robot) {
         this.robot = robot;
+        if (robot.shooterMotor != null) {
+            robot.shooterMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        }
     }
-    public void runFlywheel (){robot.leftShooterMotor.setPower(shooterPower);}
-    public void increasePower (){Math.min (1.0, shooterPower + POWER_STEP);}
-    public void decreasePower (){Math.max(0.0, shooterPower + POWER_STEP);}
-    public double getshooterPower (){return shooterPower; }
-    public void stop (){robot.leftShooterMotor.setPower(0);}
+
+    public void runFlywheel() {
+        if (robot.shooterMotor != null) {
+            double currentVelocity = robot.shooterMotor.getVelocity();
+            double pidOutput = pidController.calculate(currentVelocity, targetVelocity);
+            pidOutput = Range.clip(pidOutput, 0.0, 1.0);
+            robot.shooterMotor.setPower(pidOutput);
+        }
+    }
+
+    public void increasePower() {
+        targetVelocity += VELOCITY_STEP;
+    }
+
+    public void decreasePower() {
+        targetVelocity = Math.max(0.0, targetVelocity - VELOCITY_STEP);
+    }
+
+    public double getTargetVelocity() {
+        return targetVelocity;
+    }
+
+    public double getCurrentVelocity() {
+        return robot.shooterMotor.getVelocity();
+    }
+    public double getshooterPower() {
+        return targetVelocity;
+    }
+
+    public void stop() {
+        pidController.reset();
+        if (robot.shooterMotor != null) {
+            robot.shooterMotor.setPower(0);
+        }
+    }
 }

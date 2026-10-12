@@ -10,44 +10,44 @@ import org.firstinspires.ftc.teamcode.TeleOp.GamepadDriver.GamepadInput;
 import java.util.Arrays;
 import java.util.function.Function;
 import java.util.stream.IntStream;
-import java.util.stream.Stream;
 
 public class Button implements GamepadInput<Boolean> {
-    private Stream<Gamepad> gamepads;
-    private Function<Gamepad,Boolean> input;
+    private final Gamepad[] gamepads;
+    private final Function<Gamepad, Boolean> input;
 
     private Boolean[] inputs;
     private Boolean[] lastInputs;
     private final double debounceSeconds;
-    private ElapsedTime debounceTimer;
+    private final ElapsedTime debounceTimer;
     public boolean pressed;
 
-    public Button(Gamepad[] gamepads, Function<Gamepad,Boolean> input, double debounceSeconds){
-        this.gamepads=Arrays.stream(gamepads);
-        this.input=input;
+    public Button(Gamepad[] gamepads, Function<Gamepad, Boolean> input, double debounceSeconds) {
+        this.gamepads = gamepads;
+        this.input = input;
 
-        lastInputs=getInputs();
+        this.inputs = getInputs();
+        this.lastInputs = getInputs();
 
-        this.debounceSeconds=debounceSeconds;
-        debounceTimer=new ElapsedTime((long)-ceil(debounceSeconds));
+        this.debounceSeconds = debounceSeconds;
+        debounceTimer = new ElapsedTime((long) -ceil(debounceSeconds));
     }
 
-    private Boolean[] getInputs(){
-        return gamepads.map(gamepad->input.apply(gamepad)).toArray(Boolean[]::new);
+    private Boolean[] getInputs() {
+        return Arrays.stream(gamepads).map(input::apply).toArray(Boolean[]::new);
     }
 
     @Override
     public void update() {
-        lastInputs=inputs.clone();
-        inputs=getInputs();
-        pressed=checkPressed()&&debounceTimer.seconds()>=debounceSeconds;
-        if(pressed){
+        lastInputs = inputs.clone();
+        inputs = getInputs();
+        pressed = checkPressed() && debounceTimer.seconds() >= debounceSeconds;
+        if (pressed) {
             debounceTimer.reset();
         }
     }
 
-    private boolean checkPressed(){
-        return IntStream.range(0,(int)gamepads.count()).anyMatch(i->!lastInputs[i]&&inputs[i]);
+    private boolean checkPressed() {
+        return IntStream.range(0, gamepads.length).anyMatch(i -> !lastInputs[i] && inputs[i]);
     }
 
     @Override
