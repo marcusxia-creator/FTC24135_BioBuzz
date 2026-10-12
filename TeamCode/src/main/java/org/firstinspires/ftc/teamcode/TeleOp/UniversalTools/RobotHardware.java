@@ -1,11 +1,9 @@
 package org.firstinspires.ftc.teamcode.TeleOp.UniversalTools;
 
 
-import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
-import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
@@ -19,7 +17,7 @@ public class RobotHardware{
     public DcMotorEx leftShooterMotor;
     public DcMotorEx rightShooterMotor;
     //public DcMotorEx flowerMechMotor;
-    public Servo transferGateServo;
+    public Servo transferServo;
     public Servo rampServo;
     public Servo limelightAdjServo;
     public Servo transferLimitingServo;
@@ -59,10 +57,7 @@ public class RobotHardware{
         leftShooterMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         rightShooterMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         ///Servos
-        transferGateServo = hardwareMap.get(Servo.class, "Gate_Servo");
-        transferLimitingServo = hardwareMap.get(Servo.class, "Limit_Servo");
-        rampServo = hardwareMap.get(Servo.class, "Ramp_Servo");
-        limelightAdjServo = hardwareMap.get(Servo.class, "Limelight_Adj_Servo");
+        transferServo = hardwareMap.get(Servo.class, "Transfer_Servo");
         ///Sensors
         distanceSensor = hardwareMap.get(DistanceSensor.class, "Distance_Sensor");
     }
