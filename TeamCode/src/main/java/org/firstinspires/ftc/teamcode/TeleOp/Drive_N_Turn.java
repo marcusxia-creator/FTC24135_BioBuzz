@@ -21,7 +21,7 @@ public class Drive_N_Turn extends OpMode {
     private final double SWITCH_MARGIN = 6.0; //inch
     private final double STICK_DEADBAND = 0.05;
     private final double HEADING_DEADBAND = 1.5;
-    private final double KP_TURN = 0.02;
+    private final double KP_TURN = 0.01;
     private final double MAX_TURN_POWER = 0.5;
 
     @Override

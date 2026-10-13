@@ -34,9 +34,9 @@ public class limelight extends OpMode {
     private double imageCenterX = 320.0;
     private double horizontalFOV = 54.5;
 
-    public static double kP = 0.03;
+    public static double kP = 0.04;
     public static double deadBand = 1.0;
-    public static double forwardPower = 0.3;
+    public static double forwardPower = 0.7;
 
 
     @Override
