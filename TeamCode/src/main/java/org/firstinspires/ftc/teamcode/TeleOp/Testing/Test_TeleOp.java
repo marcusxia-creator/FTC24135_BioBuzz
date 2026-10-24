@@ -61,7 +61,7 @@ public class Test_TeleOp extends OpMode {
         if (gamepad.getButton(GamepadKeys.Button.X) && debounceTimer.seconds() >= DEBOUNCE_THRESHOLD) {
             debounceTimer.reset();
             leftShooterTargetVelocity = 2000.0;
-            rightShooterTargetVelocity = 2000.0;
+            //rightShooterTargetVelocity = 2000.0;
         }
 
         if (gamepad.getButton(GamepadKeys.Button.Y) && debounceTimer.seconds() >= DEBOUNCE_THRESHOLD) {
@@ -106,14 +106,14 @@ public class Test_TeleOp extends OpMode {
 
         double intakeCurrentVelocity = intakeMotor.getVelocity();
         double intakePidOutput = intakePID.calculate(intakeCurrentVelocity, intakeTargetVelocity);
-        intakeMotor.setPower(Range.clip(intakePidOutput, 0, 1));
+        intakeMotor.setPower(1.0);//Range.clip(intakePidOutput, 0, 1));
 
         telemetry.addData("Left Shooter Target", leftShooterTargetVelocity);
         telemetry.addData("Right Shooter Target", rightShooterTargetVelocity);
         telemetry.addData("Left Shooter Current", leftShooterCurrentVelocity);
         telemetry.addData("Right Shooter Current", rightShooterCurrentVelocity);
         telemetry.addData("Left Shooter Power", "%.2f", leftShooterMotor.getPower());
-        telemetry.addData("Right Shooter Power", "%.2f", rightShooterMotor.getVelocity());
+        telemetry.addData("Right Shooter Power", "%.2f", rightShooterMotor.getPower());
         telemetry.addLine("      ");
         telemetry.addData("Intake Target", intakeTargetVelocity);
         telemetry.addData("Intake Current", intakeCurrentVelocity);
