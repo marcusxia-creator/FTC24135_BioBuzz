@@ -1,6 +1,6 @@
 package org.firstinspires.ftc.teamcode.Subsystems;
 
-import static org.firstinspires.ftc.teamcode.IceWaddler2.src.Math.Measurement.Units.Unit.*;
+import static org.firstinspires.ftc.teamcode.lib.IceWaddler2.src.Math.Measurement.Units.Unit.*;
 
 import com.qualcomm.hardware.gobilda.GoBildaPinpointDriver;
 import com.qualcomm.hardware.gobilda.GoBildaPinpointDriver.*;
@@ -14,12 +14,9 @@ import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
-import org.firstinspires.ftc.teamcode.IceWaddler.IceWaddler1;
-import org.firstinspires.ftc.teamcode.IceWaddler2.src.Hardware.Examples.ExampleDriveTrain;
-import org.firstinspires.ftc.teamcode.IceWaddler2.src.Hardware.Examples.goBildaOdoComputer;
-import org.firstinspires.ftc.teamcode.IceWaddler2.src.Hardware.IWDriveTrain;
-import org.firstinspires.ftc.teamcode.IceWaddler2.src.Hardware.IWLocalizer;
-import org.firstinspires.ftc.teamcode.IceWaddler2.src.Math.Measurement.Scalar;
+import org.firstinspires.ftc.teamcode.lib.IceWaddler2.src.Hardware.Examples.*;
+import org.firstinspires.ftc.teamcode.lib.IceWaddler2.src.Hardware.*;
+import org.firstinspires.ftc.teamcode.lib.IceWaddler2.src.Math.Measurement.Scalar;
 
 import java.util.ArrayList;
 
@@ -90,7 +87,6 @@ public class RobotHardware {
     public ArrayList <VoltageSensor> voltageSensors;
     //public SparkFunOTOS odo;
     public GoBildaPinpointDriver odo; //Gobilda Pinpoint if needed
-    public IceWaddler1.IWLocalizer IWodo;//legacy icewaddler for error management
 
     public IWLocalizer localizer;
     public IWDriveTrain driveTrain;
@@ -160,8 +156,6 @@ public class RobotHardware {
 
         odo = hardwareMap.get(GoBildaPinpointDriver.class, "pinpoint"); //with pinpoint computer
         //odo = hardwareMap.get(SparkFunOTOS.class, "sensor_otos"); //With OTOS
-
-        //IWodo = new IceWaddler1.IWLocalizer(odo);
 
         //localizer = new OTOS(new Position(new Vector(-0.45, -6.57, in), new NormalizedAngle(0, deg)),odo);
         localizer = new goBildaOdoComputer(odo, new Scalar(0,mm),new Scalar(-170,mm), GoBildaOdometryPods.goBILDA_SWINGARM_POD, EncoderDirection.FORWARD, GoBildaPinpointDriver.EncoderDirection.REVERSED);

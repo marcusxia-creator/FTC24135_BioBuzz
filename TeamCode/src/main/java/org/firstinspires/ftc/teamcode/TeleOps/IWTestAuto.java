@@ -1,23 +1,22 @@
 package org.firstinspires.ftc.teamcode.TeleOps;
 
-import static org.firstinspires.ftc.teamcode.IceWaddler2.IWConfig.maxSpeed;
-import static org.firstinspires.ftc.teamcode.IceWaddler2.src.Math.Measurement.SpecialMeasurements.Position.ORIGIN;
-import static org.firstinspires.ftc.teamcode.IceWaddler2.src.Math.Measurement.Units.Unit.*;
+import static org.firstinspires.ftc.teamcode.lib.IceWaddler2.IWConfig.*;
+import static org.firstinspires.ftc.teamcode.lib.IceWaddler2.src.Math.Measurement.SpecialMeasurements.Position.ORIGIN;
+import static org.firstinspires.ftc.teamcode.lib.IceWaddler2.src.Math.Measurement.Units.Unit.*;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
-import org.firstinspires.ftc.teamcode.CommandBase.Action;
-import org.firstinspires.ftc.teamcode.CommandBase.ScheduledOpMode;
-import org.firstinspires.ftc.teamcode.CommandBase.PrebuiltActions.*;
-import org.firstinspires.ftc.teamcode.IceWaddler2.src.IceWaddler;
-import org.firstinspires.ftc.teamcode.IceWaddler2.src.Math.Measurement.SpecialMeasurements.*;
-import org.firstinspires.ftc.teamcode.IceWaddler2.src.Math.Measurement.*;
-import org.firstinspires.ftc.teamcode.IceWaddler2.src.Pathing.ArcDirection;
-import org.firstinspires.ftc.teamcode.IceWaddler2.src.Pathing.HeadingProfile;
-import org.firstinspires.ftc.teamcode.IceWaddler2.src.Pathing.PrebuiltMotionProfiles.*;
-import org.firstinspires.ftc.teamcode.IceWaddler2.src.Pathing.PrebuiltPathingElements.*;
+import org.firstinspires.ftc.teamcode.lib.CommandBase.Action;
+import org.firstinspires.ftc.teamcode.lib.CommandBase.PrebuiltActions.*;
+import org.firstinspires.ftc.teamcode.lib.CommandBase.ScheduledOpMode;
+import org.firstinspires.ftc.teamcode.lib.IceWaddler2.src.Math.Measurement.*;
+import org.firstinspires.ftc.teamcode.lib.IceWaddler2.src.Math.Measurement.SpecialMeasurements.*;
+import org.firstinspires.ftc.teamcode.lib.IceWaddler2.src.Pathing.PrebuiltMotionProfiles.*;
+import org.firstinspires.ftc.teamcode.lib.IceWaddler2.src.Pathing.PrebuiltPathingElements.*;
+import org.firstinspires.ftc.teamcode.lib.IceWaddler2.src.IceWaddler;
+import org.firstinspires.ftc.teamcode.lib.IceWaddler2.src.Pathing.*;
 import org.firstinspires.ftc.teamcode.Subsystems.RobotHardware;
 
 @Autonomous(name="IceWaddler Test Auto")
