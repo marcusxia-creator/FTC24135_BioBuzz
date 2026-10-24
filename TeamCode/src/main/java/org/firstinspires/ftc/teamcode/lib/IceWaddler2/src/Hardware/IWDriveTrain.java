@@ -15,7 +15,7 @@ public interface IWDriveTrain {
 
     /// Ask drivetrain to drive at a certain acceleration while currently moving at a certain velocity
     /// Both vectors are fieldcentric
-    void run(Velocity currentVelocity, Acceleration targetAcceleration, NormalizedAngle currentHeading);
+    void run(Velocity targetVelocity, Acceleration targetAcceleration, NormalizedAngle currentHeading);
 
     void runPower(double FL_Power, double BL_Power, double FR_Power, double BR_Power);
 }

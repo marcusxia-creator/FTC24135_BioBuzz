@@ -21,11 +21,6 @@ import org.firstinspires.ftc.teamcode.lib.IceWaddler2.src.Math.Measurement.Speci
 import org.firstinspires.ftc.teamcode.lib.IceWaddler2.src.Math.Measurement.SpecialMeasurements.Situation;
 import org.firstinspires.ftc.teamcode.lib.IceWaddler2.src.Math.Measurement.SpecialMeasurements.Velocity;
 import org.firstinspires.ftc.teamcode.lib.IceWaddler2.src.Pathing.Movement;
-import org.firstinspires.ftc.teamcode.lib.IceWaddler2.src.Hardware.*;
-import org.firstinspires.ftc.teamcode.lib.IceWaddler2.src.Math.Measurement.*;
-import org.firstinspires.ftc.teamcode.lib.IceWaddler2.src.Math.Measurement.SpecialMeasurements.*;
-
-import org.firstinspires.ftc.teamcode.lib.IceWaddler2.src.Pathing.*;
 
 import java.util.function.Supplier;
 
@@ -213,11 +208,11 @@ public class IceWaddler {
         }
     }
 
-    /// Writes power to drivetrain based on target acceleration in targetSituation
+    /// Writes power to drivetrain based on target acceleration and velocity in targetSituation
     private void writeAccel(){
         limitAcceleration();
 
-        driveTrain.run(currentSituation.getVelocity(),
+        driveTrain.run(targetSituation.getVelocity(),
                 targetSituation.getAcceleration(),
                 currentSituation.getPosition().getHeading());
     }

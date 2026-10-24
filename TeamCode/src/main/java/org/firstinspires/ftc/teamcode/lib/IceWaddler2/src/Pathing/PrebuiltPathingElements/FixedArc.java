@@ -9,7 +9,6 @@ import org.firstinspires.ftc.teamcode.lib.IceWaddler2.src.Pathing.*;
 import org.firstinspires.ftc.teamcode.lib.IceWaddler2.src.Math.Measurement.*;
 import org.firstinspires.ftc.teamcode.lib.IceWaddler2.src.Math.Measurement.SpecialMeasurements.*;
 import org.firstinspires.ftc.teamcode.lib.IceWaddler2.src.Math.Measurement.Units.Dimensions;
-import org.firstinspires.ftc.teamcode.lib.IceWaddler2.src.Pathing.*;
 
 public class FixedArc implements Movement {
 

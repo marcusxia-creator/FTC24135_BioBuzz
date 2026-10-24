@@ -5,7 +5,6 @@ import com.qualcomm.robotcore.hardware.Gamepad;
 import org.firstinspires.ftc.teamcode.lib.GamepadDriver.GamepadInput;
 import org.firstinspires.ftc.teamcode.lib.IceWaddler2.src.Math.Measurement.DimlessVector;
 import org.firstinspires.ftc.teamcode.lib.IceWaddler2.src.Math.Measurement.Scalar;
-import org.firstinspires.ftc.teamcode.lib.IceWaddler2.src.Math.Measurement.*;
 import org.firstinspires.ftc.teamcode.lib.IceWaddler2.src.Math.Measurement.SpecialMeasurements.Velocity;
 
 import java.util.function.Function;

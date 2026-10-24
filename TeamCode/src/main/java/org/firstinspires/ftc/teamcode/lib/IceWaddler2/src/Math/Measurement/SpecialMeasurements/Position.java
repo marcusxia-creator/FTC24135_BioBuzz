@@ -6,7 +6,6 @@ import static org.firstinspires.ftc.teamcode.lib.IceWaddler2.src.Math.Measuremen
 import org.firstinspires.ftc.teamcode.lib.IceWaddler2.src.Math.Measurement.DimlessVector;
 import org.firstinspires.ftc.teamcode.lib.IceWaddler2.src.Math.Measurement.Scalar;
 import org.firstinspires.ftc.teamcode.lib.IceWaddler2.src.Math.Measurement.Vector;
-import org.firstinspires.ftc.teamcode.lib.IceWaddler2.src.Math.Measurement.*;
 
 public class Position {
     Vector linPos;

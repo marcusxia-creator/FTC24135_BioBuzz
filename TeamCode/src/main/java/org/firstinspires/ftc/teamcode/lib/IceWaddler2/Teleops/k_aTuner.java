@@ -10,21 +10,21 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import org.firstinspires.ftc.teamcode.lib.CommandBase.Action;
 import org.firstinspires.ftc.teamcode.lib.CommandBase.PrebuiltActions.ActionParallel;
 import org.firstinspires.ftc.teamcode.lib.CommandBase.PrebuiltActions.ActionSwitch;
+import org.firstinspires.ftc.teamcode.lib.GamepadDriver.GamepadInput;
+import org.firstinspires.ftc.teamcode.lib.GamepadDriver.PrebuiltInputs.AnalogInputs.LerpedVel;
+import org.firstinspires.ftc.teamcode.lib.GamepadDriver.PrebuiltInputs.AnalogInputs.SmoothedVel;
 import org.firstinspires.ftc.teamcode.lib.IceWaddler2.src.Math.Measurement.Scalar;
 import org.firstinspires.ftc.teamcode.lib.IceWaddler2.src.Math.Measurement.SpecialMeasurements.NormalizedAngle;
 import org.firstinspires.ftc.teamcode.lib.IceWaddler2.src.Math.Measurement.SpecialMeasurements.Position;
 import org.firstinspires.ftc.teamcode.lib.IceWaddler2.src.Math.Measurement.SpecialMeasurements.Velocity;
 import org.firstinspires.ftc.teamcode.lib.IceWaddler2.src.Math.Measurement.Vector;
-import org.firstinspires.ftc.teamcode.lib.CommandBase.PrebuiltActions.*;
 import org.firstinspires.ftc.teamcode.lib.CommandBase.ScheduledOpMode;
 import org.firstinspires.ftc.teamcode.lib.IceWaddler2.src.IceWaddler;
-import org.firstinspires.ftc.teamcode.lib.IceWaddler2.src.Math.Measurement.*;
-import org.firstinspires.ftc.teamcode.lib.IceWaddler2.src.Math.Measurement.SpecialMeasurements.*;
 import org.firstinspires.ftc.teamcode.Subsystems.RobotHardware;
 
-@TeleOp(name="Velocity Tuner", group="IceWaddler")
+@TeleOp(name="k_a/Accel Tuner", group="IceWaddler")
 @Config
-public class VelTuner extends ScheduledOpMode {
+public class k_aTuner extends ScheduledOpMode {
     RobotHardware robot;
     IceWaddler waddler;
     FtcDashboard dashboard;
@@ -32,10 +32,7 @@ public class VelTuner extends ScheduledOpMode {
     public static Scalar linVelFactor=new Scalar(2.5,metersPerSecond);
     public static Scalar angVelFactor=new Scalar(5,radiansPerSecond);
 
-    Velocity getJoystickCommandVel(){
-        return new Velocity(new Vector(linVelFactor.multiply(gamepad1.right_stick_x),linVelFactor.multiply(-gamepad1.right_stick_y)),
-                angVelFactor.multiply(gamepad1.left_stick_x));
-    }
+    GamepadInput<Velocity> driveInput;
 
     @Override
     public void init(){
@@ -49,8 +46,10 @@ public class VelTuner extends ScheduledOpMode {
 
         telemetry=new MultipleTelemetry(telemetry, dashboard.getTelemetry());
 
+        driveInput=new SmoothedVel(new LerpedVel(gamepad1,gamepad2,(gamepad) -> (double)gamepad.right_stick_y,(gamepad) -> (double)gamepad.right_stick_x,(gamepad) -> (double)gamepad.left_stick_x,linVelFactor,angVelFactor,new Scalar(5,metersPerSecondSquared),new Scalar(5,radiansPerSecondSquared)),2);
+
         rootAction=new ActionParallel(ActionParallel.TERMINATIONTYPE.NONE,
-                new ActionSwitch(()->gamepad1.b?1:0, waddler.new VelDrive(this::getJoystickCommandVel),
+                new ActionSwitch(()->gamepad1.b?1:0, waddler.new VelDrive(driveInput),
                         waddler.new Idle()),
                 new telemetryDriver()
         );

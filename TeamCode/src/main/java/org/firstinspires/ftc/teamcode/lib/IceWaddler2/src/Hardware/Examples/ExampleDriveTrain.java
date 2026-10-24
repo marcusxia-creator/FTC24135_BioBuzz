@@ -45,9 +45,9 @@ public class ExampleDriveTrain implements IWDriveTrain {
     }
 
     @Override
-    public void run(Velocity currentVelocity, Acceleration targetAcceleration, NormalizedAngle currentHeading){
-                DimlessVector linPower=currentVelocity.getLinVel().getDimlessVector().multi(k_v).add(targetAcceleration.getLinAcc().getDimlessVector().multi(k_a)).rotateBy(currentHeading.multiply(-1));
-        double angPower=angk_v*currentVelocity.getAngVel().getValueSI()+angk_a*targetAcceleration.getAngAcc().getValueSI();
+    public void run(Velocity targetVelocity, Acceleration targetAcceleration, NormalizedAngle currentHeading){
+                DimlessVector linPower= targetVelocity.getLinVel().getDimlessVector().multi(k_v).add(targetAcceleration.getLinAcc().getDimlessVector().multi(k_a)).rotateBy(currentHeading.multiply(-1));
+        double angPower=angk_v* targetVelocity.getAngVel().getValueSI()+angk_a*targetAcceleration.getAngAcc().getValueSI();
         run(linPower,angPower);
     }
 
