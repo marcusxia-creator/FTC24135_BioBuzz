@@ -7,6 +7,7 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 import com.seattlesolvers.solverslib.controller.PIDController;
@@ -19,6 +20,7 @@ public class Test_TeleOp extends OpMode {
     private DcMotorEx leftShooterMotor;
     private DcMotorEx rightShooterMotor;
     private DcMotorEx intakeMotor;
+    private Servo transferServo;
     private GamepadEx gamepad;
     private ElapsedTime debounceTimer = new ElapsedTime();
     private final double DEBOUNCE_THRESHOLD = 0.2;
@@ -41,11 +43,15 @@ public class Test_TeleOp extends OpMode {
         leftShooterMotor = hardwareMap.get(DcMotorEx.class, "Left_Shooter_Motor");
         rightShooterMotor = hardwareMap.get(DcMotorEx.class, "Right_Shooter_Motor");
         intakeMotor = hardwareMap.get(DcMotorEx.class, "Intake_Motor");
+        transferServo = hardwareMap.get(Servo.class, "Transfer_Servo");
         leftShooterMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         rightShooterMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         leftShooterMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
         rightShooterMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
         intakeMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+
+        transferServo.setPosition(0.0);
+
         gamepad = new GamepadEx(gamepad1);
         dashboard = FtcDashboard.getInstance();
         telemetry = new MultipleTelemetry(telemetry, dashboard.getTelemetry());
@@ -96,6 +102,19 @@ public class Test_TeleOp extends OpMode {
             debounceTimer.reset();
             rightShooterTargetVelocity -= 100.0;
         }
+        //Bring transfer gate out
+        if (gamepad.getButton(GamepadKeys.Button.RIGHT_BUMPER) && debounceTimer.seconds() >= DEBOUNCE_THRESHOLD) {
+            double currentPosition;
+            currentPosition = transferServo.getPosition();
+            transferServo.setPosition(currentPosition+0.01);
+            debounceTimer.reset();
+
+        }
+        //Transfer gate in
+        if (gamepad.getButton(GamepadKeys.Button.LEFT_BUMPER) && debounceTimer.seconds() >= DEBOUNCE_THRESHOLD){
+            debounceTimer.reset();
+            transferServo.setPosition(0.0);
+        }
 
         double leftShooterCurrentVelocity = leftShooterMotor.getVelocity();
         double leftShooterPidOutput = leftShooterPID.calculate(leftShooterCurrentVelocity, leftShooterTargetVelocity);
@@ -118,6 +137,7 @@ public class Test_TeleOp extends OpMode {
         telemetry.addData("Intake Target", intakeTargetVelocity);
         telemetry.addData("Intake Current", intakeCurrentVelocity);
         telemetry.addData("Intake Power", "%.2f", intakeMotor.getPower());
+        telemetry.addData("Transfer Servo Pos", "%.2f", transferServo.getPosition());
         telemetry.update();
     }
 }
