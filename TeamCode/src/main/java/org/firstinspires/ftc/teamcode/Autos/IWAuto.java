@@ -1,7 +1,7 @@
-package org.firstinspires.ftc.teamcode.TeleOps;
+package org.firstinspires.ftc.teamcode.Autos;
 
-import static org.firstinspires.ftc.teamcode.IceWaddler2.IWConfig.maxSpeed;
-import static org.firstinspires.ftc.teamcode.IceWaddler2.src.Math.Measurement.SpecialMeasurements.Position.ORIGIN;
+import static org.firstinspires.ftc.teamcode.CommandBase.PrebuiltActions.ActionParallel.TERMINATIONTYPE.*;
+import static org.firstinspires.ftc.teamcode.IceWaddler2.IWConfig.*;
 import static org.firstinspires.ftc.teamcode.IceWaddler2.src.Math.Measurement.Units.Unit.*;
 
 import com.acmerobotics.dashboard.FtcDashboard;
@@ -9,23 +9,31 @@ import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
 import org.firstinspires.ftc.teamcode.CommandBase.Action;
-import org.firstinspires.ftc.teamcode.CommandBase.ScheduledOpMode;
 import org.firstinspires.ftc.teamcode.CommandBase.PrebuiltActions.*;
+import org.firstinspires.ftc.teamcode.CommandBase.ScheduledOpMode;
 import org.firstinspires.ftc.teamcode.IceWaddler2.src.IceWaddler;
 import org.firstinspires.ftc.teamcode.IceWaddler2.src.Math.Measurement.SpecialMeasurements.*;
 import org.firstinspires.ftc.teamcode.IceWaddler2.src.Math.Measurement.*;
-import org.firstinspires.ftc.teamcode.IceWaddler2.src.Pathing.ArcDirection;
-import org.firstinspires.ftc.teamcode.IceWaddler2.src.Pathing.HeadingProfile;
+import org.firstinspires.ftc.teamcode.IceWaddler2.src.Pathing.*;
 import org.firstinspires.ftc.teamcode.IceWaddler2.src.Pathing.PrebuiltMotionProfiles.*;
 import org.firstinspires.ftc.teamcode.IceWaddler2.src.Pathing.PrebuiltPathingElements.*;
-import org.firstinspires.ftc.teamcode.Subsystems.RobotHardware;
+import org.firstinspires.ftc.teamcode.Subsystems.*;
 
-@Autonomous(name="IceWaddler Test Auto")
-public class IWTestAuto extends ScheduledOpMode {
+@Autonomous(name="IceWaddler Auto")
+public class IWAuto extends ScheduledOpMode {
     RobotHardware robot;
     IceWaddler waddler;
 
     Action path;
+
+    //Pathing Positions
+    Position startPos=new Position(new Vector(0,0,m),new NormalizedAngle(0,deg));
+    Position shootingPos=new Position(new Vector(-0.3,0.5,m),new NormalizedAngle(180,deg));
+    Position intakePos=new Position(new Vector(0.4,0.1,m),new NormalizedAngle(135,deg));
+    Position parkPos=new Position(new Vector(-0.3,0.1,m),new NormalizedAngle(0,deg));
+
+    IntakeSubsystem intake;
+    ShooterSubsystem shooter;
 
     @Override
     public void init() {
@@ -33,22 +41,47 @@ public class IWTestAuto extends ScheduledOpMode {
         robot.init(hardwareMap);
 
         waddler=new IceWaddler(robot.driveTrain, robot.localizer);
-        waddler.init(ORIGIN,false);
+        waddler.init(startPos,true);
+
+        intake=new IntakeSubsystem(robot);
+        shooter=new ShooterSubsystem(robot);
 
         telemetry=new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
 
         path=new ActionSeries(
-                waddler.new InitPath(),
-                waddler.new MotionAction(new Line(new PathingPoint(new Position(new Vector(-1,0,m),new NormalizedAngle(-90,deg)),new Scalar(0.6,metersPerSecond)),new maxSpeedMP(maxSpeed),new SCurveHP(),new String[]{})),
-                waddler.new MotionAction(new FixedArc(new Vector(-1,0.5,m), new PositiveAngle(90,deg), ArcDirection.CLOCKWISE,new Scalar(0,metersPerSecond),new NormalizedAngle(-90,deg),new maxSpeedMP(new Scalar(0.6,metersPerSecond)),new SCurveHP(),new String[]{})),
-                new ActionParallel(ActionParallel.TERMINATIONTYPE.ALL,waddler.new MotionAction(new holdPos(new String[]{})),new Delay(3)),
-                waddler.new MotionAction(new Line(new PathingPoint(new Position(new Vector(-0.5,0.5,m),new NormalizedAngle(-90,deg)),new Scalar(0.3,metersPerSecond)),new maxSpeedMP(maxSpeed),new LUT_HP(new double[]{0.5}, new NormalizedAngle[]{new NormalizedAngle(180,deg)},new HeadingProfile[]{new SCurveHP()}),new String[]{})),
-                waddler.new MotionAction(new FixedArc(new Vector(-0.5,0.25,m),new PositiveAngle(90,deg),ArcDirection.CLOCKWISE,new Scalar(0.3,metersPerSecond),new NormalizedAngle(-45,deg),new linearMP(),new linearHP(),new String[]{})),
-                waddler.new MotionAction(new FixedArc(new Vector(0,0.25,m),new PositiveAngle(90,deg),ArcDirection.COUNTERCLOCKWISE,new Scalar(0,metersPerSecond),new NormalizedAngle(0,deg),new maxSpeedMP(new Scalar(0.3,metersPerSecond)),new linearHP(),new String[]{})),
-                new ActionParallel(ActionParallel.TERMINATIONTYPE.NONE,waddler.new MotionAction(new holdPos(new String[]{})),new Standby())
+                waddler.new InitPath(new PathingPoint(startPos)),
+                new ActionParallel(FIRST,
+                        waddler.new MotionAction(new Line(new PathingPoint(shootingPos),new maxSpeedMP(),new linearHP(),new String[]{})),
+                        shooter.new SpinFlywheel()
+                ),
+                new ActionParallel(FIRST,
+                        new Delay(3),
+                        new ActionParallel(NONE,
+                                shooter.new ShootAction(),
+                                waddler.new MotionAction(new holdPos(new String[]{})))
+                ),
+                new ActionParallel(FIRST,
+                        waddler.new MotionAction(new Line(new PathingPoint(intakePos),
+                                new LUT_MP(new double[]{0.7},new Scalar[]{new Scalar(0.3,metersPerSecond)},new MotionProfile[]{new maxSpeedMP(),new maxSpeedMP(new Scalar(0.3,metersPerSecond))}),
+                                new linearHP(),new String[]{})),
+                        intake.new IntakeAction()
+                ),
+                new ActionParallel(FIRST,
+                        waddler.new MotionAction(new Line(new PathingPoint(shootingPos),new maxSpeedMP(),new linearHP(),new String[]{})),
+                        shooter.new SpinFlywheel()
+                ),
+                new ActionParallel(FIRST,
+                        new Delay(3),
+                        new ActionParallel(NONE,
+                                shooter.new ShootAction(),
+                                waddler.new MotionAction(new holdPos(new String[]{})))
+                ),
+                waddler.new MotionAction(new Line(new PathingPoint(parkPos),
+                        new LUT_MP(new double[]{0.7},new Scalar[]{new Scalar(0.3,metersPerSecond)},new MotionProfile[]{new maxSpeedMP(),new maxSpeedMP(new Scalar(0.3,metersPerSecond))}),
+                        new linearHP(),new String[]{}))
         );
         
-        rootAction=new ActionParallel(ActionParallel.TERMINATIONTYPE.NONE,
+        rootAction=new ActionParallel(NONE,
                 path,
                 new telemetryDriver()
         );

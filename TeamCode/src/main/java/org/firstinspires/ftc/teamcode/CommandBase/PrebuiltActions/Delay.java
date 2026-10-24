@@ -27,6 +27,6 @@ public class Delay implements Action {
 
     @Override
     public boolean finished() {
-        return delaySeconds>=timer.seconds();
+        return timer.seconds()>=delaySeconds;
     }
 }

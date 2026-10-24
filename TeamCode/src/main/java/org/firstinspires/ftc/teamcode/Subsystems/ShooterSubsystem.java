@@ -18,6 +18,21 @@ public class ShooterSubsystem {
         transferServo= robot.transferServo;
     }
 
+    public class SpinFlywheel implements Action{
+        @Override
+        public void init() {
+            shooterMotor.setVelocity(1000);
+        }
+
+        @Override
+        public void loop() {}
+
+        @Override
+        public void shutdown(){
+            shooterMotor.setPower(0);
+        }
+    }
+
     public class ShootAction implements Action{
         @Override
         public void init() {
@@ -34,6 +49,7 @@ public class ShooterSubsystem {
             }
         }
 
+        @Override
         public void shutdown(){
             shooterMotor.setPower(0);
             transferServo.setPower(0);
