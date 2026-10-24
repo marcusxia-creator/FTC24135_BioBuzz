@@ -1,11 +1,9 @@
 package org.firstinspires.ftc.teamcode.TeleOp.UniversalTools;
 
 
-import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
-import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
@@ -19,10 +17,10 @@ public class RobotHardware{
     public DcMotorEx leftShooterMotor;
     public DcMotorEx rightShooterMotor;
     //public DcMotorEx flowerMechMotor;
-    public Servo transferGateServo;
-    public Servo rampServo;
+    public Servo nectarGateServo;
+    public Servo flowerRampServo;
     public Servo limelightAdjServo;
-    public Servo transferLimitingServo;
+    public Servo pollenLimitingServo;
     public DistanceSensor distanceSensor;
     public HardwareMap hardwareMap;
     public RobotHardware(HardwareMap hardwareMap) {
@@ -59,9 +57,9 @@ public class RobotHardware{
         leftShooterMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         rightShooterMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         ///Servos
-        transferGateServo = hardwareMap.get(Servo.class, "Gate_Servo");
-        transferLimitingServo = hardwareMap.get(Servo.class, "Limit_Servo");
-        rampServo = hardwareMap.get(Servo.class, "Ramp_Servo");
+        nectarGateServo = hardwareMap.get(Servo.class, "Gate_Servo");
+        pollenLimitingServo = hardwareMap.get(Servo.class, "Limit_Servo");
+        flowerRampServo = hardwareMap.get(Servo.class, "Ramp_Servo");
         limelightAdjServo = hardwareMap.get(Servo.class, "Limelight_Adj_Servo");
         ///Sensors
         distanceSensor = hardwareMap.get(DistanceSensor.class, "Distance_Sensor");
