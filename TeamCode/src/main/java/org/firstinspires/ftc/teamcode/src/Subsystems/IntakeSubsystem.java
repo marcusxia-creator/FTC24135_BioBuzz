@@ -76,5 +76,10 @@ public class IntakeSubsystem extends SubsystemBase {
         public void shutdown() {
             stop();
         }
+
+        @Override
+        public boolean finished() {
+            return true;
+        }
     }
 }

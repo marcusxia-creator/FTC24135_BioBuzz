@@ -6,6 +6,8 @@ import static org.firstinspires.ftc.teamcode.lib.IceWaddler2.src.Math.Measuremen
 import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
+import org.firstinspires.ftc.teamcode.src.Subsystems.IntakeSubsystem;
+import org.firstinspires.ftc.teamcode.src.Subsystems.ShooterSubsystem;
 import org.firstinspires.ftc.teamcode.src.UniversalTools.RobotHardware;
 import org.firstinspires.ftc.teamcode.lib.CommandBase.Action;
 import org.firstinspires.ftc.teamcode.lib.CommandBase.PrebuiltActions.*;
@@ -24,6 +26,9 @@ public class RedSideAuto extends ScheduledOpMode {
 
     Action path;
 
+    IntakeSubsystem intake;
+    ShooterSubsystem shooter;
+
     //Pathing Positions
     public static Position startPoint=new Position(new Vector(5.2,-1,feet),new NormalizedAngle(-90,deg));
     public static Position leftHive=new Position(new Vector(4,-1,feet),new NormalizedAngle(-90,deg));
@@ -40,36 +45,35 @@ public class RedSideAuto extends ScheduledOpMode {
         waddler=new IceWaddler(robot.driveTrain, robot.localizer);
         waddler.init(startPoint,false);
 
+        intake=new IntakeSubsystem(robot);
+
         path=new ActionSeries(
                 waddler.new InitPath(new PathingPoint(startPoint)),
-                new ActionParallel(ALL,//spool flywheel
+                new ActionParallel(ALL, shooter.new runFlywheelAction(),
                         waddler.new MotionAction(new Line(new PathingPoint(leftHive), new maxSpeedMP(), new linearHP(), new String[]{}))),
-                new ActionParallel(FIRST,//shoot
+                new ActionParallel(FIRST,new Delay(5),shooter.new runFlywheelAction(),
                         waddler.new MotionAction(new holdPos(new String[]{}))),
 
-                new ActionParallel(ALL,//put ramp down
+                new ActionParallel(ALL,intake.new flowerIntakeAction(),
                         waddler.new MotionAction(new Line(new PathingPoint(flower1), new maxSpeedMP(), new linearHP(), new String[]{}))),
-                new ActionParallel(FIRST,new Delay(5),//intake
+                new ActionParallel(FIRST,new Delay(5),intake.new flowerIntakeAction(),
                         waddler.new MotionAction(new holdPos(new String[]{}))),
-                new ActionParallel(ALL,
+                new ActionParallel(FIRST,
                         waddler.new MotionAction(new Line(new PathingPoint(new Position(new Vector(rightHive.getX(),new Scalar(-3,feet)),rightHive.getHeading()),new Scalar(0.3,metersPerSecond)), new maxSpeedMP(), new linearHP(), new String[]{})),
-                        new ActionSeries(
-                                new Delay(0.4)//,retract ramp
-                                )),
-                new ActionParallel(ALL,//spool flywheel
+                        new ActionParallel(FIRST, new Delay(0.4), intake.new flowerIntakeAction())),
+                new ActionParallel(ALL,shooter.new runFlywheelAction(),
                         waddler.new MotionAction(new Line(new PathingPoint(rightHive), new maxSpeedMP(), new linearHP(), new String[]{}))),
-                new ActionParallel(FIRST,//shoot
+                new ActionParallel(FIRST,new Delay(5),shooter.new runFlywheelAction(),
                         waddler.new MotionAction(new holdPos(new String[]{}))),
 
-                new ActionParallel(ALL,//put ramp down
+                new ActionParallel(ALL,intake.new flowerIntakeAction(),
                         waddler.new MotionAction(new Line(new PathingPoint(flower2), new maxSpeedMP(), new linearHP(), new String[]{}))),
-
-                new ActionParallel(ALL,//spool flywheel,
-                        new ActionSeries(
-                                new Delay(0.4)//,retract ramp
-                        )),
+                new ActionParallel(FIRST,new Delay(5),intake.new flowerIntakeAction(),
+                        waddler.new MotionAction(new holdPos(new String[]{}))),
+                new ActionParallel(ALL,shooter.new runFlywheelAction(),
                         waddler.new MotionAction(new Line(new PathingPoint(rightHive), new maxSpeedMP(), new linearHP(), new String[]{})),
-                new ActionParallel(FIRST,//shoot
+                        new ActionParallel(FIRST, new Delay(0.4), intake.new flowerIntakeAction())),
+                new ActionParallel(FIRST,new Delay(5),shooter.new runFlywheelAction(),
                         waddler.new MotionAction(new holdPos(new String[]{}))),
 
                 waddler.new MotionAction(new Line(new PathingPoint(parkPoint), new maxSpeedMP(), new linearHP(), new String[]{}))
