@@ -63,14 +63,21 @@ public class BasicTeleOp extends CommandOpMode {
 
         ///RUN SHOOTER
         new GamepadButton(gamepad_1, GamepadKeys.Button.X)
-                .whileHeld(new RunCommand(shooter::runFlywheel, shooter))
-                .whenReleased(new InstantCommand(shooter::stop, shooter));
+                .whenPressed(new RunCommand(shooter::runFlywheel, shooter));
 
+        // SHOOTER SPEED ADJUSTMENT (Gamepad 1: DPAD_UP / DPAD_DOWN)
         new GamepadButton(gamepad_1, GamepadKeys.Button.DPAD_UP)
                 .whenPressed(new InstantCommand(shooter::increasePower, shooter));
 
         new GamepadButton(gamepad_1, GamepadKeys.Button.DPAD_DOWN)
                 .whenPressed(new InstantCommand(shooter::decreasePower, shooter));
+
+        // INTAKE SPEED ADJUSTMENT (Gamepad 2: DPAD_UP / DPAD_DOWN)
+        new GamepadButton(gamepad_2, GamepadKeys.Button.DPAD_UP)
+                .whenPressed(new InstantCommand(intake::increasePower, intake));
+
+        new GamepadButton(gamepad_2, GamepadKeys.Button.DPAD_DOWN)
+                .whenPressed(new InstantCommand(intake::decreasePower, intake));
 
         ///STOP ALL
         new GamepadButton(gamepad_1, GamepadKeys.Button.B)
@@ -84,7 +91,8 @@ public class BasicTeleOp extends CommandOpMode {
     public void run() {
         super.run();
         telemetry.addData("Intake Motor Power", intake.getIntakeMotorPower());
-        telemetry.addData("Shooter Power", shooter.getshooterPower());
+        telemetry.addData("Shooter Velocity", shooter.getShooterVelocity());
+        telemetry.addData("Target Velocity", shooter.getTargetVelocity());
         telemetry.update();
     }
 }

@@ -39,10 +39,6 @@ public class RobotHardware{
         frontRightMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         backRightMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
-        frontLeftMotor.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER); // set motor mode
-        backLeftMotor.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER); //set motor mode
-        frontRightMotor.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER); // set motor mode
-        backRightMotor.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER); // set motor mode
 
         frontLeftMotor.setDirection(DcMotorSimple.Direction.REVERSE);
         backLeftMotor.setDirection(DcMotorSimple.Direction.REVERSE);
@@ -50,13 +46,14 @@ public class RobotHardware{
         intakeMotor = hardwareMap.get(DcMotorEx.class, "Intake_Motor");
 
         intakeMotor.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
-        intakeMotor.setDirection(DcMotorSimple.Direction.REVERSE);
         ///Shooter
         leftShooterMotor = hardwareMap.get(DcMotorEx.class, "Left_Shooter_Motor");
         rightShooterMotor = hardwareMap.get(DcMotorEx.class, "Right_Shooter_Motor");
 
         leftShooterMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         rightShooterMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+
+        leftShooterMotor.setDirection(DcMotorSimple.Direction.REVERSE);
         ///Servos
         gateServo = hardwareMap.get(Servo.class, "Gate_Servo");
         pollenLimitingServo = hardwareMap.get(Servo.class, "Limit_Servo");

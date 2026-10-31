@@ -10,11 +10,11 @@ import static org.firstinspires.ftc.teamcode.TeleOp.UniversalTools.RobotActionCo
 public class ShooterSubsystem extends SubsystemBase {
     private final RobotHardware robot;
 
-    public static double leftShooterKp = 0.001, leftShooterKi = 0.0, leftShooterKd = 0.0, leftShooterKf = 0.02;
-    public static double rightShooterKp = 0.001, rightShooterKi = 0.0, rightShooterKd = 0.0, rightShooterKf = 0.02;
+    public static double leftShooterKp = 0.001, leftShooterKi = 0.0, leftShooterKd = 0.0, leftShooterKf = 0.001;
+    public static double rightShooterKp = 0.001, rightShooterKi = 0.0, rightShooterKd = 0.0, rightShooterKf = 0.001;
 
-    public static double leftShooterTargetVelocity = 2000.0;
-    public static double rightShooterTargetVelocity = 2000.0;
+    public static double leftShooterTargetVelocity = 1100.0;
+    public static double rightShooterTargetVelocity = 1100.0;
 
     private final PIDFController leftShooterPIDF = new PIDFController(leftShooterKp, leftShooterKi, leftShooterKd, leftShooterKf);
     private final PIDFController rightShooterPIDF = new PIDFController(rightShooterKp, rightShooterKi, rightShooterKd, rightShooterKf);
@@ -26,7 +26,10 @@ public class ShooterSubsystem extends SubsystemBase {
     }
 
     public void runFlywheel() {
+        robot.pollenLimitingServo.setPosition(pollenUpPos);
         robot.gateServo.setPosition(gateUpPos);
+        robot.intakeMotor.setPower(0.8);
+
         leftShooterPIDF.setPIDF(leftShooterKp, leftShooterKi, leftShooterKd, leftShooterKf);
         rightShooterPIDF.setPIDF(rightShooterKp, rightShooterKi, rightShooterKd, rightShooterKf);
 
@@ -49,7 +52,11 @@ public class ShooterSubsystem extends SubsystemBase {
         rightShooterTargetVelocity = Math.max(0.0, rightShooterTargetVelocity - 200.0);
     }
 
-    public double getshooterPower() {
+    public double getShooterVelocity() {
+        return leftShooterTargetVelocity;
+    }
+
+    public double getTargetVelocity () {
         return leftShooterTargetVelocity;
     }
 
