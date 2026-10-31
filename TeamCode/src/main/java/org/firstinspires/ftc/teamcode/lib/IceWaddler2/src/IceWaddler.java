@@ -7,19 +7,12 @@ import static org.firstinspires.ftc.teamcode.lib.IceWaddler2.src.Math.Measuremen
 import static java.lang.Math.PI;
 
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
-import com.arcrobotics.ftclib.controller.PIDController;
-import com.qualcomm.robotcore.hardware.PIDCoefficients;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.lib.CommandBase.Action;
-import org.firstinspires.ftc.teamcode.lib.IceWaddler2.src.Hardware.IWDriveTrain;
-import org.firstinspires.ftc.teamcode.lib.IceWaddler2.src.Hardware.IWLocalizer;
-import org.firstinspires.ftc.teamcode.lib.IceWaddler2.src.Math.Measurement.Scalar;
-import org.firstinspires.ftc.teamcode.lib.IceWaddler2.src.Math.Measurement.SpecialMeasurements.Acceleration;
-import org.firstinspires.ftc.teamcode.lib.IceWaddler2.src.Math.Measurement.SpecialMeasurements.PathingPoint;
-import org.firstinspires.ftc.teamcode.lib.IceWaddler2.src.Math.Measurement.SpecialMeasurements.Position;
-import org.firstinspires.ftc.teamcode.lib.IceWaddler2.src.Math.Measurement.SpecialMeasurements.Situation;
-import org.firstinspires.ftc.teamcode.lib.IceWaddler2.src.Math.Measurement.SpecialMeasurements.Velocity;
+import org.firstinspires.ftc.teamcode.lib.IceWaddler2.src.Hardware.*;
+import org.firstinspires.ftc.teamcode.lib.IceWaddler2.src.Math.Measurement.*;
+import org.firstinspires.ftc.teamcode.lib.IceWaddler2.src.Math.Measurement.SpecialMeasurements.*;
 import org.firstinspires.ftc.teamcode.lib.IceWaddler2.src.Pathing.Movement;
 
 import java.util.function.Supplier;
@@ -405,12 +398,6 @@ public class IceWaddler {
                 .setStroke("green")
                 .setStrokeWidth(1);
         return packet;
-    }
-
-
-    //Helper methods
-    private PIDController fromCoeffs(PIDCoefficients Coeffs){
-        return new PIDController(Coeffs.p, Coeffs.i, Coeffs.d);
     }
 
     ///limits acceleration within the bounds specified in the config

@@ -42,7 +42,9 @@ public class ActionSeries implements Action {
 
     @Override
     public void shutdown(){
-        actionList[index].shutdown();
+        if(index<actionList.length){
+            actionList[index].shutdown();
+        }
     }
 
     @Override
