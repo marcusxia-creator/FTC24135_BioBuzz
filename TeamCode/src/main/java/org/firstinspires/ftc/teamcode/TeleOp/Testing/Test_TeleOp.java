@@ -11,7 +11,7 @@ import com.seattlesolvers.solverslib.controller.PIDController;
 import com.seattlesolvers.solverslib.gamepad.GamepadEx;
 import com.seattlesolvers.solverslib.gamepad.GamepadKeys;
 
-import org.firstinspires.ftc.teamcode.TeleOp.UniversalTools.RobotHardware;
+import org.firstinspires.ftc.teamcode.src.UniversalTools.RobotHardware;
 
 @Config
 @TeleOp (name = "Test Dual PID Motors", group = "Test")
