@@ -1,0 +1,40 @@
+package org.firstinspires.ftc.teamcode.lib.GamepadDriver.Samples;
+
+import static org.firstinspires.ftc.teamcode.lib.IceWaddler2.src.Math.Measurement.Units.Unit.*;
+
+import com.qualcomm.robotcore.hardware.Gamepad;
+
+import org.firstinspires.ftc.teamcode.lib.GamepadDriver.GamepadDriver;
+import org.firstinspires.ftc.teamcode.lib.GamepadDriver.GamepadInput;
+import org.firstinspires.ftc.teamcode.lib.GamepadDriver.PrebuiltInputs.AnalogInputs.LerpedVel;
+import org.firstinspires.ftc.teamcode.lib.GamepadDriver.PrebuiltInputs.AnalogInputs.Slider;
+import org.firstinspires.ftc.teamcode.lib.GamepadDriver.PrebuiltInputs.DigitalInputs.Button;
+import org.firstinspires.ftc.teamcode.lib.GamepadDriver.PrebuiltInputs.DigitalInputs.Toggle;
+import org.firstinspires.ftc.teamcode.lib.GamepadDriver.PrebuiltInputs.AnalogInputs.*;
+import org.firstinspires.ftc.teamcode.lib.IceWaddler2.src.Math.Measurement.Scalar;
+import org.firstinspires.ftc.teamcode.lib.IceWaddler2.src.Math.Measurement.SpecialMeasurements.Velocity;
+
+public class SampleGamepad extends GamepadDriver {
+    public static double debounce=0.1;
+
+    Gamepad gamepad1;
+    Gamepad gamepad2;
+
+    Gamepad[] gamepads;
+
+    public GamepadInput<Velocity> drive;
+    public Toggle intakeToggle;
+    public Slider intakePower;
+
+    public SampleGamepad(Gamepad gamepad1, Gamepad gamepad2){
+        this.gamepad1=gamepad1;
+        this.gamepad2=gamepad2;
+        gamepads= new Gamepad[]{gamepad1, gamepad2};
+
+        drive=new SmoothedVel(new LerpedVel(gamepad1,gamepad2,(gamepad) -> (double)gamepad.right_stick_y,(gamepad) -> (double)gamepad.right_stick_x,(gamepad) -> (double)gamepad.left_stick_x,new Scalar(6,metersPerSecond),new Scalar(6,radiansPerSecond),new Scalar(5,metersPerSecondSquared),new Scalar(5,radiansPerSecondSquared)),2);
+
+        intakeToggle=new Toggle(gamepads,gamepad -> gamepad.a,debounce,false);
+
+        intakePower=new Slider(0.1,0,1,new Button(gamepads, gamepad -> gamepad.dpad_up,debounce),new Button(gamepads, gamepad -> gamepad.dpad_down,debounce),0.5);
+    }
+}

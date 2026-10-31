@@ -1,0 +1,46 @@
+package org.firstinspires.ftc.teamcode.IWOpmodes;
+
+import com.qualcomm.hardware.gobilda.GoBildaPinpointDriver;
+import com.qualcomm.robotcore.eventloop.opmode.OpMode;
+import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+
+import org.firstinspires.ftc.robotcore.external.navigation.UnnormalizedAngleUnit;
+import org.firstinspires.ftc.teamcode.lib.IceWaddler2.src.Hardware.IWDriveTrain;
+import org.firstinspires.ftc.teamcode.TeleOp.UniversalTools.RobotHardware;
+
+@TeleOp(name="goBilda Odo Offset Tester")
+public class OdoOffsetTester extends OpMode {
+    RobotHardware robot;
+    GoBildaPinpointDriver odo;
+    IWDriveTrain driveTrain;
+
+    int initialXTicks;
+    int initialYTicks;
+
+    @Override
+    public void init() {
+        robot=new RobotHardware(hardwareMap);
+        robot.init();
+
+        odo=robot.odo;
+        odo.initialize();
+        odo.recalibrateIMU();
+        odo.resetPosAndIMU();
+
+        initialXTicks=odo.getEncoderX();
+        initialYTicks=odo.getEncoderY();
+
+        driveTrain=robot.driveTrain;
+    }
+
+    @Override
+    public void loop() {
+        double power=gamepad1.left_stick_x;
+        driveTrain.runPower(power,power,-power,-power);
+
+        odo.update();
+
+        telemetry.addData("X Offset", String.format("%f mm", ((odo.getEncoderX()-initialXTicks)/19.89436789)/odo.getHeading(UnnormalizedAngleUnit.RADIANS)));
+        telemetry.addData("Y Offset", String.format("%f mm", ((odo.getEncoderY()-initialYTicks)/19.89436789)/odo.getHeading(UnnormalizedAngleUnit.RADIANS)));
+    }
+}
