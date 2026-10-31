@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.TeleOp.UniversalTools;
+package org.firstinspires.ftc.teamcode.src.UniversalTools;
 
 public class RobotActionConfig {
     private RobotHardware robot;

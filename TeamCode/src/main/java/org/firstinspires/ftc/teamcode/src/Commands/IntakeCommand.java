@@ -1,9 +1,9 @@
-package org.firstinspires.ftc.teamcode.TeleOp.Commands;
+package org.firstinspires.ftc.teamcode.src.Commands;
 
 import com.seattlesolvers.solverslib.command.CommandBase;
 
-import org.firstinspires.ftc.teamcode.TeleOp.Subsystems.IntakeSubsystem;
-import org.firstinspires.ftc.teamcode.TeleOp.Subsystems.TransferSubsystem;
+import org.firstinspires.ftc.teamcode.src.Subsystems.IntakeSubsystem;
+import org.firstinspires.ftc.teamcode.src.Subsystems.TransferSubsystem;
 
 public class IntakeCommand extends CommandBase {
     private final IntakeSubsystem intakeSubsystem;

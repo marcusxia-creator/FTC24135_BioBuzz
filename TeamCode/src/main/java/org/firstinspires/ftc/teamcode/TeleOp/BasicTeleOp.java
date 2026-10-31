@@ -8,11 +8,11 @@ import com.seattlesolvers.solverslib.command.button.GamepadButton;
 import com.seattlesolvers.solverslib.gamepad.GamepadEx;
 import com.seattlesolvers.solverslib.gamepad.GamepadKeys;
 
-import org.firstinspires.ftc.teamcode.TeleOp.Commands.RobotDriveCommand;
-import org.firstinspires.ftc.teamcode.TeleOp.Subsystems.IntakeSubsystem;
-import org.firstinspires.ftc.teamcode.TeleOp.Subsystems.RobotDriveSubsystem;
-import org.firstinspires.ftc.teamcode.TeleOp.Subsystems.ShooterSubsystem;
-import org.firstinspires.ftc.teamcode.TeleOp.UniversalTools.RobotHardware;
+import org.firstinspires.ftc.teamcode.src.Commands.RobotDriveCommand;
+import org.firstinspires.ftc.teamcode.src.Subsystems.IntakeSubsystem;
+import org.firstinspires.ftc.teamcode.src.Subsystems.RobotDriveSubsystem;
+import org.firstinspires.ftc.teamcode.src.Subsystems.ShooterSubsystem;
+import org.firstinspires.ftc.teamcode.src.UniversalTools.RobotHardware;
 
 @TeleOp (name = "Basic TeleOp", group = "firstinspireslinkthingCHANGE")
 public class BasicTeleOp extends CommandOpMode {

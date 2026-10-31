@@ -6,7 +6,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.robotcore.external.navigation.UnnormalizedAngleUnit;
 import org.firstinspires.ftc.teamcode.lib.IceWaddler2.src.Hardware.IWDriveTrain;
-import org.firstinspires.ftc.teamcode.TeleOp.UniversalTools.RobotHardware;
+import org.firstinspires.ftc.teamcode.src.UniversalTools.RobotHardware;
 
 @TeleOp(name="goBilda Odo Offset Tester")
 public class OdoOffsetTester extends OpMode {

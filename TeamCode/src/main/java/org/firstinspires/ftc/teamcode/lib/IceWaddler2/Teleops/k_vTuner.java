@@ -8,7 +8,7 @@ import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
-import org.firstinspires.ftc.teamcode.TeleOp.UniversalTools.RobotHardware;
+import org.firstinspires.ftc.teamcode.src.UniversalTools.RobotHardware;
 import org.firstinspires.ftc.teamcode.lib.CommandBase.Action;
 import org.firstinspires.ftc.teamcode.lib.CommandBase.PrebuiltActions.ActionParallel;
 import org.firstinspires.ftc.teamcode.lib.CommandBase.PrebuiltActions.ActionSwitch;

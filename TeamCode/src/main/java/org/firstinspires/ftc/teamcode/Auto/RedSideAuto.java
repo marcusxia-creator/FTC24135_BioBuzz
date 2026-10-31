@@ -6,7 +6,7 @@ import static org.firstinspires.ftc.teamcode.lib.IceWaddler2.src.Math.Measuremen
 import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
-import org.firstinspires.ftc.teamcode.TeleOp.UniversalTools.RobotHardware;
+import org.firstinspires.ftc.teamcode.src.UniversalTools.RobotHardware;
 import org.firstinspires.ftc.teamcode.lib.CommandBase.Action;
 import org.firstinspires.ftc.teamcode.lib.CommandBase.PrebuiltActions.*;
 import org.firstinspires.ftc.teamcode.lib.CommandBase.ScheduledOpMode;
@@ -31,8 +31,6 @@ public class RedSideAuto extends ScheduledOpMode {
     public static Position flower1=new Position(new Vector(2,-4.7,feet),new NormalizedAngle(180,deg));
     public static Position flower2=new Position(new Vector(-4.7,-2,feet),new NormalizedAngle(-90,deg));
     public static Position parkPoint=new Position(new Vector(-4.3,-4.6,feet),new NormalizedAngle(-90,deg));
-
-    public static Scalar wallIntakeSpeed=new Scalar(0.3,metersPerSecond);
 
     @Override
     public void init() {

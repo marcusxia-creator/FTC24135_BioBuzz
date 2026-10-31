@@ -11,8 +11,8 @@ import com.qualcomm.robotcore.util.Range;
 import com.seattlesolvers.solverslib.gamepad.GamepadEx;
 import com.seattlesolvers.solverslib.gamepad.GamepadKeys;
 
-import static org.firstinspires.ftc.teamcode.TeleOp.UniversalTools.RobotActionConfig.*;
-import org.firstinspires.ftc.teamcode.TeleOp.UniversalTools.RobotHardware;
+import static org.firstinspires.ftc.teamcode.src.UniversalTools.RobotActionConfig.*;
+import org.firstinspires.ftc.teamcode.src.UniversalTools.RobotHardware;
 
 @Config
 @TeleOp (name = "Test Servos", group = "Test")

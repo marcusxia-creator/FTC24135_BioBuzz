@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.TeleOp.Subsystems;
+package org.firstinspires.ftc.teamcode.src.Subsystems;
 
 import static org.firstinspires.ftc.teamcode.lib.IceWaddler2.src.Math.Measurement.Units.Unit.*;
 
@@ -7,7 +7,7 @@ import com.acmerobotics.dashboard.config.Config;
 import org.firstinspires.ftc.teamcode.lib.IceWaddler2.src.Hardware.IWDriveTrain;
 import org.firstinspires.ftc.teamcode.lib.IceWaddler2.src.Math.Measurement.*;
 import org.firstinspires.ftc.teamcode.lib.IceWaddler2.src.Math.Measurement.SpecialMeasurements.*;
-import org.firstinspires.ftc.teamcode.TeleOp.UniversalTools.RobotHardware;
+import org.firstinspires.ftc.teamcode.src.UniversalTools.RobotHardware;
 
 /// An example IceWaddler drive train object, built on our robot hardwaremap.<br>
 /// If also using a hardwaremap, change class and motor names to match<br>

@@ -1,8 +1,10 @@
-package org.firstinspires.ftc.teamcode.TeleOp.Subsystems;
+package org.firstinspires.ftc.teamcode.src.Subsystems;
 
 import com.seattlesolvers.solverslib.command.SubsystemBase;
-import org.firstinspires.ftc.teamcode.TeleOp.UniversalTools.RobotHardware;
-import static org.firstinspires.ftc.teamcode.TeleOp.UniversalTools.RobotActionConfig.*;
+
+import org.firstinspires.ftc.teamcode.lib.CommandBase.Action;
+import org.firstinspires.ftc.teamcode.src.UniversalTools.RobotHardware;
+import static org.firstinspires.ftc.teamcode.src.UniversalTools.RobotActionConfig.*;
 
 public class IntakeSubsystem extends SubsystemBase {
     public static double intakeKp = 0.001, intakeKi = 0, intakeKd = 0;
@@ -59,5 +61,20 @@ public class IntakeSubsystem extends SubsystemBase {
         robot.intakeMotor.setPower(0);
         robot.leftFlowerRampServo.setPosition(flowerRampUpPos);
         robot.rightFlowerRampServo.setPosition(flowerRampUpPos);
+    }
+
+    public class flowerIntakeAction implements Action {
+        @Override
+        public void init() {
+            runRollersFlower();
+        }
+
+        @Override
+        public void loop() {}
+
+        @Override
+        public void shutdown() {
+            stop();
+        }
     }
 }

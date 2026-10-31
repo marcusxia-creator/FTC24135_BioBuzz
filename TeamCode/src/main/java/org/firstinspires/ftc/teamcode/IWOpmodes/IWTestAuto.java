@@ -17,7 +17,7 @@ import org.firstinspires.ftc.teamcode.lib.IceWaddler2.src.Pathing.PrebuiltMotion
 import org.firstinspires.ftc.teamcode.lib.IceWaddler2.src.Pathing.PrebuiltPathingElements.*;
 import org.firstinspires.ftc.teamcode.lib.IceWaddler2.src.IceWaddler;
 import org.firstinspires.ftc.teamcode.lib.IceWaddler2.src.Pathing.*;
-import org.firstinspires.ftc.teamcode.TeleOp.UniversalTools.RobotHardware;
+import org.firstinspires.ftc.teamcode.src.UniversalTools.RobotHardware;
 
 @Autonomous(name="IceWaddler Test Auto")
 public class IWTestAuto extends ScheduledOpMode {

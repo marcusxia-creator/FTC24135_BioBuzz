@@ -1,11 +1,11 @@
-package org.firstinspires.ftc.teamcode.TeleOp.Subsystems;
+package org.firstinspires.ftc.teamcode.src.Subsystems;
 
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.Range;
 import com.seattlesolvers.solverslib.command.SubsystemBase;
 import com.seattlesolvers.solverslib.controller.PIDFController;
-import org.firstinspires.ftc.teamcode.TeleOp.UniversalTools.RobotHardware;
-import static org.firstinspires.ftc.teamcode.TeleOp.UniversalTools.RobotActionConfig.*;
+import org.firstinspires.ftc.teamcode.src.UniversalTools.RobotHardware;
+import static org.firstinspires.ftc.teamcode.src.UniversalTools.RobotActionConfig.*;
 
 public class ShooterSubsystem extends SubsystemBase {
     private final RobotHardware robot;
