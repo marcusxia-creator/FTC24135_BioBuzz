@@ -1,7 +1,6 @@
 package org.firstinspires.ftc.teamcode.src.UniversalTools;
 
 public class RobotActionConfig {
-    private RobotHardware robot;
 
     public static double flowerRampDownPos          = 0.44;
     public static double flowerRampUpPos            = 1.0;
