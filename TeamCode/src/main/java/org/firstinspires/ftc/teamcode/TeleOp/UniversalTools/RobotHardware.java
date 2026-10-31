@@ -17,8 +17,9 @@ public class RobotHardware{
     public DcMotorEx leftShooterMotor;
     public DcMotorEx rightShooterMotor;
     //public DcMotorEx flowerMechMotor;
-    public Servo nectarGateServo;
-    public Servo flowerRampServo;
+    public Servo gateServo;
+    public Servo leftFlowerRampServo;
+    public Servo rightFlowerRampServo;
     public Servo limelightAdjServo;
     public Servo pollenLimitingServo;
     public DistanceSensor distanceSensor;
@@ -57,11 +58,14 @@ public class RobotHardware{
         leftShooterMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         rightShooterMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         ///Servos
-        nectarGateServo = hardwareMap.get(Servo.class, "Gate_Servo");
+        gateServo = hardwareMap.get(Servo.class, "Gate_Servo");
         pollenLimitingServo = hardwareMap.get(Servo.class, "Limit_Servo");
-        flowerRampServo = hardwareMap.get(Servo.class, "Ramp_Servo");
-        limelightAdjServo = hardwareMap.get(Servo.class, "Limelight_Adj_Servo");
+        leftFlowerRampServo = hardwareMap.get(Servo.class, "Left_Flower_Servo");
+        rightFlowerRampServo = hardwareMap.get(Servo.class, "Right_Flower_Servo");
+        limelightAdjServo = hardwareMap.get(Servo.class, "Limelight_Servo");
+
+        rightFlowerRampServo.setDirection(Servo.Direction.REVERSE);
         ///Sensors
-        distanceSensor = hardwareMap.get(DistanceSensor.class, "Distance_Sensor");
+        //distanceSensor = hardwareMap.get(DistanceSensor.class, "Distance_Sensor");
     }
 }
