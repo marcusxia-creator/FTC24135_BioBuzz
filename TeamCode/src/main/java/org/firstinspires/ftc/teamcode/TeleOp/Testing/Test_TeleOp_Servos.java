@@ -98,11 +98,12 @@ public class Test_TeleOp_Servos extends OpMode {
 
         // ==================== SERVO TELEMETRY ====================
         telemetry.addLine("--- SERVO POSITIONS ---");
-        telemetry.addData("1. Transfer Servo", "%.2f", robotHardware.gateServo != null ? robotHardware.gateServo.getPosition() : 0.0);
+        telemetry.addData("1. Gate Servo", "%.2f", robotHardware.gateServo != null ? robotHardware.gateServo.getPosition() : 0.0);
         telemetry.addData("2. Limit Servo", "%.2f", robotHardware.pollenLimitingServo != null ? robotHardware.pollenLimitingServo.getPosition() : 0.0);
         telemetry.addData("3. Left Ramp Servo", "%.2f", robotHardware.leftFlowerRampServo != null ? robotHardware.leftFlowerRampServo.getPosition() : 0.0);
         telemetry.addData("4. Right Ramp Servo", "%.2f", robotHardware.rightFlowerRampServo != null ? robotHardware.rightFlowerRampServo.getPosition() : 0.0);
         telemetry.addData("5. Limelight Servo", "%.2f", robotHardware.limelightAdjServo != null ? robotHardware.limelightAdjServo.getPosition() : 0.0);
+
 
         telemetry.update();
     }

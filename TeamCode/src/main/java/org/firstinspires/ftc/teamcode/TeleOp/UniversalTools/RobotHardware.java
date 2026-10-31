@@ -1,6 +1,6 @@
 package org.firstinspires.ftc.teamcode.TeleOp.UniversalTools;
 
-
+import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
@@ -8,7 +8,7 @@ import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 
-public class RobotHardware{
+public class RobotHardware {
     public DcMotorEx frontLeftMotor;
     public DcMotorEx backLeftMotor;
     public DcMotorEx frontRightMotor;
@@ -24,10 +24,12 @@ public class RobotHardware{
     public Servo pollenLimitingServo;
     public DistanceSensor distanceSensor;
     public HardwareMap hardwareMap;
+
     public RobotHardware(HardwareMap hardwareMap) {
-       this.hardwareMap=hardwareMap;
+        this.hardwareMap = hardwareMap;
     }
-    public void init(){
+
+    public void init() {
         ///Drive
         frontLeftMotor = hardwareMap.get(DcMotorEx.class, "FL_Motor");
         backLeftMotor = hardwareMap.get(DcMotorEx.class, "BL_Motor");
@@ -39,13 +41,20 @@ public class RobotHardware{
         frontRightMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         backRightMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
+        // Crucial Fix: Set run mode back to RUN_WITHOUT_ENCODER so motors respond to power commands
+        frontLeftMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        backLeftMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        frontRightMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        backRightMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
         frontLeftMotor.setDirection(DcMotorSimple.Direction.REVERSE);
         backLeftMotor.setDirection(DcMotorSimple.Direction.REVERSE);
+
         ///Intake
         intakeMotor = hardwareMap.get(DcMotorEx.class, "Intake_Motor");
 
         intakeMotor.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
+
         ///Shooter
         leftShooterMotor = hardwareMap.get(DcMotorEx.class, "Left_Shooter_Motor");
         rightShooterMotor = hardwareMap.get(DcMotorEx.class, "Right_Shooter_Motor");
@@ -54,6 +63,7 @@ public class RobotHardware{
         rightShooterMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
         leftShooterMotor.setDirection(DcMotorSimple.Direction.REVERSE);
+
         ///Servos
         gateServo = hardwareMap.get(Servo.class, "Gate_Servo");
         pollenLimitingServo = hardwareMap.get(Servo.class, "Limit_Servo");
@@ -62,7 +72,7 @@ public class RobotHardware{
         limelightAdjServo = hardwareMap.get(Servo.class, "Limelight_Servo");
 
         rightFlowerRampServo.setDirection(Servo.Direction.REVERSE);
-        ///Sensors
-        //distanceSensor = hardwareMap.get(DistanceSensor.class, "Distance_Sensor");
+        gateServo.setDirection(Servo.Direction.REVERSE);
+        pollenLimitingServo.setDirection(Servo.Direction.REVERSE);
     }
 }

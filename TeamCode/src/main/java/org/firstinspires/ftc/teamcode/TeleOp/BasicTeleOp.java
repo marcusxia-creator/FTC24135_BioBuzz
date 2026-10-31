@@ -34,6 +34,7 @@ public class BasicTeleOp extends CommandOpMode {
         gamepad_1 = new GamepadEx(gamepad1);
         gamepad_2 = new GamepadEx(gamepad2);
 
+        // Standard Mecanum Drive: Left Stick = Forward/Strafe, Right Stick = Turn
         robotDrive.setDefaultCommand(new RobotDriveCommand(
                 robotDrive,
                 () -> -gamepad_1.getRightY(),
@@ -64,6 +65,9 @@ public class BasicTeleOp extends CommandOpMode {
         ///RUN SHOOTER
         new GamepadButton(gamepad_1, GamepadKeys.Button.X)
                 .whenPressed(new RunCommand(shooter::runFlywheel, shooter));
+
+        new GamepadButton(gamepad_1, GamepadKeys.Button.Y)
+                .whenPressed(new RunCommand(shooter::shootFlywheel, shooter));
 
         // SHOOTER SPEED ADJUSTMENT (Gamepad 1: DPAD_UP / DPAD_DOWN)
         new GamepadButton(gamepad_1, GamepadKeys.Button.DPAD_UP)
