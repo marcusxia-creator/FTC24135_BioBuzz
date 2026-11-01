@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.src.Subsystems;
 
+import static org.apache.commons.math3.util.FastMath.signum;
 import static org.firstinspires.ftc.teamcode.lib.IceWaddler2.src.Math.Measurement.Units.Unit.*;
 
 import com.acmerobotics.dashboard.config.Config;
@@ -14,10 +15,12 @@ import org.firstinspires.ftc.teamcode.src.UniversalTools.RobotHardware;
 /// If not using a hardware map, modify the constructor to input and store the four motors as individual parameters
 @Config
 public class DriveTrain implements IWDriveTrain {
-    public static double k_v=8.8;
-    public static double angk_v=3;
-    public static double k_a=1.5;
-    public static double angk_a=5;
+    public static double k_v    =9;
+    public static double k_vAng =2;
+    public static double k_s    =0;
+    public static double k_sAng =0;
+    public static double k_a    =1.6;
+    public static double k_aAng =0.4;
     public static double maxAllowableLinPower=11;
     public static Scalar wheelPivotRadius       = new Scalar(10, in); //The distance between the pivot point and each of the wheels, or half the length of the diagonal
     RobotHardware robot;
@@ -45,8 +48,15 @@ public class DriveTrain implements IWDriveTrain {
 
     @Override
     public void run(Velocity targetVelocity, Acceleration targetAcceleration, NormalizedAngle currentHeading){
-                DimlessVector linPower= targetVelocity.getLinVel().getDimlessVector().multi(k_v).add(targetAcceleration.getLinAcc().getDimlessVector().multi(k_a)).rotateBy(currentHeading.multiply(-1));
-        double angPower=angk_v* targetVelocity.getAngVel().getValueSI()+angk_a*targetAcceleration.getAngAcc().getValueSI();
+        DimlessVector linPower=
+                targetVelocity.getLinVel().getDimlessVector().multi(k_v)    //k_v, to counteract motor resistance
+                        .add(targetVelocity.getLinVel().mag().getValueSI()==0?new DimlessVector(0,0):targetVelocity.getLinVel().unitVector().multi(k_s))//k_s, to counteract rolling friction
+                        .add(targetAcceleration.getLinAcc().getDimlessVector().multi(k_a))//k_a, to accelerate robot
+                        .rotateBy(currentHeading.multiply(-1));
+        double angPower=
+                k_vAng*targetVelocity.getAngVel().getValueSI()+
+                k_sAng*(targetVelocity.getAngVel().getValueSI()==0?0:signum(targetVelocity.getAngVel().getValueSI()))+
+                k_aAng*targetAcceleration.getAngAcc().getValueSI();
         run(linPower,angPower);
     }
 

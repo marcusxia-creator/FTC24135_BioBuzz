@@ -81,11 +81,11 @@ public class RobotHardware {
         driveTrain=new DriveTrain(this);
         localizer=new goBildaOdoComputer(
                 odo,
-                new Scalar(0,in),
-                new Scalar(0,in),//value larp
+                new Scalar(-25,mm),
+                new Scalar(-150,mm),//value larp
                 GoBildaPinpointDriver.GoBildaOdometryPods.goBILDA_4_BAR_POD,
-                FORWARD,
-                FORWARD
+                REVERSED,
+                REVERSED
         );
 
         ///Intake

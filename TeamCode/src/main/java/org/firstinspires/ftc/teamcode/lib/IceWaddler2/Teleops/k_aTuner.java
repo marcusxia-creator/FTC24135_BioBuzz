@@ -11,7 +11,9 @@ import org.firstinspires.ftc.teamcode.lib.CommandBase.Action;
 import org.firstinspires.ftc.teamcode.lib.CommandBase.PrebuiltActions.ActionParallel;
 import org.firstinspires.ftc.teamcode.lib.CommandBase.PrebuiltActions.ActionSwitch;
 import org.firstinspires.ftc.teamcode.lib.GamepadDriver.GamepadInput;
+import org.firstinspires.ftc.teamcode.lib.GamepadDriver.PrebuiltInputs.AnalogInputs.DualDirectVel;
 import org.firstinspires.ftc.teamcode.lib.GamepadDriver.PrebuiltInputs.AnalogInputs.LerpedVel;
+import org.firstinspires.ftc.teamcode.lib.GamepadDriver.PrebuiltInputs.AnalogInputs.SingleDirectVel;
 import org.firstinspires.ftc.teamcode.lib.GamepadDriver.PrebuiltInputs.AnalogInputs.SmoothedVel;
 import org.firstinspires.ftc.teamcode.lib.IceWaddler2.src.Math.Measurement.Scalar;
 import org.firstinspires.ftc.teamcode.lib.IceWaddler2.src.Math.Measurement.SpecialMeasurements.NormalizedAngle;
@@ -46,12 +48,13 @@ public class k_aTuner extends ScheduledOpMode {
 
         telemetry=new MultipleTelemetry(telemetry, dashboard.getTelemetry());
 
-        driveInput=new SmoothedVel(new LerpedVel(gamepad1,gamepad2,(gamepad) -> (double)gamepad.right_stick_y,(gamepad) -> (double)gamepad.right_stick_x,(gamepad) -> (double)gamepad.left_stick_x,linVelFactor,angVelFactor,new Scalar(5,metersPerSecondSquared),new Scalar(5,radiansPerSecondSquared)),2);
+        driveInput=new SmoothedVel(new DualDirectVel(gamepad1,gamepad2,(gamepad) -> (double)gamepad.right_stick_x,(gamepad) -> (double)gamepad.right_stick_y,(gamepad) -> (double)gamepad.left_stick_x,linVelFactor,angVelFactor),5);
 
         rootAction=new ActionParallel(ActionParallel.TERMINATIONTYPE.NONE,
-                new ActionSwitch(()->gamepad1.b?1:0, waddler.new VelDrive(driveInput),
+                new ActionSwitch(() -> gamepad1.b ? 1 : 0, waddler.new VelDrive(driveInput),
                         waddler.new Idle()),
-                new telemetryDriver()
+                new telemetryDriver(),
+                () -> driveInput.update()
         );
     }
 

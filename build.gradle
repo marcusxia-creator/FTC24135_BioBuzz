@@ -1,3 +1,4 @@
+
 /**
  * Top-level build file for ftc_app project.
  *
@@ -11,7 +12,7 @@ buildscript {
     }
     dependencies {
         // Note for FTC Teams: Do not modify this yourself.
-        classpath 'com.android.tools.build:gradle:8.13.2'
+        classpath 'com.android.tools.build:gradle:9.2.1'
     }
 }
 

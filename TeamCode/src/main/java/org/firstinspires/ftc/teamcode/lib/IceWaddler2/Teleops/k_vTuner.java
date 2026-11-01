@@ -27,15 +27,13 @@ public class k_vTuner extends ScheduledOpMode {
     IceWaddler waddler;
     FtcDashboard dashboard;
 
-    GamepadInput<Velocity> driveInput;
-
     @Override
     public void init(){
         robot=new RobotHardware(hardwareMap);
         robot.init();
 
         waddler=new IceWaddler(robot.driveTrain, robot.localizer);
-        waddler.init(new Position(new Vector(0,0,m),new NormalizedAngle(0,deg)),false);
+        waddler.init(new Position(new Vector(0,0,m),new NormalizedAngle(0,deg)),true);
 
         dashboard=FtcDashboard.getInstance();
 

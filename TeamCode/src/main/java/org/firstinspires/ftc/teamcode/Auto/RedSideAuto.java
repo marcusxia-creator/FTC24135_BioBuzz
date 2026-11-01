@@ -6,6 +6,7 @@ import static org.firstinspires.ftc.teamcode.lib.IceWaddler2.src.Math.Measuremen
 import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
+import org.firstinspires.ftc.teamcode.lib.IceWaddler2.src.Pathing.ArcDirection;
 import org.firstinspires.ftc.teamcode.src.Subsystems.IntakeSubsystem;
 import org.firstinspires.ftc.teamcode.src.Subsystems.ShooterSubsystem;
 import org.firstinspires.ftc.teamcode.src.UniversalTools.RobotHardware;
@@ -59,10 +60,10 @@ public class RedSideAuto extends ScheduledOpMode {
                 new ActionParallel(FIRST,new Delay(5),intake.new flowerIntakeAction(),
                         waddler.new MotionAction(new holdPos(new String[]{}))),
                 new ActionParallel(FIRST,
-                        waddler.new MotionAction(new Line(new PathingPoint(new Position(new Vector(rightHive.getX(),new Scalar(-3,feet)),rightHive.getHeading()),new Scalar(0.3,metersPerSecond)), new maxSpeedMP(), new linearHP(), new String[]{})),
+                        waddler.new MotionAction(new Line(new PathingPoint(new Position(new Vector(rightHive.getX().add(new Scalar(2,feet)), rightHive.getY().sub(new Scalar(2,feet))),rightHive.getHeading()),new Scalar(0.5,metersPerSecond)), new maxSpeedMP(), new linearHP(), new String[]{})),
                         new ActionParallel(FIRST, new Delay(0.4), intake.new flowerIntakeAction())),
                 new ActionParallel(ALL,shooter.new spoolFlywheelAction(),
-                        waddler.new MotionAction(new Line(new PathingPoint(rightHive), new maxSpeedMP(), new linearHP(), new String[]{}))),
+                        waddler.new MotionAction(new FixedArc(new Vector(rightHive.getX().add(new Scalar(2,feet)),rightHive.getY()),new PositiveAngle(90,deg), ArcDirection.CLOCKWISE,new Scalar(0,metersPerSecond),rightHive.getHeading(), new maxSpeedMP(new Scalar(1,metersPerSecond)), new linearHP(), new String[]{}))),
                 new ActionParallel(FIRST,new Delay(5),shooter.new ShootAction(),
                         waddler.new MotionAction(new holdPos(new String[]{}))),
 

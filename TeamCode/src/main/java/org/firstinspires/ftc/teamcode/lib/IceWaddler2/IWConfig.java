@@ -16,24 +16,24 @@ public class IWConfig {
     public static int derivativeTicks=2;
 
     // Velocity -> Acceleration Error Correction
-    public static double linAccelKP=7;
-    public static double angAccelKP=1.3;
+    public static double linAccelKP=20;
+    public static double angAccelKP=15;
     public static AccelerationController accelerationController=new proportionalAccController(linAccelKP,angAccelKP);
 
     // Positional error -> Velocity Correction
-    public static double latPosKP=7;
-    public static double headingKP=12;
+    public static double latPosKP=12;
+    public static double headingKP=7;
     public static LatPositionController latPosController= new proportionaLatController(latPosKP);
     public static HeadingController headingController= new proportionaHeadingController(headingKP);
 
     // General constraints
     public static Scalar maxAccel               = new Scalar(6, metersPerSecondSquared); //Maximum acceleration before wheels slip
-    public static Scalar maxAngAccel            = new Scalar(1, radiansPerSecondSquared); //Maximum angular acceleration before wheels slip
+    public static Scalar maxAngAccel            = new Scalar(10, radiansPerSecondSquared); //Maximum angular acceleration before wheels slip
 
     // Positional control parameter defaults, Can be modified per action
     public static Scalar maxSpeed               = new Scalar(1.4, metersPerSecond);
     public static Scalar minSpeed               = new Scalar(0.2, metersPerSecond);// A minimum drive speed, to prevent stalls
-    public static Scalar defaultAccel           = new Scalar(1,metersPerSecondSquared); // A "comfortable" acceleration
+    public static Scalar defaultAccel           = new Scalar(0.5,metersPerSecondSquared); // A "comfortable" acceleration
     public static Scalar distThreshold          = new Scalar(1, cm); // The longitudinal distance from the end point at which the action indicates completion
 
     // Angular position parameter defaults

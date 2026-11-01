@@ -26,7 +26,7 @@ public class OdoTester extends OpMode {
 
         waddler = new IceWaddler(robot.driveTrain, robot.localizer);
 
-        waddler.init(new Position(new Vector(0, 0, m), new NormalizedAngle(0, deg)), true);
+        waddler.init(new Position(new Vector(2, 0, m), new NormalizedAngle(0, deg)), true);
     }
 
     /*

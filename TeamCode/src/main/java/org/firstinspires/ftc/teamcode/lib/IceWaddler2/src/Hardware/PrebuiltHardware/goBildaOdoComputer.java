@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.lib.IceWaddler2.src.Hardware.PrebuiltHardware;
 
+import static android.os.SystemClock.sleep;
 import static org.firstinspires.ftc.teamcode.lib.IceWaddler2.src.Math.Measurement.Units.Unit.*;
 
 import com.qualcomm.hardware.gobilda.GoBildaPinpointDriver;
@@ -23,12 +24,11 @@ public class goBildaOdoComputer implements IWLocalizer {
 
     public void init(){
         //Set to start counting at initPose parameter
-        odo.initialize();
         odo.resetPosAndIMU();
+        sleep(300);
     }
 
     public void reset(Situation situation) {
-        odo.resetPosAndIMU();
         odo.setPosition(new Pose2D(DistanceUnit.METER, situation.getPosition().getY().getValue(m), -situation.getPosition().getX().getValue(m), AngleUnit.RADIANS, -situation.getPosition().getHeading().getValue(rad)));
     }
 

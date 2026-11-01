@@ -15,11 +15,10 @@ public class SmoothedVel implements GamepadInput<Velocity>{
     Queue<Velocity> velocities=new LinkedList<>();
     int ticks;
 
-    ElapsedTime tickTimer;
-
     public SmoothedVel(GamepadInput<Velocity>rawVel, int ticks){
         this.rawVel=rawVel;
         this.ticks=ticks;
+        velocities.add(Velocity.zero);
     }
 
     @Override

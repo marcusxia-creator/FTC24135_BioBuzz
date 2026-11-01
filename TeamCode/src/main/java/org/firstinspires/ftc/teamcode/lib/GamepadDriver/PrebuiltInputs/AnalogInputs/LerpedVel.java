@@ -14,7 +14,6 @@ import java.util.function.Function;
 public class LerpedVel implements GamepadInput<Velocity>{
     GamepadInput<Velocity> rawVel;
     Velocity lastVel;
-    Velocity lerpedVel;
     Scalar maxAccel;
     Scalar maxAngAccel;
 
@@ -35,17 +34,19 @@ public class LerpedVel implements GamepadInput<Velocity>{
 
     @Override
     public void update() {
+        rawVel.update();
         Velocity targetVel=rawVel.get();
         Scalar maxDelta=maxAccel.multiply(new Scalar(tickTimer.seconds(),s));
         Scalar maxAngDelta=maxAngAccel.multiply(new Scalar(tickTimer.seconds(),s));
+        tickTimer.reset();
         Velocity delta=targetVel.sub(lastVel);
 
-        lerpedVel=new Velocity(delta.mag().lessThanOrEqual(maxDelta)?targetVel.getLinVel():lastVel.getLinVel().add(delta.unitVector().multi(maxDelta)),
-                delta.getAngVel().abs().lessThanOrEqual(maxAngDelta)?targetVel.getAngVel():lastVel.getAngVel().div(lastVel.getAngVel().abs()).multiply(maxAngDelta));
+        lastVel=new Velocity(delta.mag().lessThanOrEqual(maxDelta)?targetVel.getLinVel():lastVel.getLinVel().add(delta.unitVector().multi(maxDelta)),
+                delta.getAngVel().abs().lessThanOrEqual(maxAngDelta)?targetVel.getAngVel():lastVel.getAngVel().add(delta.getAngVel().div(delta.getAngVel().abs()).multiply(maxAngDelta)));
     }
 
     @Override
     public Velocity get() {
-        return lerpedVel;
+        return lastVel;
     }
 }
