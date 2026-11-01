@@ -41,16 +41,27 @@ public class IntakeSubsystem extends SubsystemBase {
 
     public void increasePower() {
         intakePower = Math.min(1.0, intakePower + 0.1);
-        if (robot.intakeMotor != null && robot.intakeMotor.getPower() > 0) {
+        if (robot.intakeMotor.getPower() > 0) {
             robot.intakeMotor.setPower(intakePower);
         }
     }
 
     public void decreasePower() {
         intakePower = Math.max(0.0, intakePower - 0.1);
-        if (robot.intakeMotor != null && robot.intakeMotor.getPower() > 0) {
+        if (robot.intakeMotor.getPower() > 0) {
             robot.intakeMotor.setPower(intakePower);
         }
+    }
+
+    /**
+     * Opens intake gates and runs rollers in reverse at -0.3 power to eject game pieces cleanly.
+     */
+    public void reverseIntake() {
+        robot.leftFlowerRampServo.setPosition(flowerRampUpPos);
+        robot.rightFlowerRampServo.setPosition(flowerRampUpPos);
+        robot.gateServo.setPosition(gateDownPos);
+        robot.pollenLimitingServo.setPosition(pollenUpPos);
+        robot.intakeMotor.setPower(-0.3);
     }
 
     public double getIntakeMotorPower() {
