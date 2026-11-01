@@ -13,6 +13,11 @@ import static org.firstinspires.ftc.teamcode.src.UniversalTools.RobotActionConfi
 
 @Config
 public class ShooterSubsystem extends SubsystemBase {
+    // Gear Ratio: Motor Gear Teeth / Flywheel Gear Teeth (e.g. 30T motor gear driving 40T flywheel gear)
+    public static double GEAR_RATIO = 30.0 / 40.0;
+
+    public static double TICKS_PER_REV = 28.0;
+
     private ElapsedTime shootingTime = new ElapsedTime();
     private boolean isShooting = false;
     private final RobotHardware robot;
@@ -20,8 +25,8 @@ public class ShooterSubsystem extends SubsystemBase {
     public static double leftShooterKp = 0.001, leftShooterKi = 0.0, leftShooterKd = 0.0, leftShooterKf = 0.001;
     public static double rightShooterKp = 0.001, rightShooterKi = 0.0, rightShooterKd = 0.0, rightShooterKf = 0.001;
 
-    public static double leftShooterTargetVelocity = 800;
-    public static double rightShooterTargetVelocity = 800;
+    public static double leftShooterTargetRPM = 2300.0;
+    public static double rightShooterTargetRPM = 2300.0;
 
     private final PIDFController leftShooterPIDF = new PIDFController(leftShooterKp, leftShooterKi, leftShooterKd, leftShooterKf);
     private final PIDFController rightShooterPIDF = new PIDFController(rightShooterKp, rightShooterKi, rightShooterKd, rightShooterKf);
@@ -32,19 +37,34 @@ public class ShooterSubsystem extends SubsystemBase {
         robot.rightShooterMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
     }
 
+    public static double rpmToTicksPerSecond(double flywheelRPM) {
+        double motorRPM = flywheelRPM / GEAR_RATIO;
+        return (motorRPM * TICKS_PER_REV) / 60.0;
+    }
+
+    /**
+     * Converts measured Encoder Ticks Per Second back to Flywheel RPM for telemetry.
+     * Formula: Flywheel RPM = ( (TicksPerSec * 60) / TicksPerRev ) * Gear Ratio
+     */
+    public static double ticksPerSecondToRPM(double ticksPerSecond) {
+        double motorRPM = (ticksPerSecond * 60.0) / TICKS_PER_REV;
+        return motorRPM * GEAR_RATIO;
+    }
+
     public void runFlywheel() {
-        robot.pollenLimitingServo.setPosition(pollenDownPos);
         robot.gateServo.setPosition(gateUpPos);
 
         leftShooterPIDF.setPIDF(leftShooterKp, leftShooterKi, leftShooterKd, leftShooterKf);
         rightShooterPIDF.setPIDF(rightShooterKp, rightShooterKi, rightShooterKd, rightShooterKf);
 
-        double leftVel = robot.leftShooterMotor.getVelocity();
-        double leftOutput = leftShooterPIDF.calculate(leftVel, leftShooterTargetVelocity);
+        double leftVelTicks = robot.leftShooterMotor.getVelocity();
+        double leftTargetTicks = rpmToTicksPerSecond(leftShooterTargetRPM);
+        double leftOutput = leftShooterPIDF.calculate(leftVelTicks, leftTargetTicks);
         robot.leftShooterMotor.setPower(Range.clip(leftOutput, 0.0, 1.0));
 
-        double rightVel = robot.rightShooterMotor.getVelocity();
-        double rightOutput = rightShooterPIDF.calculate(rightVel, rightShooterTargetVelocity);
+        double rightVelTicks = robot.rightShooterMotor.getVelocity();
+        double rightTargetTicks = rpmToTicksPerSecond(rightShooterTargetRPM);
+        double rightOutput = rightShooterPIDF.calculate(rightVelTicks, rightTargetTicks);
         robot.rightShooterMotor.setPower(Range.clip(rightOutput, 0.0, 1.0));
     }
 
@@ -77,22 +97,38 @@ public class ShooterSubsystem extends SubsystemBase {
         robot.intakeMotor.setPower(power);
     }
 
-    public void increasePower() {
-        leftShooterTargetVelocity += 200.0;
-        rightShooterTargetVelocity += 200.0;
+    public void increaseTargetRPM() {
+        leftShooterTargetRPM += 100.0;
+        rightShooterTargetRPM += 100.0;
     }
 
-    public void decreasePower() {
-        leftShooterTargetVelocity = Math.max(0.0, leftShooterTargetVelocity - 200.0);
-        rightShooterTargetVelocity = Math.max(0.0, rightShooterTargetVelocity - 200.0);
+    public void decreaseTargetRPM() {
+        leftShooterTargetRPM = Math.max(0.0, leftShooterTargetRPM - 100.0);
+        rightShooterTargetRPM = Math.max(0.0, rightShooterTargetRPM - 100.0);
     }
 
-    public double getShooterVelocity() {
-        return leftShooterTargetVelocity;
+    public double getShooterRPM() {
+        return getLeftShooterCurrentRPM();
     }
 
-    public double getTargetVelocity() {
-        return leftShooterTargetVelocity;
+    public double getShooterTicksPerSecond() {
+        return robot.leftShooterMotor.getVelocity();
+    }
+
+    public double getLeftShooterCurrentRPM() {
+        return ticksPerSecondToRPM(robot.leftShooterMotor.getVelocity());
+    }
+
+    public double getRightShooterCurrentRPM() {
+        return ticksPerSecondToRPM(robot.rightShooterMotor.getVelocity());
+    }
+
+    public double getTargetRPM() {
+        return leftShooterTargetRPM;
+    }
+
+    public double getTargetTicksPerSecond() {
+        return rpmToTicksPerSecond(leftShooterTargetRPM);
     }
 
     public void stop() {

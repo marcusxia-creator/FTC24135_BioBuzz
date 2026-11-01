@@ -4,16 +4,19 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import com.seattlesolvers.solverslib.command.CommandBase;
 
 import org.firstinspires.ftc.teamcode.src.Subsystems.ShooterSubsystem;
+import org.firstinspires.ftc.teamcode.src.Subsystems.IntakeSubsystem;
 
 import static org.firstinspires.ftc.teamcode.src.UniversalTools.RobotActionConfig.intakeShootingPower;
 
 public class ShooterCommand extends CommandBase {
     private final ShooterSubsystem shooterSubsystem;
+    private final IntakeSubsystem intakeSubsystem;
     private final ElapsedTime timer = new ElapsedTime();
 
-    public ShooterCommand(ShooterSubsystem shooterSubsystem) {
+    public ShooterCommand(ShooterSubsystem shooterSubsystem, IntakeSubsystem intakeSubsystem) {
         this.shooterSubsystem = shooterSubsystem;
-        addRequirements(shooterSubsystem);
+        this.intakeSubsystem = intakeSubsystem;
+        addRequirements(shooterSubsystem, intakeSubsystem);
     }
 
     @Override
@@ -24,7 +27,8 @@ public class ShooterCommand extends CommandBase {
 
     @Override
     public void execute() {
-        // Runs intake feeder motor at 0.9 power
+        // Keep the flywheel regulated while feeding balls into it.
+        shooterSubsystem.runFlywheel();
         shooterSubsystem.setFeederPower(intakeShootingPower);
 
         // After 0.75 seconds, automatically lift pollen gate while keeping intake running
@@ -39,5 +43,10 @@ public class ShooterCommand extends CommandBase {
     public void end(boolean interrupted) {
         shooterSubsystem.setFeederPower(0);
         shooterSubsystem.closePollenGate();
+    }
+
+    @Override
+    public boolean isFinished() {
+        return false;
     }
 }

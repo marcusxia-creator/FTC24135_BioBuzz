@@ -15,6 +15,14 @@ public class IntakeSubsystem extends SubsystemBase {
         this.robot = robot;
     }
 
+    /** Set the intake servos to their safe starting positions when the OpMode starts. */
+    public void setInitialServoPositions() {
+        robot.leftFlowerRampServo.setPosition(flowerRampUpPos);
+        robot.rightFlowerRampServo.setPosition(flowerRampUpPos);
+        robot.gateServo.setPosition(gateUpPos);
+        robot.pollenLimitingServo.setPosition(pollenDownPos);
+    }
+
     public void runRollersPollen() {
         robot.leftFlowerRampServo.setPosition(flowerRampUpPos);
         robot.rightFlowerRampServo.setPosition(flowerRampUpPos);
