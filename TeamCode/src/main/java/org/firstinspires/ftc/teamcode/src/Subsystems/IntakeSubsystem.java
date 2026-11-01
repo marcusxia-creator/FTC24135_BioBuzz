@@ -18,7 +18,7 @@ public class IntakeSubsystem extends SubsystemBase {
     public void runRollersPollen() {
         robot.leftFlowerRampServo.setPosition(flowerRampUpPos);
         robot.rightFlowerRampServo.setPosition(flowerRampUpPos);
-        robot.gateServo.setPosition(gateDownPos);
+        robot.gateServo.setPosition(gateUpPos);
         robot.pollenLimitingServo.setPosition(pollenDownPos);
         robot.intakeMotor.setPower(intakePower);
     }
@@ -26,7 +26,7 @@ public class IntakeSubsystem extends SubsystemBase {
     public void runRollersNectar() {
         robot.leftFlowerRampServo.setPosition(flowerRampUpPos);
         robot.rightFlowerRampServo.setPosition(flowerRampUpPos);
-        robot.gateServo.setPosition(gateUpPos);
+        robot.gateServo.setPosition(gateDownPos);
         robot.pollenLimitingServo.setPosition(pollenUpPos);
         robot.intakeMotor.setPower(intakePower);
     }
@@ -34,7 +34,7 @@ public class IntakeSubsystem extends SubsystemBase {
     public void runRollersFlower() {
         robot.leftFlowerRampServo.setPosition(flowerRampDownPos);
         robot.rightFlowerRampServo.setPosition(flowerRampDownPos);
-        robot.gateServo.setPosition(gateDownPos);
+        robot.gateServo.setPosition(gateUpPos);
         robot.pollenLimitingServo.setPosition(pollenDownPos);
         robot.intakeMotor.setPower(intakePower);
     }
