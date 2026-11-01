@@ -31,9 +31,9 @@ public class IWConfig {
     public static Scalar maxAngAccel            = new Scalar(10, radiansPerSecondSquared); //Maximum angular acceleration before wheels slip
 
     // Positional control parameter defaults, Can be modified per action
-    public static Scalar maxSpeed               = new Scalar(1.4, metersPerSecond);
+    public static Scalar maxSpeed               = new Scalar(4, metersPerSecond);
     public static Scalar minSpeed               = new Scalar(0.2, metersPerSecond);// A minimum drive speed, to prevent stalls
-    public static Scalar defaultAccel           = new Scalar(0.5,metersPerSecondSquared); // A "comfortable" acceleration
+    public static Scalar defaultAccel           = new Scalar(2,metersPerSecondSquared); // A "comfortable" acceleration
     public static Scalar distThreshold          = new Scalar(1, cm); // The longitudinal distance from the end point at which the action indicates completion
 
     // Angular position parameter defaults
