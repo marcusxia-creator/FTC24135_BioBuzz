@@ -1,5 +1,8 @@
 package org.firstinspires.ftc.teamcode.TeleOp;
 
+import com.acmerobotics.dashboard.FtcDashboard;
+import com.acmerobotics.dashboard.config.Config;
+import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.Range;
@@ -10,6 +13,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
 import org.firstinspires.ftc.teamcode.TeleOp.UniversalTools.RobotHardware;
 import static org.firstinspires.ftc.teamcode.TeleOp.UniversalTools.RobotActionConfig.*;
 
+@Config
 @TeleOp
 public class Drive_N_Turn extends OpMode {
 
@@ -20,9 +24,11 @@ public class Drive_N_Turn extends OpMode {
 
     private final double SWITCH_MARGIN = 6.0; //inch
     private final double STICK_DEADBAND = 0.05;
-    private final double HEADING_DEADBAND = 1.5;
-    private final double KP_TURN = 0.02;
-    private final double MAX_TURN_POWER = 0.5;
+    public static double HEADING_DEADBAND = 1.5;
+    public static double KP_TURN = 0.005;
+    public static double MAX_TURN_POWER = 0.5;
+
+    private FtcDashboard dashboard;
 
     @Override
     public void init() {
@@ -36,6 +42,9 @@ public class Drive_N_Turn extends OpMode {
                 redAllianceCell2,
                 redAllianceCell1
         };
+
+        dashboard = FtcDashboard.getInstance();
+        telemetry = new MultipleTelemetry(telemetry, dashboard.getTelemetry());
     }
 
     @Override
@@ -53,12 +62,12 @@ public class Drive_N_Turn extends OpMode {
         double targetCellX = targetCell.getX(DistanceUnit.INCH);
         double targetCellY = targetCell.getY(DistanceUnit.INCH);
 
-        double targetHeading = Math.toDegrees(
+        double targetHeading = (Math.toDegrees(
                 Math.atan2(
                         targetCellY - robot.pinpoint.getPosY(DistanceUnit.INCH),
                         targetCellX - robot.pinpoint.getPosX(DistanceUnit.INCH)
                 )
-        );
+        ) + 180);
 
         double error = wrapDegrees (
             targetHeading - robot.pinpoint.getHeading(AngleUnit.DEGREES)
@@ -77,8 +86,14 @@ public class Drive_N_Turn extends OpMode {
         double turn;
 
         if (gamepad1.dpad_left) {
-            turn = Math.abs(error) < HEADING_DEADBAND ? 0.0:
-                    Range.clip(KP_TURN * error, -MAX_TURN_POWER, MAX_TURN_POWER);
+
+            if (Math.abs(error) < HEADING_DEADBAND) {
+                turn = 0;
+            }
+            else {
+                turn = Range.clip(KP_TURN * error, -MAX_TURN_POWER, MAX_TURN_POWER);
+            }
+
         }
         else {
             turn = gamepad1.left_stick_x;
@@ -104,6 +119,9 @@ public class Drive_N_Turn extends OpMode {
 
         telemetry.addData("Auto Facing", gamepad1.dpad_left);
         telemetry.addData("Selected Cell", selectedCell + 1);
+        telemetry.addData("target angle", targetHeading);
+        telemetry.addData("current angle", robot.pinpoint.getHeading(AngleUnit.DEGREES));
+        telemetry.addData("error angle", error);
         telemetry.addData("x", robot.pinpoint.getPosX(DistanceUnit.INCH));
         telemetry.addData("y", robot.pinpoint.getPosY(DistanceUnit.INCH));
         telemetry.addData("heading", robot.pinpoint.getHeading(AngleUnit.DEGREES));
