@@ -1,29 +1,46 @@
 package org.firstinspires.ftc.teamcode.src.UniversalTools;
 
-import com.qualcomm.robotcore.hardware.CRServo;
+import static com.qualcomm.hardware.gobilda.GoBildaPinpointDriver.EncoderDirection.*;
+import static org.firstinspires.ftc.teamcode.lib.IceWaddler2.src.Math.Measurement.Units.Unit.*;
+
+import com.qualcomm.hardware.gobilda.GoBildaPinpointDriver;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
-import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.hardware.VoltageSensor;
+
+import org.firstinspires.ftc.teamcode.lib.IceWaddler2.src.Hardware.IWDriveTrain;
+import org.firstinspires.ftc.teamcode.lib.IceWaddler2.src.Hardware.IWLocalizer;
+import org.firstinspires.ftc.teamcode.lib.IceWaddler2.src.Hardware.PrebuiltHardware.goBildaOdoComputer;
+import org.firstinspires.ftc.teamcode.lib.IceWaddler2.src.Math.Measurement.Scalar;
+import org.firstinspires.ftc.teamcode.src.Subsystems.DriveTrain;
 
 public class RobotHardware {
     public DcMotorEx frontLeftMotor;
     public DcMotorEx backLeftMotor;
     public DcMotorEx frontRightMotor;
     public DcMotorEx backRightMotor;
+
+    public GoBildaPinpointDriver odo;
+
+    public VoltageSensor voltageSensor;
+
     public DcMotorEx intakeMotor;
     public DcMotorEx leftShooterMotor;
     public DcMotorEx rightShooterMotor;
-    //public DcMotorEx flowerMechMotor;
+
     public Servo gateServo;
     public Servo leftFlowerRampServo;
     public Servo rightFlowerRampServo;
     public Servo limelightAdjServo;
     public Servo pollenLimitingServo;
-    public DistanceSensor distanceSensor;
     public HardwareMap hardwareMap;
+
+    public IWDriveTrain driveTrain;
+    public IWLocalizer localizer;
+
 
     public RobotHardware(HardwareMap hardwareMap) {
         this.hardwareMap = hardwareMap;
@@ -47,8 +64,29 @@ public class RobotHardware {
         frontRightMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         backRightMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
+        frontLeftMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+        backLeftMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+        frontRightMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+        backRightMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+
         frontLeftMotor.setDirection(DcMotorSimple.Direction.REVERSE);
         backLeftMotor.setDirection(DcMotorSimple.Direction.REVERSE);
+        frontRightMotor.setDirection(DcMotorSimple.Direction.FORWARD);
+        backRightMotor.setDirection(DcMotorSimple.Direction.FORWARD);
+
+        voltageSensor=hardwareMap.get(VoltageSensor.class,"Control Hub");
+
+        odo=hardwareMap.get(GoBildaPinpointDriver.class,"pinpoint");
+
+        driveTrain=new DriveTrain(this);
+        localizer=new goBildaOdoComputer(
+                odo,
+                new Scalar(0,in),
+                new Scalar(0,in),//value larp
+                GoBildaPinpointDriver.GoBildaOdometryPods.goBILDA_4_BAR_POD,
+                FORWARD,
+                FORWARD
+        );
 
         ///Intake
         intakeMotor = hardwareMap.get(DcMotorEx.class, "Intake_Motor");

@@ -101,10 +101,22 @@ public class ShooterSubsystem extends SubsystemBase {
         robot.pollenLimitingServo.setPosition(pollenDownPos);
     }
 
-    public class runFlywheelAction implements Action {
+    public class spoolFlywheelAction implements Action {
         @Override
         public void loop() {
             runFlywheel();
+        }
+
+        @Override
+        public boolean finished() {
+            return true;
+        }
+    }
+
+    public class ShootAction implements Action {
+        @Override
+        public void loop() {
+            shootFlywheel();
         }
 
         @Override

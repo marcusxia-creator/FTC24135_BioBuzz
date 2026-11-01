@@ -49,9 +49,9 @@ public class RedSideAuto extends ScheduledOpMode {
 
         path=new ActionSeries(
                 waddler.new InitPath(new PathingPoint(startPoint)),
-                new ActionParallel(ALL, shooter.new runFlywheelAction(),
+                new ActionParallel(ALL, shooter.new spoolFlywheelAction(),
                         waddler.new MotionAction(new Line(new PathingPoint(leftHive), new maxSpeedMP(), new linearHP(), new String[]{}))),
-                new ActionParallel(FIRST,new Delay(5),shooter.new runFlywheelAction(),
+                new ActionParallel(FIRST,new Delay(5),shooter.new ShootAction(),
                         waddler.new MotionAction(new holdPos(new String[]{}))),
 
                 new ActionParallel(ALL,intake.new flowerIntakeAction(),
@@ -61,19 +61,19 @@ public class RedSideAuto extends ScheduledOpMode {
                 new ActionParallel(FIRST,
                         waddler.new MotionAction(new Line(new PathingPoint(new Position(new Vector(rightHive.getX(),new Scalar(-3,feet)),rightHive.getHeading()),new Scalar(0.3,metersPerSecond)), new maxSpeedMP(), new linearHP(), new String[]{})),
                         new ActionParallel(FIRST, new Delay(0.4), intake.new flowerIntakeAction())),
-                new ActionParallel(ALL,shooter.new runFlywheelAction(),
+                new ActionParallel(ALL,shooter.new spoolFlywheelAction(),
                         waddler.new MotionAction(new Line(new PathingPoint(rightHive), new maxSpeedMP(), new linearHP(), new String[]{}))),
-                new ActionParallel(FIRST,new Delay(5),shooter.new runFlywheelAction(),
+                new ActionParallel(FIRST,new Delay(5),shooter.new ShootAction(),
                         waddler.new MotionAction(new holdPos(new String[]{}))),
 
                 new ActionParallel(ALL,intake.new flowerIntakeAction(),
                         waddler.new MotionAction(new Line(new PathingPoint(flower2), new maxSpeedMP(), new linearHP(), new String[]{}))),
                 new ActionParallel(FIRST,new Delay(5),intake.new flowerIntakeAction(),
                         waddler.new MotionAction(new holdPos(new String[]{}))),
-                new ActionParallel(ALL,shooter.new runFlywheelAction(),
+                new ActionParallel(ALL,shooter.new spoolFlywheelAction(),
                         waddler.new MotionAction(new Line(new PathingPoint(rightHive), new maxSpeedMP(), new linearHP(), new String[]{})),
                         new ActionParallel(FIRST, new Delay(0.4), intake.new flowerIntakeAction())),
-                new ActionParallel(FIRST,new Delay(5),shooter.new runFlywheelAction(),
+                new ActionParallel(FIRST,new Delay(5),shooter.new ShootAction(),
                         waddler.new MotionAction(new holdPos(new String[]{}))),
 
                 waddler.new MotionAction(new Line(new PathingPoint(parkPoint), new maxSpeedMP(), new linearHP(), new String[]{}))
