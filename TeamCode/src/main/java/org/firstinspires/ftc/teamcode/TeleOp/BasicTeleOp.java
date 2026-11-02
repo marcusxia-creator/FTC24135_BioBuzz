@@ -26,6 +26,7 @@ public class BasicTeleOp extends CommandOpMode {
     public void initialize() {
         RobotHardware robot = new RobotHardware(hardwareMap);
         robot.init();
+        robot.initPinpoint();
 
         robotDrive = new RobotDriveSubsystem(robot);
         intake = new IntakeSubsystem(robot);
@@ -39,7 +40,8 @@ public class BasicTeleOp extends CommandOpMode {
                 robotDrive,
                 () -> -gamepad_1.getRightY(),
                 () -> gamepad_1.getRightX(),
-                () -> gamepad_1.getLeftX()
+                () -> gamepad_1.getLeftX(),
+                () -> gamepad_1.getButton(GamepadKeys.Button.PS)
         ));
 
         ///------------------Gamepad-----------------------

@@ -2,9 +2,14 @@ package org.firstinspires.ftc.teamcode.src.Subsystems;
 
 import static org.apache.commons.math3.util.FastMath.signum;
 import static org.firstinspires.ftc.teamcode.lib.IceWaddler2.src.Math.Measurement.Units.Unit.*;
+import static org.firstinspires.ftc.teamcode.src.UniversalTools.RobotActionConfig.blueAllianceCell1;
+import static org.firstinspires.ftc.teamcode.src.UniversalTools.RobotActionConfig.blueAllianceCell2;
+import static org.firstinspires.ftc.teamcode.src.UniversalTools.RobotActionConfig.redAllianceCell1;
+import static org.firstinspires.ftc.teamcode.src.UniversalTools.RobotActionConfig.redAllianceCell2;
 
 import com.acmerobotics.dashboard.config.Config;
 
+import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
 import org.firstinspires.ftc.teamcode.lib.IceWaddler2.src.Hardware.IWDriveTrain;
 import org.firstinspires.ftc.teamcode.lib.IceWaddler2.src.Math.Measurement.*;
 import org.firstinspires.ftc.teamcode.lib.IceWaddler2.src.Math.Measurement.SpecialMeasurements.*;
@@ -24,9 +29,26 @@ public class DriveTrain implements IWDriveTrain {
     public static double maxAllowableLinPower=11;
     public static Scalar wheelPivotRadius       = new Scalar(10, in); //The distance between the pivot point and each of the wheels, or half the length of the diagonal
     RobotHardware robot;
+
+    ///DRIVE_N_TURN
+    private Pose2D[] cells;
+    private int selectedCell = 0;
+
+    private final double SWITCH_MARGIN = 6.0; //inch
+    private final double STICK_DEADBAND = 0.05;
+    public static double HEADING_DEADBAND = 1.5;
+    public static double KP_TURN = 0.005;
+    public static double MAX_TURN_POWER = 0.5;
+
     ///In this implimentation, the constructor simply stores our hardware map
     public DriveTrain(RobotHardware robot){
         this.robot=robot;
+        this.cells = new Pose2D[] {
+                blueAllianceCell1,
+                blueAllianceCell2,
+                redAllianceCell2,
+                redAllianceCell1
+        };
     }
 
     @Override

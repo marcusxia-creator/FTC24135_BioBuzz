@@ -120,6 +120,6 @@ public class RobotHardware {
         odo.setEncoderResolution(GoBildaPinpointDriver.GoBildaOdometryPods.goBILDA_4_BAR_POD);
         odo.setEncoderDirections(REVERSED, REVERSED);
         odo.resetPosAndIMU();
-        //pinpoint.resetPosAndIMU();
+        odo.resetPosAndIMU();
     }
 }
