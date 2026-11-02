@@ -25,8 +25,8 @@ public class ShooterSubsystem extends SubsystemBase {
     public static double leftShooterKp = 0.001, leftShooterKi = 0.0, leftShooterKd = 0.0, leftShooterKf = 0.001;
     public static double rightShooterKp = 0.001, rightShooterKi = 0.0, rightShooterKd = 0.0, rightShooterKf = 0.001;
 
-    public static double leftShooterTargetRPM = 2300.0;
-    public static double rightShooterTargetRPM = 2300.0;
+    public static double leftShooterTargetRPM = 1400.0;
+    public static double rightShooterTargetRPM = 1400.0;
 
     private final PIDFController leftShooterPIDF = new PIDFController(leftShooterKp, leftShooterKi, leftShooterKd, leftShooterKf);
     private final PIDFController rightShooterPIDF = new PIDFController(rightShooterKp, rightShooterKi, rightShooterKd, rightShooterKf);
@@ -66,6 +66,8 @@ public class ShooterSubsystem extends SubsystemBase {
         double rightTargetTicks = rpmToTicksPerSecond(rightShooterTargetRPM);
         double rightOutput = rightShooterPIDF.calculate(rightVelTicks, rightTargetTicks);
         robot.rightShooterMotor.setPower(Range.clip(rightOutput, 0.0, 1.0));
+
+        robot.intakeMotor.setPower(0.6);
     }
 
     public void shootFlywheel() {
@@ -76,7 +78,7 @@ public class ShooterSubsystem extends SubsystemBase {
         }
         robot.gateServo.setPosition(gateUpPos);
 
-        robot.intakeMotor.setPower(0.7);
+        robot.intakeMotor.setPower(1.0);
 
         if (shootingTime.seconds() >= 0.75) {
             robot.pollenLimitingServo.setPosition(pollenUpPos);
@@ -107,6 +109,14 @@ public class ShooterSubsystem extends SubsystemBase {
         rightShooterTargetRPM = Math.max(0.0, rightShooterTargetRPM - 100.0);
     }
 
+    ///Setter
+    public double setShooterRPM(double rpm) {
+        leftShooterTargetRPM = rpm;
+        rightShooterTargetRPM = rpm;
+        return rpm;
+    }
+    ///
+    /// Getter
     public double getShooterRPM() {
         return getLeftShooterCurrentRPM();
     }

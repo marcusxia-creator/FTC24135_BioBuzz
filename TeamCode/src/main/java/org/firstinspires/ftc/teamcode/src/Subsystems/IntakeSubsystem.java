@@ -77,7 +77,7 @@ public class IntakeSubsystem extends SubsystemBase {
     }
 
     public void stop() {
-        robot.intakeMotor.setPower(0);
+        robot.intakeMotor.setPower(intakeIdleSpeed);
         robot.leftFlowerRampServo.setPosition(flowerRampUpPos);
         robot.rightFlowerRampServo.setPosition(flowerRampUpPos);
     }

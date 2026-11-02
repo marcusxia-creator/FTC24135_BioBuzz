@@ -34,8 +34,8 @@ public class ControlSubsystem extends GamepadDriver {
         new GamepadButton(gamepad2, GamepadKeys.Button.Y)
                 .whenPressed(new ShooterCommand(shooter, intake));
 
-        bindShooterSpeedControls(gamepad1, shooter);
-        bindIntakeSpeedControls(gamepad2, intake);
+        //bindShooterSpeedControls(gamepad1, shooter);
+        //bindIntakeSpeedControls(gamepad2, intake);
 
         new GamepadButton(gamepad1, GamepadKeys.Button.B)
                 .whenPressed(new InstantCommand(() -> {
@@ -71,6 +71,7 @@ public class ControlSubsystem extends GamepadDriver {
                 .whenActive(new InstantCommand(intake::reverseIntake, intake));
     }
 
+    /*
     private void bindShooterSpeedControls(GamepadEx gamepad, ShooterSubsystem shooter) {
         new GamepadButton(gamepad, GamepadKeys.Button.DPAD_UP)
                 .whenPressed(new InstantCommand(() -> {
@@ -88,6 +89,7 @@ public class ControlSubsystem extends GamepadDriver {
                 }, shooter));
     }
 
+
     private void bindIntakeSpeedControls(GamepadEx gamepad, IntakeSubsystem intake) {
         new GamepadButton(gamepad, GamepadKeys.Button.DPAD_UP)
                 .whenPressed(new InstantCommand(() -> {
@@ -104,4 +106,5 @@ public class ControlSubsystem extends GamepadDriver {
                     }
                 }, intake));
     }
+     */
 }

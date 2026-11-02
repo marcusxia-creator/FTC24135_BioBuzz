@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.TeleOp;
 
+import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.seattlesolvers.solverslib.command.CommandOpMode;
 import com.seattlesolvers.solverslib.gamepad.GamepadEx;
@@ -12,6 +13,7 @@ import org.firstinspires.ftc.teamcode.src.Subsystems.RobotDriveSubsystem;
 import org.firstinspires.ftc.teamcode.src.Subsystems.ShooterSubsystem;
 import org.firstinspires.ftc.teamcode.src.UniversalTools.RobotHardware;
 
+@Config
 @TeleOp(name = "Basic TeleOp", group = "TeleOp")
 public class BasicTeleOp extends CommandOpMode {
     private RobotDriveSubsystem robotDrive;
@@ -20,6 +22,10 @@ public class BasicTeleOp extends CommandOpMode {
     private ControlSubsystem controls;
     private GamepadEx gamepad1Ex;
     private GamepadEx gamepad2Ex;
+
+    public static double targetShooterRPM = 1500;
+    public static double actualShooterRPM;
+
 
     @Override
     public void initialize() {
@@ -56,6 +62,10 @@ public class BasicTeleOp extends CommandOpMode {
     @Override
     public void run() {
         super.run();
+        targetShooterRPM = shooter.getTargetRPM();
+        actualShooterRPM = shooter.getShooterRPM();
+        shooter.setShooterRPM(targetShooterRPM);
+
         telemetry.addData("Intake Motor Power", intake.getIntakeMotorPower());
         telemetry.addLine("--- SHOOTER TELEMETRY ---");
         telemetry.addData("Target Speed", "%.0f RPM (%.0f TPS)", shooter.getTargetRPM(), shooter.getTargetTicksPerSecond());
