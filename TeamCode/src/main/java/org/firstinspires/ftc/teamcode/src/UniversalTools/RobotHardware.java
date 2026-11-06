@@ -5,6 +5,7 @@ import static org.firstinspires.ftc.teamcode.lib.IceWaddler2.src.Math.Measuremen
 
 import com.qualcomm.hardware.gobilda.GoBildaPinpointDriver;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotor.*;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
@@ -53,21 +54,23 @@ public class RobotHardware {
         frontRightMotor = hardwareMap.get(DcMotorEx.class, "FR_Motor");
         backRightMotor = hardwareMap.get(DcMotorEx.class, "BR_Motor");
 
+        //Ion think we really need this
         frontLeftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         backLeftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         frontRightMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         backRightMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
-        // Crucial Fix: Set run mode back to RUN_WITHOUT_ENCODER so motors respond to power commands
-        frontLeftMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        backLeftMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        frontRightMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        backRightMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        RunMode mode=RunMode.RUN_WITHOUT_ENCODER;
+        frontLeftMotor.setMode(mode);
+        backLeftMotor.setMode(mode);
+        frontRightMotor.setMode(mode);
+        backRightMotor.setMode(mode);
 
-        frontLeftMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
-        backLeftMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
-        frontRightMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
-        backRightMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+        ZeroPowerBehavior zeroPowerBehavior=ZeroPowerBehavior.BRAKE;//for better power teleop handling. I do want to move to a IW veldrive later on tho
+        frontLeftMotor.setZeroPowerBehavior(zeroPowerBehavior);
+        backLeftMotor.setZeroPowerBehavior(zeroPowerBehavior);
+        frontRightMotor.setZeroPowerBehavior(zeroPowerBehavior);
+        backRightMotor.setZeroPowerBehavior(zeroPowerBehavior);
 
         frontLeftMotor.setDirection(DcMotorSimple.Direction.REVERSE);
         backLeftMotor.setDirection(DcMotorSimple.Direction.REVERSE);
