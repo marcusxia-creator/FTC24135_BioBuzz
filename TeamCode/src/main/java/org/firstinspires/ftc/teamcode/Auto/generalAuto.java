@@ -21,7 +21,7 @@ import org.firstinspires.ftc.teamcode.lib.IceWaddler2.src.Pathing.PrebuiltMotion
 import org.firstinspires.ftc.teamcode.lib.IceWaddler2.src.Pathing.PrebuiltPathingElements.*;
 
 @Config
-@Autonomous(name="Auto (Both Sides)")
+@Autonomous(name="Auto (Both Sides)",preselectTeleOp="Basic TeleOp")
 public class generalAuto extends ScheduledOpMode {
     RobotHardware robot;
     IceWaddler waddler;
