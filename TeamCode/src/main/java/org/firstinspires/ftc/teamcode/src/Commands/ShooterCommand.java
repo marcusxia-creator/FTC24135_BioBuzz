@@ -32,7 +32,7 @@ public class ShooterCommand extends CommandBase {
         shooterSubsystem.setFeederPower(intakeShootingPower);
 
         // After 0.75 seconds, automatically lift pollen gate while keeping intake running
-        if (timer.seconds() >= 0.75) {
+        if (timer.seconds() >= 0.5) {
             shooterSubsystem.openPollenGate();
         } else {
             shooterSubsystem.closePollenGate();

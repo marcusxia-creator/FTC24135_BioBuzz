@@ -1,6 +1,8 @@
 package org.firstinspires.ftc.teamcode.TeleOp;
 
+import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
+import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.seattlesolvers.solverslib.command.CommandOpMode;
 import com.seattlesolvers.solverslib.gamepad.GamepadEx;
@@ -40,6 +42,8 @@ public class BasicTeleOp extends CommandOpMode {
         gamepad1Ex = new GamepadEx(gamepad1);
         gamepad2Ex = new GamepadEx(gamepad2);
 
+        telemetry=new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
+
         // Right stick X/Y moves and left stick X rotates; either driver can take over each axis.
         robotDrive.setDefaultCommand(new RobotDriveCommand(
                 robotDrive,
@@ -69,7 +73,10 @@ public class BasicTeleOp extends CommandOpMode {
         telemetry.addData("Intake Motor Power", intake.getIntakeMotorPower());
         telemetry.addLine("--- SHOOTER TELEMETRY ---");
         telemetry.addData("Target Speed", "%.0f RPM (%.0f TPS)", shooter.getTargetRPM(), shooter.getTargetTicksPerSecond());
+        telemetry.addData("Target RPM", shooter.getTargetRPM());
         telemetry.addData("Actual Speed", "%.0f RPM (%.0f TPS)", shooter.getShooterRPM(), shooter.getShooterTicksPerSecond());
+        telemetry.addData("Current RPM", shooter.getShooterRPM());
+        //telemetry.addData("Gate Position", robot.);
         telemetry.update();
     }
 }

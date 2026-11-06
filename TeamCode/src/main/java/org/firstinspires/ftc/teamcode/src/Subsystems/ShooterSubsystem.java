@@ -22,11 +22,12 @@ public class ShooterSubsystem extends SubsystemBase {
     private boolean isShooting = false;
     private final RobotHardware robot;
 
-    public static double leftShooterKp = 0.001, leftShooterKi = 0.0, leftShooterKd = 0.0, leftShooterKf = 0.001;
-    public static double rightShooterKp = 0.001, rightShooterKi = 0.0, rightShooterKd = 0.0, rightShooterKf = 0.001;
+    public static double leftShooterKp = 0.01, leftShooterKi = 0.0, leftShooterKd = 0.0, leftShooterKf = 0.00084
+            ;
+    public static double rightShooterKp = 0.01, rightShooterKi = 0.0, rightShooterKd = 0.0, rightShooterKf = 0.001;
 
-    public static double leftShooterTargetRPM = 1400.0;
-    public static double rightShooterTargetRPM = 1400.0;
+    public static double leftShooterTargetRPM = 700.0;
+    public static double rightShooterTargetRPM = 700.0;
 
     private final PIDFController leftShooterPIDF = new PIDFController(leftShooterKp, leftShooterKi, leftShooterKd, leftShooterKf);
     private final PIDFController rightShooterPIDF = new PIDFController(rightShooterKp, rightShooterKi, rightShooterKd, rightShooterKf);
@@ -68,6 +69,8 @@ public class ShooterSubsystem extends SubsystemBase {
         robot.rightShooterMotor.setPower(Range.clip(rightOutput, 0.0, 1.0));
 
         robot.intakeMotor.setPower(0.6);
+
+        updatePids();
     }
 
     public void shootFlywheel() {
@@ -85,6 +88,8 @@ public class ShooterSubsystem extends SubsystemBase {
         } else {
             robot.pollenLimitingServo.setPosition(pollenDownPos);
         }
+
+        updatePids();
     }
 
     public void openPollenGate() {
@@ -100,13 +105,13 @@ public class ShooterSubsystem extends SubsystemBase {
     }
 
     public void increaseTargetRPM() {
-        leftShooterTargetRPM += 100.0;
-        rightShooterTargetRPM += 100.0;
+        leftShooterTargetRPM += 50.0;
+        rightShooterTargetRPM += 50.0;
     }
 
     public void decreaseTargetRPM() {
-        leftShooterTargetRPM = Math.max(0.0, leftShooterTargetRPM - 100.0);
-        rightShooterTargetRPM = Math.max(0.0, rightShooterTargetRPM - 100.0);
+        leftShooterTargetRPM = Math.max(0.0, leftShooterTargetRPM - 50.0);
+        rightShooterTargetRPM = Math.max(0.0, rightShooterTargetRPM - 50.0);
     }
 
     ///Setter
@@ -180,5 +185,35 @@ public class ShooterSubsystem extends SubsystemBase {
         public boolean finished() {
             return true;
         }
+    }
+
+    //Check pid controllers against coeff variables, and updates if needed.
+     void updatePids(){
+         if(leftShooterPIDF.getP()!=leftShooterKp){
+             leftShooterPIDF.setP(leftShooterKp);
+         }
+         if(leftShooterPIDF.getI()!=leftShooterKi){
+             leftShooterPIDF.setI(leftShooterKi);
+         }
+         if(leftShooterPIDF.getD()!=leftShooterKd){
+             leftShooterPIDF.setD(leftShooterKd);
+         }
+         if(leftShooterPIDF.getF()!=leftShooterKf){
+             leftShooterPIDF.setF(leftShooterKf);
+         }
+
+
+         if(rightShooterPIDF.getP()!=rightShooterKp){
+             rightShooterPIDF.setP(rightShooterKp);
+         }
+         if(rightShooterPIDF.getI()!=rightShooterKi){
+             rightShooterPIDF.setI(rightShooterKi);
+         }
+         if(rightShooterPIDF.getD()!=rightShooterKd){
+             rightShooterPIDF.setD(rightShooterKd);
+         }
+         if(rightShooterPIDF.getF()!=rightShooterKf){
+             rightShooterPIDF.setF(rightShooterKf);
+         }
     }
 }
