@@ -88,7 +88,7 @@ public class generalAuto extends ScheduledOpMode {
                         intake.new flowerIntakeAction(),//Continue running the intake. The intake will stop and the ramp will retract at the end of the actionParallel
                         shooter.new spoolFlywheelAction()),
                 //This action spools the flywheel while moving in an arc to the shooting position
-                //the radius for the arc is defined above as `arcRadius`. It covers an angle of 90°, and ends at the right hive shooting pos. It should flow pretty smoothly from the last movement. Note that FixedArcs are defined by the centre and angle of sweep. The movement is also restricted to a max speed of 1m/s
+                //the radius for the arc is defined above as `arcRadius`. It covers an angle of 90°, and ends at the right hive shooting pos. It should flow pretty smoothly from the last movement. Note that FixedArcs are defined by the center and angle of sweep. The movement is also restricted to a max speed of 1m/s
                 new ActionParallel(ALL,shooter.new spoolFlywheelAction(),
                         waddler.new MotionAction(new FixedArc(new Vector(rightHive.getX().add(arcRadius),rightHive.getY()),new PositiveAngle(90,deg), ArcDirection.CLOCKWISE,new Scalar(0,metersPerSecond),rightHive.getHeading(), new maxSpeedMP(new Scalar(1,metersPerSecond)), new linearHP(), new String[]{}))),
                 //As before, this actionParallel simultaneously runs the shooter while holding the robot still for the shooting duration
