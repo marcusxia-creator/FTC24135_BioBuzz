@@ -15,6 +15,14 @@ public class IntakeSubsystem extends SubsystemBase {
         this.robot = robot;
     }
 
+    /** Set the intake servos to their safe starting positions when the OpMode starts. */
+    public void setInitialServoPositions() {
+        robot.leftFlowerRampServo.setPosition(flowerRampUpPos);
+        robot.rightFlowerRampServo.setPosition(flowerRampUpPos);
+        robot.gateServo.setPosition(gateUpPos);
+        robot.pollenLimitingServo.setPosition(pollenDownPos);
+    }
+
     public void runRollersPollen() {
         robot.leftFlowerRampServo.setPosition(flowerRampUpPos);
         robot.rightFlowerRampServo.setPosition(flowerRampUpPos);
@@ -41,16 +49,27 @@ public class IntakeSubsystem extends SubsystemBase {
 
     public void increasePower() {
         intakePower = Math.min(1.0, intakePower + 0.1);
-        if (robot.intakeMotor != null && robot.intakeMotor.getPower() > 0) {
+        if (robot.intakeMotor.getPower() > 0) {
             robot.intakeMotor.setPower(intakePower);
         }
     }
 
     public void decreasePower() {
         intakePower = Math.max(0.0, intakePower - 0.1);
-        if (robot.intakeMotor != null && robot.intakeMotor.getPower() > 0) {
+        if (robot.intakeMotor.getPower() > 0) {
             robot.intakeMotor.setPower(intakePower);
         }
+    }
+
+    /**
+     * Opens intake gates and runs rollers in reverse at -0.3 power to eject game pieces cleanly.
+     */
+    public void reverseIntake() {
+        robot.leftFlowerRampServo.setPosition(flowerRampUpPos);
+        robot.rightFlowerRampServo.setPosition(flowerRampUpPos);
+        robot.gateServo.setPosition(gateDownPos);
+        robot.pollenLimitingServo.setPosition(pollenUpPos);
+        robot.intakeMotor.setPower(-0.3);
     }
 
     public double getIntakeMotorPower() {
@@ -58,7 +77,7 @@ public class IntakeSubsystem extends SubsystemBase {
     }
 
     public void stop() {
-        robot.intakeMotor.setPower(0);
+        robot.intakeMotor.setPower(intakeIdleSpeed);
         robot.leftFlowerRampServo.setPosition(flowerRampUpPos);
         robot.rightFlowerRampServo.setPosition(flowerRampUpPos);
     }

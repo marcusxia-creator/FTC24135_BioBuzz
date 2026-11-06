@@ -114,6 +114,5 @@ public class RobotHardware {
 
         rightFlowerRampServo.setDirection(Servo.Direction.REVERSE);
         gateServo.setDirection(Servo.Direction.REVERSE);
-        pollenLimitingServo.setDirection(Servo.Direction.REVERSE);
     }
 }
