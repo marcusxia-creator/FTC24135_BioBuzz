@@ -66,7 +66,7 @@ public class IntakeSubsystem extends SubsystemBase {
     public class flowerIntakeAction implements Action {
         @Override
         public void init() {
-            runRollersFlower();
+            runRollersFlower();//start intake and run ramp, once when this action is called.
         }
 
         @Override
@@ -74,7 +74,7 @@ public class IntakeSubsystem extends SubsystemBase {
 
         @Override
         public void shutdown() {
-            stop();
+            stop();//Will retract ramp and intake when this action ends
         }
 
         @Override

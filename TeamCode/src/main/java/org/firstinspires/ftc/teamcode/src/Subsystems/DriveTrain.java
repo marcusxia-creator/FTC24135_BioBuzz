@@ -4,6 +4,7 @@ import static org.apache.commons.math3.util.FastMath.signum;
 import static org.firstinspires.ftc.teamcode.lib.IceWaddler2.src.Math.Measurement.Units.Unit.*;
 
 import com.acmerobotics.dashboard.config.Config;
+import com.qualcomm.robotcore.hardware.DcMotor;
 
 import org.firstinspires.ftc.teamcode.lib.IceWaddler2.src.Hardware.IWDriveTrain;
 import org.firstinspires.ftc.teamcode.lib.IceWaddler2.src.Math.Measurement.*;
@@ -27,6 +28,15 @@ public class DriveTrain implements IWDriveTrain {
     ///In this implimentation, the constructor simply stores our hardware map
     public DriveTrain(RobotHardware robot){
         this.robot=robot;
+    }
+
+    @Override
+    /// IW needs motors in float
+    public void init() {
+        robot.frontLeftMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+        robot.backLeftMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+        robot.frontRightMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+        robot.backRightMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
     }
 
     @Override

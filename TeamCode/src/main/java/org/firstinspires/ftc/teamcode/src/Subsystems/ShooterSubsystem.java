@@ -104,7 +104,7 @@ public class ShooterSubsystem extends SubsystemBase {
     public class spoolFlywheelAction implements Action {
         @Override
         public void loop() {
-            runFlywheel();
+            runFlywheel();//Constantly run flywheel pid continuously without shooting
         }
 
         @Override
@@ -116,7 +116,7 @@ public class ShooterSubsystem extends SubsystemBase {
     public class ShootAction implements Action {
         @Override
         public void loop() {
-            shootFlywheel();
+            shootFlywheel();//retracts limiter for shooting
         }
 
         @Override
