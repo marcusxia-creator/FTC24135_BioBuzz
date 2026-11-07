@@ -76,14 +76,16 @@ public class ControlSubsystem extends GamepadDriver {
         new GamepadButton(gamepad, GamepadKeys.Button.DPAD_UP)
                 .whenPressed(new InstantCommand(() -> {
                     if (!gamepad.getButton(GamepadKeys.Button.DPAD_LEFT)
-                            && !gamepad.getButton(GamepadKeys.Button.DPAD_RIGHT)) {
+                            && !gamepad.getButton(GamepadKeys.Button.DPAD_RIGHT)
+                            && !gamepad.getButton(GamepadKeys.Button.RIGHT_BUMPER)) {
                         shooter.increaseTargetRPM();
                     }
                 }, shooter));
         new GamepadButton(gamepad, GamepadKeys.Button.DPAD_DOWN)
                 .whenPressed(new InstantCommand(() -> {
                     if (!gamepad.getButton(GamepadKeys.Button.DPAD_LEFT)
-                            && !gamepad.getButton(GamepadKeys.Button.DPAD_RIGHT)) {
+                            && !gamepad.getButton(GamepadKeys.Button.DPAD_RIGHT)
+                            && !gamepad.getButton(GamepadKeys.Button.LEFT_BUMPER)) {
                         shooter.decreaseTargetRPM();
                     }
                 }, shooter));

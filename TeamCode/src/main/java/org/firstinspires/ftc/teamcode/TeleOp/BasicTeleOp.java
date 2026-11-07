@@ -76,6 +76,7 @@ public class BasicTeleOp extends CommandOpMode {
         telemetry.addData("Target RPM", shooter.getTargetRPM());
         telemetry.addData("Actual Speed", "%.0f RPM (%.0f TPS)", shooter.getShooterRPM(), shooter.getShooterTicksPerSecond());
         telemetry.addData("Current RPM", shooter.getShooterRPM());
+        telemetry.addData("Current Power", shooter.getShooterPower());
         //telemetry.addData("Gate Position", robot.);
         telemetry.update();
     }
