@@ -73,20 +73,21 @@ public class ControlSubsystem extends GamepadDriver {
 
 
     private void bindShooterSpeedControls(GamepadEx gamepad, ShooterSubsystem shooter) {
+        // Target changes must not interrupt the command regulating or firing the shooter.
         new GamepadButton(gamepad, GamepadKeys.Button.DPAD_UP)
                 .whenPressed(new InstantCommand(() -> {
                     if (!gamepad.getButton(GamepadKeys.Button.DPAD_LEFT)
                             && !gamepad.getButton(GamepadKeys.Button.DPAD_RIGHT)) {
                         shooter.increaseTargetRPM();
                     }
-                }, shooter));
+                }));
         new GamepadButton(gamepad, GamepadKeys.Button.DPAD_DOWN)
                 .whenPressed(new InstantCommand(() -> {
                     if (!gamepad.getButton(GamepadKeys.Button.DPAD_LEFT)
                             && !gamepad.getButton(GamepadKeys.Button.DPAD_RIGHT)) {
                         shooter.decreaseTargetRPM();
                     }
-                }, shooter));
+                }));
     }
 
 
