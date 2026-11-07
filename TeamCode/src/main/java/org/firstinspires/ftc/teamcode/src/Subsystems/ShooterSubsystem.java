@@ -144,11 +144,11 @@ public class ShooterSubsystem extends SubsystemBase {
     ///
     /// Getter
     public double getShooterRPM() {
-        return getLeftShooterCurrentRPM();
+        return getRightShooterCurrentRPM();
     }
 
     public double getShooterTicksPerSecond() {
-        return robot.leftShooterMotor.getVelocity();
+        return robot.rightShooterMotor.getVelocity();
     }
 
     public double getLeftShooterCurrentRPM() {
@@ -160,11 +160,11 @@ public class ShooterSubsystem extends SubsystemBase {
     }
 
     public double getTargetRPM() {
-        return leftShooterTargetRPM;
+        return rightShooterTargetRPM;
     }
 
     public double getTargetTicksPerSecond() {
-        return rpmToTicksPerSecond(leftShooterTargetRPM);
+        return rpmToTicksPerSecond(rightShooterTargetRPM);
     }
 
     public void stop() {
