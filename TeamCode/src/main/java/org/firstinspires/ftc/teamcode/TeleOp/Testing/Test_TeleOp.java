@@ -5,25 +5,21 @@ import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorEx;
-import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 import com.seattlesolvers.solverslib.controller.PIDController;
 import com.seattlesolvers.solverslib.gamepad.GamepadEx;
 import com.seattlesolvers.solverslib.gamepad.GamepadKeys;
 
+import org.firstinspires.ftc.teamcode.src.UniversalTools.RobotHardware;
+
 @Config
-@TeleOp (name = "Test Dual PID", group = "Test")
+@TeleOp (name = "Test Dual PID Motors", group = "Test")
 public class Test_TeleOp extends OpMode {
-    private DcMotorEx leftShooterMotor;
-    private DcMotorEx rightShooterMotor;
-    private DcMotorEx intakeMotor;
-    private Servo transferServo;
-    private GamepadEx gamepad;
+    private RobotHardware robotHardware;
+    private GamepadEx gamepad1Ex;
     private ElapsedTime debounceTimer = new ElapsedTime();
-    private final double DEBOUNCE_THRESHOLD = 0.2;
+    private final double DEBOUNCE_THRESHOLD = 0.15;
     private FtcDashboard dashboard;
 
     public static double leftShooterKp = 0.001, leftShooterKi = 0, leftShooterKd = 0;
@@ -40,104 +36,89 @@ public class Test_TeleOp extends OpMode {
 
     @Override
     public void init() {
-        leftShooterMotor = hardwareMap.get(DcMotorEx.class, "Left_Shooter_Motor");
-        rightShooterMotor = hardwareMap.get(DcMotorEx.class, "Right_Shooter_Motor");
-        intakeMotor = hardwareMap.get(DcMotorEx.class, "Intake_Motor");
-        transferServo = hardwareMap.get(Servo.class, "Transfer_Servo");
-        leftShooterMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        rightShooterMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        leftShooterMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
-        rightShooterMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
-        intakeMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        robotHardware = new RobotHardware(hardwareMap);
+        robotHardware.init();
 
-        transferServo.setPosition(0.0);
-
-        gamepad = new GamepadEx(gamepad1);
+        gamepad1Ex = new GamepadEx(gamepad1);
         dashboard = FtcDashboard.getInstance();
         telemetry = new MultipleTelemetry(telemetry, dashboard.getTelemetry());
     }
 
     @Override
     public void loop(){
-
         leftShooterPID.setPID(leftShooterKp, leftShooterKi, leftShooterKd);
         rightShooterPID.setPID(rightShooterKp, rightShooterKi, rightShooterKd);
         intakePID.setPID(intakeKp, intakeKi, intakeKd);
 
-        if (gamepad.getButton(GamepadKeys.Button.X) && debounceTimer.seconds() >= DEBOUNCE_THRESHOLD) {
+        // --- Shooter Controls ---
+        if (gamepad1Ex.getButton(GamepadKeys.Button.X) && debounceTimer.seconds() >= DEBOUNCE_THRESHOLD) {
             debounceTimer.reset();
             leftShooterTargetVelocity = 2000.0;
-            //rightShooterTargetVelocity = 2000.0;
+            rightShooterTargetVelocity = 2000.0;
         }
 
-        if (gamepad.getButton(GamepadKeys.Button.Y) && debounceTimer.seconds() >= DEBOUNCE_THRESHOLD) {
+        if (gamepad1Ex.getButton(GamepadKeys.Button.Y) && debounceTimer.seconds() >= DEBOUNCE_THRESHOLD) {
             debounceTimer.reset();
             leftShooterTargetVelocity = 0.0;
             rightShooterTargetVelocity = 0.0;
         }
 
-        if (gamepad.getButton(GamepadKeys.Button.DPAD_UP) && debounceTimer.seconds() >= DEBOUNCE_THRESHOLD) {
+        if (gamepad1Ex.getButton(GamepadKeys.Button.DPAD_UP) && debounceTimer.seconds() >= DEBOUNCE_THRESHOLD) {
             debounceTimer.reset();
             leftShooterTargetVelocity += 100.0;
         }
 
-        if (gamepad.getButton(GamepadKeys.Button.DPAD_DOWN) && debounceTimer.seconds() >= DEBOUNCE_THRESHOLD) {
+        if (gamepad1Ex.getButton(GamepadKeys.Button.DPAD_DOWN) && debounceTimer.seconds() >= DEBOUNCE_THRESHOLD) {
             debounceTimer.reset();
             leftShooterTargetVelocity -= 100.0;
         }
 
-        if (gamepad.getButton(GamepadKeys.Button.A) && debounceTimer.seconds() >= DEBOUNCE_THRESHOLD) {
-            debounceTimer.reset();
-            intakeTargetVelocity = 650.0;
-        }
-        if (gamepad.getButton(GamepadKeys.Button.B) && debounceTimer.seconds() >= DEBOUNCE_THRESHOLD) {
-            debounceTimer.reset();
-            intakeTargetVelocity = 0.0;
-        }
-        if (gamepad.getButton(GamepadKeys.Button.DPAD_RIGHT) && debounceTimer.seconds() >= DEBOUNCE_THRESHOLD) {
+        if (gamepad1Ex.getButton(GamepadKeys.Button.DPAD_RIGHT) && debounceTimer.seconds() >= DEBOUNCE_THRESHOLD) {
             debounceTimer.reset();
             rightShooterTargetVelocity += 100.0;
         }
-        if (gamepad.getButton(GamepadKeys.Button.DPAD_LEFT) && debounceTimer.seconds() >= DEBOUNCE_THRESHOLD) {
+
+        if (gamepad1Ex.getButton(GamepadKeys.Button.DPAD_LEFT) && debounceTimer.seconds() >= DEBOUNCE_THRESHOLD) {
             debounceTimer.reset();
             rightShooterTargetVelocity -= 100.0;
         }
-        //Bring transfer gate out
-        if (gamepad.getButton(GamepadKeys.Button.RIGHT_BUMPER) && debounceTimer.seconds() >= DEBOUNCE_THRESHOLD) {
-            double currentPosition;
-            currentPosition = transferServo.getPosition();
-            transferServo.setPosition(currentPosition+0.01);
-            debounceTimer.reset();
 
-        }
-        //Transfer gate in
-        if (gamepad.getButton(GamepadKeys.Button.LEFT_BUMPER) && debounceTimer.seconds() >= DEBOUNCE_THRESHOLD){
+        // --- Intake Controls ---
+        if (gamepad1Ex.getButton(GamepadKeys.Button.A) && debounceTimer.seconds() >= DEBOUNCE_THRESHOLD) {
             debounceTimer.reset();
-            transferServo.setPosition(0.0);
+            intakeTargetVelocity = 650.0;
+        }
+        if (gamepad1Ex.getButton(GamepadKeys.Button.B) && debounceTimer.seconds() >= DEBOUNCE_THRESHOLD) {
+            debounceTimer.reset();
+            intakeTargetVelocity = 0.0;
         }
 
-        double leftShooterCurrentVelocity = leftShooterMotor.getVelocity();
-        double leftShooterPidOutput = leftShooterPID.calculate(leftShooterCurrentVelocity, leftShooterTargetVelocity);
-        double rightShooterCurrentVelocity = rightShooterMotor.getVelocity();
-        double rightShooterPidOutput = rightShooterPID.calculate(rightShooterCurrentVelocity, rightShooterTargetVelocity);
-        leftShooterMotor.setPower(Range.clip(leftShooterPidOutput, 0, 1));
-        rightShooterMotor.setPower(Range.clip(rightShooterPidOutput, 0, 1));
+        // ==================== MOTOR PID CALCULATIONS ====================
 
-        double intakeCurrentVelocity = intakeMotor.getVelocity();
-        double intakePidOutput = intakePID.calculate(intakeCurrentVelocity, intakeTargetVelocity);
-        intakeMotor.setPower(1.0);//Range.clip(intakePidOutput, 0, 1));
+        if (robotHardware.leftShooterMotor != null) {
+            double leftShooterCurrentVelocity = robotHardware.leftShooterMotor.getVelocity();
+            double leftShooterPidOutput = leftShooterPID.calculate(leftShooterCurrentVelocity, leftShooterTargetVelocity);
+            robotHardware.leftShooterMotor.setPower(Range.clip(leftShooterPidOutput, 0, 1));
+            telemetry.addData("Left Shooter Current", leftShooterCurrentVelocity);
+            telemetry.addData("Left Shooter Power", "%.2f", robotHardware.leftShooterMotor.getPower());
+        }
 
-        telemetry.addData("Left Shooter Target", leftShooterTargetVelocity);
-        telemetry.addData("Right Shooter Target", rightShooterTargetVelocity);
-        telemetry.addData("Left Shooter Current", leftShooterCurrentVelocity);
-        telemetry.addData("Right Shooter Current", rightShooterCurrentVelocity);
-        telemetry.addData("Left Shooter Power", "%.2f", leftShooterMotor.getPower());
-        telemetry.addData("Right Shooter Power", "%.2f", rightShooterMotor.getPower());
-        telemetry.addLine("      ");
-        telemetry.addData("Intake Target", intakeTargetVelocity);
-        telemetry.addData("Intake Current", intakeCurrentVelocity);
-        telemetry.addData("Intake Power", "%.2f", intakeMotor.getPower());
-        telemetry.addData("Transfer Servo Pos", "%.2f", transferServo.getPosition());
+        if (robotHardware.rightShooterMotor != null) {
+            double rightShooterCurrentVelocity = robotHardware.rightShooterMotor.getVelocity();
+            double rightShooterPidOutput = rightShooterPID.calculate(rightShooterCurrentVelocity, rightShooterTargetVelocity);
+            robotHardware.rightShooterMotor.setPower(Range.clip(rightShooterPidOutput, 0, 1));
+            telemetry.addData("Right Shooter Current", rightShooterCurrentVelocity);
+            telemetry.addData("Right Shooter Power", "%.2f", robotHardware.rightShooterMotor.getPower());
+        }
+
+        if (robotHardware.intakeMotor != null) {
+            double intakeCurrentVelocity = robotHardware.intakeMotor.getVelocity();
+            double intakePidOutput = intakePID.calculate(intakeCurrentVelocity, intakeTargetVelocity);
+            robotHardware.intakeMotor.setPower(Range.clip(intakePidOutput, 0, 1));
+            telemetry.addData("Intake Current", intakeCurrentVelocity);
+            telemetry.addData("Intake Power", "%.2f", robotHardware.intakeMotor.getPower());
+        }
+
         telemetry.update();
     }
 }

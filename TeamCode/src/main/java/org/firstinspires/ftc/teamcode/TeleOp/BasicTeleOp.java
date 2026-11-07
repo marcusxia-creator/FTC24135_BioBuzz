@@ -1,75 +1,82 @@
 package org.firstinspires.ftc.teamcode.TeleOp;
 
-import com.seattlesolvers.solverslib.command.RunCommand;
-import com.seattlesolvers.solverslib.command.StartEndCommand;
-import com.seattlesolvers.solverslib.gamepad.GamepadEx;
-import com.seattlesolvers.solverslib.gamepad.GamepadKeys;
+import com.acmerobotics.dashboard.FtcDashboard;
+import com.acmerobotics.dashboard.config.Config;
+import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.seattlesolvers.solverslib.command.CommandOpMode;
-import com.seattlesolvers.solverslib.command.InstantCommand;
-import com.seattlesolvers.solverslib.command.button.GamepadButton;
+import com.seattlesolvers.solverslib.gamepad.GamepadEx;
 
-import org.firstinspires.ftc.teamcode.TeleOp.Commands.RobotDriveCommand;
-///Subsystems
-import org.firstinspires.ftc.teamcode.TeleOp.Subsystems.IntakeSubsystem;
-import org.firstinspires.ftc.teamcode.TeleOp.Subsystems.RobotDriveSubsystem;
+import org.firstinspires.ftc.teamcode.src.Commands.RobotDriveCommand;
+import org.firstinspires.ftc.teamcode.src.Commands.ShooterCommand;
+import org.firstinspires.ftc.teamcode.src.Subsystems.ControlSubsystem;
+import org.firstinspires.ftc.teamcode.src.Subsystems.IntakeSubsystem;
+import org.firstinspires.ftc.teamcode.src.Subsystems.RobotDriveSubsystem;
+import org.firstinspires.ftc.teamcode.src.Subsystems.ShooterSubsystem;
+import org.firstinspires.ftc.teamcode.src.UniversalTools.RobotHardware;
 
-import org.firstinspires.ftc.teamcode.TeleOp.Subsystems.ShooterSubsystem;
-import org.firstinspires.ftc.teamcode.TeleOp.UniversalTools.RobotHardware;
-
-@TeleOp (name = "Basic TeleOp", group = "Test")
-
+@Config
+@TeleOp(name = "Basic TeleOp", group = "TeleOp")
 public class BasicTeleOp extends CommandOpMode {
     private RobotDriveSubsystem robotDrive;
     private IntakeSubsystem intake;
     private ShooterSubsystem shooter;
-    private GamepadEx gamepadDriver;
-    private GamepadEx gamepadOperator;
+    private ControlSubsystem controls;
+    private GamepadEx gamepad1Ex;
+    private GamepadEx gamepad2Ex;
+
+    public static double targetShooterRPM = 1500;
+    public static double actualShooterRPM;
+
 
     @Override
-    public void initialize (){
+    public void initialize() {
         RobotHardware robot = new RobotHardware(hardwareMap);
         robot.init();
 
         robotDrive = new RobotDriveSubsystem(robot);
         intake = new IntakeSubsystem(robot);
         shooter = new ShooterSubsystem(robot);
-        gamepadDriver = new GamepadEx(gamepad1);
-        gamepadOperator = new GamepadEx(gamepad2);
+        controls = new ControlSubsystem();
 
+        gamepad1Ex = new GamepadEx(gamepad1);
+        gamepad2Ex = new GamepadEx(gamepad2);
+
+        telemetry=new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
+
+        // Right stick X/Y moves and left stick X rotates; either driver can take over each axis.
         robotDrive.setDefaultCommand(new RobotDriveCommand(
                 robotDrive,
-                () -> -gamepadDriver.getRightY(),
-                () -> gamepadDriver.getRightX(),
-                () -> gamepadDriver.getLeftX()
+                () -> Math.abs(gamepad1Ex.getRightY()) > 0.05
+                        ? -gamepad1Ex.getRightY() : -gamepad2Ex.getRightY(),
+                () -> Math.abs(gamepad1Ex.getRightX()) > 0.05
+                        ? gamepad1Ex.getRightX() : gamepad2Ex.getRightX(),
+                () -> Math.abs(gamepad1Ex.getLeftX()) > 0.05
+                        ? gamepad1Ex.getLeftX() : gamepad2Ex.getLeftX()
         ));
-        ///------------------Gamepad-----------------------
-        ///Run intake
-        new GamepadButton(gamepadOperator, GamepadKeys.Button.RIGHT_BUMPER)
-                .toggleWhenPressed(new StartEndCommand(intake:: runRollers,intake::stop, intake));
-        new GamepadButton (gamepadOperator, GamepadKeys.Button.DPAD_UP)
-                .whenPressed (new InstantCommand(() -> intake.increasePower(), intake));
-        new GamepadButton (gamepadOperator, GamepadKeys.Button.DPAD_DOWN)
-                .whenPressed(new InstantCommand(()-> intake.decreasePower(), intake));
-        ///RUN SHOOTER
-        new GamepadButton(gamepadOperator, GamepadKeys.Button.X)
-                .toggleWhenPressed(new StartEndCommand(shooter::runFlywheel,shooter::stop));
-        new GamepadButton(gamepadOperator, GamepadKeys.Button.DPAD_RIGHT)
-                .whenPressed(new InstantCommand (shooter :: increasePower, shooter));
-        new GamepadButton (gamepadOperator, GamepadKeys.Button.DPAD_LEFT)
-                .whenPressed(new InstantCommand (shooter :: decreasePower, shooter));
-        ///STOP
-        new GamepadButton(gamepadOperator, GamepadKeys.Button.B)
-                .or(new GamepadButton(gamepadDriver, GamepadKeys.Button.B))
-                .whenActive(new InstantCommand(() -> {shooter.stop();
-                    intake.stop();
-                }, shooter, intake));
+
+        controls.configureControls(gamepad1Ex, gamepad2Ex, intake, shooter);
     }
+
     @Override
-    public void run (){
+    public void preRun() {
+        intake.setInitialServoPositions();
+    }
+
+    @Override
+    public void run() {
         super.run();
+        targetShooterRPM = shooter.getTargetRPM();
+        actualShooterRPM = shooter.getShooterRPM();
+        shooter.setShooterRPM(targetShooterRPM);
+
         telemetry.addData("Intake Motor Power", intake.getIntakeMotorPower());
-        telemetry.addData("Shooter Power",shooter.getshooterPower());
+        telemetry.addLine("--- SHOOTER TELEMETRY ---");
+        telemetry.addData("Target Speed", "%.0f RPM (%.0f TPS)", shooter.getTargetRPM(), shooter.getTargetTicksPerSecond());
+        telemetry.addData("Target RPM", shooter.getTargetRPM());
+        telemetry.addData("Actual Speed", "%.0f RPM (%.0f TPS)", shooter.getShooterRPM(), shooter.getShooterTicksPerSecond());
+        telemetry.addData("Current RPM", shooter.getShooterRPM());
+        //telemetry.addData("Gate Position", robot.);
         telemetry.update();
     }
 }
