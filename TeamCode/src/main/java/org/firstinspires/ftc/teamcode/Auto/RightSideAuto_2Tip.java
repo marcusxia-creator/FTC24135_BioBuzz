@@ -23,8 +23,8 @@ import org.firstinspires.ftc.teamcode.lib.IceWaddler2.src.Pathing.PrebuiltMotion
 import org.firstinspires.ftc.teamcode.lib.IceWaddler2.src.Pathing.PrebuiltPathingElements.*;
 
 @Config
-@Autonomous(name="Auto (Both Sides)",preselectTeleOp="Basic TeleOp")
-public class generalAuto extends ScheduledOpMode {
+@Autonomous(name="2 Tip Right Side Auto",preselectTeleOp="Basic TeleOp")
+public class RightSideAuto_2Tip extends ScheduledOpMode {
     RobotHardware robot;
     IceWaddler waddler;
 
@@ -40,7 +40,8 @@ public class generalAuto extends ScheduledOpMode {
     public static Position flower1=new Position(new Vector(2,-4.6,feet),new NormalizedAngle(180,deg));  //The position that the robot goes to intake from the first flower. This is on the alliance side wall
     public static Position prep_flower2=new Position(new Vector(-3.5,-2,feet),new NormalizedAngle(-90,deg));
     public static Position flower2=new Position(new Vector(-4.6,-2,feet),new NormalizedAngle(-90,deg)); //The position that the robot goes to intake from the second flower. This is the flower closest to the right hive.
-    public static Position parkPoint=new Position(new Vector(-3.8,-5,feet),new NormalizedAngle(-90,deg));//This is the position at which the robot parks at the end of auto
+    public static Position post_flower2=new Position(new Vector(-3.5,-2,feet),new NormalizedAngle(-90,deg));
+    public static Position parkPoint=new Position(new Vector(-3.5,-4.6,feet),new NormalizedAngle(-90,deg));//This is the position at which the robot parks at the end of auto
 
     public static Scalar arcRadius=new Scalar(2.5,feet);//The radius of the arc that the robot drives when moving across the field to shoot at the right hive for the first time
 
@@ -109,12 +110,13 @@ public class generalAuto extends ScheduledOpMode {
                         shooter.new spoolFlywheelAction()),
                 //This action spools the flywheel while moving in an arc to the shooting position
                 //the radius for the arc is defined above as `arcRadius`. It covers an angle of 90°, and ends at the right hive shooting pos. It should flow pretty smoothly from the last movement. Note that FixedArcs are defined by the center and angle of sweep. The movement is also restricted to a max speed of 1m/s
-                new ActionParallel(ALL,shooter.new spoolFlywheelAction(),
+                new ActionParallel(ALL,shooter.
+                        new spoolFlywheelAction(),
                         waddler.new MotionAction(new FixedArc(new Vector(rightHive.getX().add(arcRadius),rightHive.getY()),new PositiveAngle(90,deg), ArcDirection.CLOCKWISE,new Scalar(0,metersPerSecond),rightHive.getHeading(), new maxSpeedMP(new Scalar(1,metersPerSecond)), new linearHP(), new String[]{}))),
                 //As before, this actionParallel simultaneously runs the shooter while holding the robot still for the shooting duration
-                new ActionParallel(FIRST,new Delay(shootTime),shooter.new ShootAction(),
+                new ActionParallel(FIRST,
+                        new Delay(shootTime),shooter.new ShootAction(),
                         waddler.new MotionAction(new holdPos(new String[]{}))),
-
                 //Move and intake from the second flower
                 //As before, this action moves toward the flower in a straight line while running the intake to lower the ramp
                 new ActionParallel(ALL,
@@ -125,7 +127,8 @@ public class generalAuto extends ScheduledOpMode {
                 new ActionParallel(FIRST,
                         new Delay(intakeTime),intake.new flowerIntakeAction(),
                         waddler.new MotionAction(new holdPos(new String[]{}))),
-
+                new ActionParallel(ALL,
+                        waddler.new MotionAction(new Line(new PathingPoint(post_flower2), new maxSpeedMP(), new linearHP(), new String[]{}))),
                 //Move to the right hive shooting pos and shoot
                 new ActionParallel(ALL,
                         shooter.new spoolFlywheelAction(),
