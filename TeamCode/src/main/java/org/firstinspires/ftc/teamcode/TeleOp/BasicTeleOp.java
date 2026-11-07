@@ -24,6 +24,7 @@ public class BasicTeleOp extends CommandOpMode {
     private ControlSubsystem controls;
     private GamepadEx gamepad1Ex;
     private GamepadEx gamepad2Ex;
+    private RobotHardware robot;
 
     public static double targetShooterRPM = 1500;
     public static double actualShooterRPM;
@@ -31,7 +32,7 @@ public class BasicTeleOp extends CommandOpMode {
 
     @Override
     public void initialize() {
-        RobotHardware robot = new RobotHardware(hardwareMap);
+        robot = new RobotHardware(hardwareMap);
         robot.init();
 
         robotDrive = new RobotDriveSubsystem(robot);
@@ -68,16 +69,15 @@ public class BasicTeleOp extends CommandOpMode {
         super.run();
         targetShooterRPM = shooter.getTargetRPM();
         actualShooterRPM = shooter.getShooterRPM();
-        shooter.setShooterRPM(targetShooterRPM);
 
-        telemetry.addData("Intake Motor Power", intake.getIntakeMotorPower());
+        telemetry.addData("Intake Target Power", "%.1f", intake.getIntakeMotorPower());
+        telemetry.addData("Intake Active Power", "%.2f", robot.intakeMotor.getPower());
         telemetry.addLine("--- SHOOTER TELEMETRY ---");
         telemetry.addData("Target Speed", "%.0f RPM (%.0f TPS)", shooter.getTargetRPM(), shooter.getTargetTicksPerSecond());
         telemetry.addData("Target RPM", shooter.getTargetRPM());
         telemetry.addData("Actual Speed", "%.0f RPM (%.0f TPS)", shooter.getShooterRPM(), shooter.getShooterTicksPerSecond());
         telemetry.addData("Current RPM", shooter.getShooterRPM());
-        telemetry.addData("Current Power", shooter.getShooterPower());
-        //telemetry.addData("Gate Position", robot.);
+        telemetry.addData("Shooter power", robot.rightShooterMotor.getPower());
         telemetry.update();
     }
 }

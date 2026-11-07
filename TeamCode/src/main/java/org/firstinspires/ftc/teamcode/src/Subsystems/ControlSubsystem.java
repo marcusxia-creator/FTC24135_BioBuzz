@@ -35,6 +35,7 @@ public class ControlSubsystem extends GamepadDriver {
                 .whenPressed(new ShooterCommand(shooter, intake));
 
         bindShooterSpeedControls(gamepad2, shooter);
+        bindIntakeSpeedControls(gamepad1, intake);
         bindIntakeSpeedControls(gamepad2, intake);
 
         new GamepadButton(gamepad1, GamepadKeys.Button.B)

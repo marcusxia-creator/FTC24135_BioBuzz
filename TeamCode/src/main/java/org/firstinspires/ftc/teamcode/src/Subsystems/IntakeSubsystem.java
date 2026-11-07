@@ -48,15 +48,15 @@ public class IntakeSubsystem extends SubsystemBase {
     }
 
     public void increasePower() {
-        intakePower = Math.min(1.0, intakePower + 0.05);
-        if (robot.intakeMotor.getPower() > 0) {
+        intakePower = Math.min(1.0, Math.round((intakePower + 0.1) * 10.0) / 10.0);
+        if (Math.abs(robot.intakeMotor.getPower()) > 0.05) {
             robot.intakeMotor.setPower(intakePower);
         }
     }
 
     public void decreasePower() {
-        intakePower = Math.max(0.0, intakePower - 0.05);
-        if (robot.intakeMotor.getPower() > 0) {
+        intakePower = Math.max(0.0, Math.round((intakePower - 0.1) * 10.0) / 10.0);
+        if (Math.abs(robot.intakeMotor.getPower()) > 0.05) {
             robot.intakeMotor.setPower(intakePower);
         }
     }

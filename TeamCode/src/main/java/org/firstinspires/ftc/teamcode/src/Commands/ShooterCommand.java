@@ -29,10 +29,10 @@ public class ShooterCommand extends CommandBase {
     public void execute() {
         // Keep the flywheel regulated while feeding balls into it.
         shooterSubsystem.runFlywheel();
-        shooterSubsystem.setFeederPower(intakeShootingPower);
+        shooterSubsystem.setFeederPower(0.8);
 
         // After 0.75 seconds, automatically lift pollen gate while keeping intake running
-        if (timer.seconds() > 0.25) {
+        if (timer.seconds() > 0.3) {
             shooterSubsystem.openPollenGate();
         } else {
             shooterSubsystem.closePollenGate();
