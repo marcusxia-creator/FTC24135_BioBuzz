@@ -101,4 +101,21 @@ public class IntakeSubsystem extends SubsystemBase {
             return true;
         }
     }
+
+    public class wallIntakeAction implements Action {
+        @Override
+        public void init() {
+            runRollersPollen();
+        }
+
+        @Override
+        public void loop() {}
+
+        @Override
+        public void shutdown() {
+            stop();
+        }
+
+        public boolean finished() {return true;}
+    }
 }

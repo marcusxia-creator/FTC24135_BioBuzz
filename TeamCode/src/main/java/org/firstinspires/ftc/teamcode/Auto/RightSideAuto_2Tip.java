@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.Auto;
 
 import static org.firstinspires.ftc.teamcode.lib.CommandBase.PrebuiltActions.ActionParallel.TERMINATIONTYPE.*;
 import static org.firstinspires.ftc.teamcode.lib.IceWaddler2.src.Math.Measurement.Units.Unit.*;
+import static org.firstinspires.ftc.teamcode.lib.IceWaddler2.src.Pathing.ArcDirection.COUNTERCLOCKWISE;
 import static org.firstinspires.ftc.teamcode.src.UniversalTools.RobotActionConfig.flowerRampUpPos;
 import static org.firstinspires.ftc.teamcode.src.UniversalTools.RobotActionConfig.gateUpPos;
 import static org.firstinspires.ftc.teamcode.src.UniversalTools.RobotActionConfig.pollenDownPos;
@@ -35,19 +36,22 @@ public class RightSideAuto_2Tip extends ScheduledOpMode {
 
     //Pathing Positions. All positions are in x,y, as on a graph, and headings are clockwise from vertical
     public static Position startPoint=new Position(new Vector(5.15,-1.40,feet),new NormalizedAngle(-90,deg));//Position at which the robot starts. I think this position's actually illegal rn
-    public static Position leftHive=new Position(new Vector(5,-1.5,feet),new NormalizedAngle(-90,deg));   //The position that the robot goes to to shoot into the left hive. This is the first hive that the robot visits
-    public static Position rightHive=new Position(new Vector(-4.5,-1,feet),new NormalizedAngle(90,deg));  //The position that the robot goes to to shoot into the right hive.
-    public static Position flower1=new Position(new Vector(2,-4.57,feet),new NormalizedAngle(180,deg));  //The position that the robot goes to intake from the first flower. This is on the alliance side wall
-    public static Position prep_flower2=new Position(new Vector(-3.5,-2,feet),new NormalizedAngle(-90,deg));
-    public static Position flower2=new Position(new Vector(-4.3,-2,feet),new NormalizedAngle(-90,deg)); //The position that the robot goes to intake from the second flower. This is the flower closest to the right hive.
-    public static Position post_flower2=new Position(new Vector(-3.5,-2,feet),new NormalizedAngle(-90,deg));
+    public static Position leftHive=new Position(new Vector(4.6,-1.5,feet),new NormalizedAngle(-90,deg));   //The position that the robot goes to to shoot into the left hive. This is the first hive that the robot visits
+    public static Position rightHive=new Position(new Vector(-4.6,-1,feet),new NormalizedAngle(90,deg));  //The position that the robot goes to to shoot into the right hive.
+    public static Position wallIntake=new Position(new Vector(5.2,-5.1,feet),new NormalizedAngle(-180,deg));//The position that the robot goes to intake from the wall
+    public static Position flower1=new Position(new Vector(2,-4.6,feet),new NormalizedAngle(180,deg));  //The position that the robot goes to intake from the first flower. This is on the alliance side wall
+    public static Position prep_flower2=new Position(new Vector(-3,-2,feet),new NormalizedAngle(-90,deg));
+    public static Position flower2=new Position(new Vector(-4.6,-2,feet),new NormalizedAngle(-90,deg)); //The position that the robot goes to intake from the second flower. This is the flower closest to the right hive.
+    public static Position post_flower2=new Position(new Vector(-3,-2,feet),new NormalizedAngle(-90,deg));
     public static Position parkPoint=new Position(new Vector(-3.5,-4.6,feet),new NormalizedAngle(-90,deg));//This is the position at which the robot parks at the end of auto
 
     public static Scalar arcRadius=new Scalar(2.5,feet);//The radius of the arc that the robot drives when moving across the field to shoot at the right hive for the first time
 
     //Timings
-    public static Scalar shootTime=new Scalar(2.5,s);//Amount of time needed to consistently shoot all four pollen
-    public static Scalar intakeTime=new Scalar(2,s);//Amount of time to consistently intake all four pollen from flower
+    public static Scalar shootTime=new Scalar(1.5,s);//Amount of time needed to consistently shoot all four pollen
+    public static Scalar intakeTime=new Scalar(1.5,s);//Amount of time to consistently intake all four pollen from flower
+
+    public static Scalar wallIntakeSpeed=new Scalar(1,metersPerSecond);
 
     @Override
     public void init() {
@@ -80,11 +84,27 @@ public class RightSideAuto_2Tip extends ScheduledOpMode {
                         shooter.new spoolFlywheelAction()),//This action spools up the flywheel without shooting
                 //Holds robot still for 2 seconds to spool flywheel
                 new ActionParallel(FIRST,
-                        new Delay(4),
+                        new Delay(1),
                         waddler.new MotionAction(new holdPos(new String[]{})),
                         shooter.new spoolFlywheelAction()
                 ),
                 //This actionParallel simultaneously runs the shooter while holding the robot still for the defined shootTime. The FIRST termination type means that this action ends when the shooting delay ends
+                new ActionParallel(FIRST,
+                        new Delay(shootTime),shooter.new ShootAction(),
+                        waddler.new MotionAction(new holdPos(new String[]{}))),//Holds the robot still
+
+                //Drive towards the wall in an arc area to intake
+                waddler.new MotionAction(new FixedArc(new Vector(wallIntake.getX(),leftHive.getY()),new PositiveAngle(90,deg),COUNTERCLOCKWISE,new Scalar(0,metersPerSecond),wallIntake.getHeading(),new maxSpeedMP(),new linearHP(),new String[]{})),
+
+                new ActionParallel(FIRST,
+                        waddler.new MotionAction(new Line(new PathingPoint(wallIntake),new maxSpeedMP(wallIntakeSpeed),new linearHP(), new String[]{})),
+                        intake.new wallIntakeAction()),
+                //Move back to shootpos
+                new ActionParallel(FIRST,
+                        waddler.new MotionAction(new Line(new PathingPoint(leftHive),new maxSpeedMP(),new SCurveHP(),new String[]{})),
+                        shooter.new spoolFlywheelAction()),
+
+                //Hold still and shoot
                 new ActionParallel(FIRST,
                         new Delay(shootTime),shooter.new ShootAction(),
                         waddler.new MotionAction(new holdPos(new String[]{}))),//Holds the robot still
@@ -119,8 +139,7 @@ public class RightSideAuto_2Tip extends ScheduledOpMode {
                         waddler.new MotionAction(new holdPos(new String[]{}))),
                 //Move and intake from the second flower
                 //As before, this action moves toward the flower in a straight line while running the intake to lower the ramp
-                new ActionParallel(ALL,
-                        waddler.new MotionAction(new Line(new PathingPoint(prep_flower2), new maxSpeedMP(), new linearHP(), new String[]{}))),
+                waddler.new MotionAction(new Line(new PathingPoint(prep_flower2), new maxSpeedMP(), new linearHP(), new String[]{})),
                 new ActionParallel(ALL,
                         intake.new flowerIntakeAction(),
                         waddler.new MotionAction(new Line(new PathingPoint(flower2), new maxSpeedMP(), new linearHP(), new String[]{}))),
@@ -128,6 +147,8 @@ public class RightSideAuto_2Tip extends ScheduledOpMode {
                         new Delay(intakeTime),intake.new flowerIntakeAction(),
                         waddler.new MotionAction(new holdPos(new String[]{}))),
                 new ActionParallel(ALL,
+                        intake.new flowerIntakeAction(),
+                        shooter.new spoolFlywheelAction(),
                         waddler.new MotionAction(new Line(new PathingPoint(post_flower2), new maxSpeedMP(), new linearHP(), new String[]{}))),
                 //Move to the right hive shooting pos and shoot
                 new ActionParallel(ALL,

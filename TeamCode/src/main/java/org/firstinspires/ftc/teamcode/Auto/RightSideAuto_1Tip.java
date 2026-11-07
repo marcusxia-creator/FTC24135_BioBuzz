@@ -49,9 +49,9 @@ public class RightSideAuto_1Tip extends ScheduledOpMode {
 
     //Pathing Positions. All positions are in x,y, as on a graph, and headings are clockwise from vertical
     public static Position startPoint=new Position(new Vector(5.15,-1.40,feet),new NormalizedAngle(-90,deg));//Position at which the robot starts. I think this position's actually illegal rn
-    public static Position leftHive=new Position(new Vector(4.8,-1.5,feet),new NormalizedAngle(-90,deg));   //The position that the robot goes to to shoot into the left hive. This is the first hive that the robot visits
-    public static Position rightHive=new Position(new Vector(-4.5,-1,feet),new NormalizedAngle(90,deg));  //The position that the robot goes to to shoot into the right hive.
-    public static Position flower1=new Position(new Vector(2,-4.57,feet),new NormalizedAngle(180,deg));  //The position that the robot goes to intake from the first flower. This is on the alliance side wall
+    public static Position leftHive=new Position(new Vector(4.6,-1.5,feet),new NormalizedAngle(-90,deg));   //The position that the robot goes to to shoot into the left hive. This is the first hive that the robot visits
+    public static Position rightHive=new Position(new Vector(-4.6,-1,feet),new NormalizedAngle(90,deg));  //The position that the robot goes to to shoot into the right hive.
+    public static Position flower1=new Position(new Vector(2,-4.6,feet),new NormalizedAngle(180,deg));  //The position that the robot goes to intake from the first flower. This is on the alliance side wall
     public static Position park_midPoint=new Position(new Vector(2.7,-3.6,feet),new NormalizedAngle(-90,deg));
     public static Position parkPoint=new Position(new Vector(-2,-4.6,feet),new NormalizedAngle(-90,deg));//This is the position at which the robot parks at the end of auto
 
@@ -60,6 +60,7 @@ public class RightSideAuto_1Tip extends ScheduledOpMode {
     //Timings
     public static Scalar shootTime=new Scalar(2.5,s);//Amount of time needed to consistently shoot all four pollen
     public static Scalar intakeTime=new Scalar(2,s);//Amount of time to consistently intake all four pollen from flower
+    public static Scalar spoolTIme=new Scalar(2,s);
 
     @Override
     public void init() {
@@ -90,9 +91,9 @@ public class RightSideAuto_1Tip extends ScheduledOpMode {
                 new ActionParallel(FIRST,
                         waddler.new MotionAction(new Line(new PathingPoint(leftHive), new maxSpeedMP(), new linearHP(), new String[]{})),//Drives in a straight line towards the shooting position. This is the terminating action
                         shooter.new spoolFlywheelAction()),//This action spools up the flywheel without shooting
-                //Holds robot still for 2 seconds to spool flywheel
+                //Holds robot still for spooltime to spool flywheel
                 new ActionParallel(FIRST,
-                        new Delay(4),
+                        new Delay(spoolTIme),
                         waddler.new MotionAction(new holdPos(new String[]{})),
                         shooter.new spoolFlywheelAction()
                 ),
@@ -125,14 +126,12 @@ public class RightSideAuto_1Tip extends ScheduledOpMode {
                 //This action spools the flywheel while moving in an arc to the shooting position
                 //As before, this actionParallel simultaneously runs the shooter while holding the robot still for the shooting duration
                 new ActionParallel(FIRST,
-                        new Delay(4),
+                        new Delay(shootTime),
                         shooter.new ShootAction(),
                         waddler.new MotionAction(new holdPos(new String[]{}))),
                 //Move to park
-                new ActionParallel(FIRST,
-                    waddler.new MotionAction(new Line(new PathingPoint(park_midPoint), new maxSpeedMP(), new linearHP(), new String[]{})),
-                new ActionParallel(FIRST,
-                    waddler.new MotionAction(new Line(new PathingPoint(parkPoint), new maxSpeedMP(), new linearHP(), new String[]{}))))
+                waddler.new MotionAction(new Line(new PathingPoint(park_midPoint,new Scalar(1,metersPerSecond)), new maxSpeedMP(), new linearHP(), new String[]{})),
+                waddler.new MotionAction(new Line(new PathingPoint(parkPoint), new maxSpeedMP(), new linearHP(), new String[]{}))
         );
 
         //Register the path into the root action
