@@ -37,9 +37,9 @@ public class RightSideAuto_2Tip extends ScheduledOpMode {
     public static Position startPoint=new Position(new Vector(5.15,-1.40,feet),new NormalizedAngle(-90,deg));//Position at which the robot starts. I think this position's actually illegal rn
     public static Position leftHive=new Position(new Vector(5,-1.5,feet),new NormalizedAngle(-90,deg));   //The position that the robot goes to to shoot into the left hive. This is the first hive that the robot visits
     public static Position rightHive=new Position(new Vector(-4.5,-1,feet),new NormalizedAngle(90,deg));  //The position that the robot goes to to shoot into the right hive.
-    public static Position flower1=new Position(new Vector(2,-4.6,feet),new NormalizedAngle(180,deg));  //The position that the robot goes to intake from the first flower. This is on the alliance side wall
+    public static Position flower1=new Position(new Vector(2,-4.57,feet),new NormalizedAngle(180,deg));  //The position that the robot goes to intake from the first flower. This is on the alliance side wall
     public static Position prep_flower2=new Position(new Vector(-3.5,-2,feet),new NormalizedAngle(-90,deg));
-    public static Position flower2=new Position(new Vector(-4.6,-2,feet),new NormalizedAngle(-90,deg)); //The position that the robot goes to intake from the second flower. This is the flower closest to the right hive.
+    public static Position flower2=new Position(new Vector(-4.3,-2,feet),new NormalizedAngle(-90,deg)); //The position that the robot goes to intake from the second flower. This is the flower closest to the right hive.
     public static Position post_flower2=new Position(new Vector(-3.5,-2,feet),new NormalizedAngle(-90,deg));
     public static Position parkPoint=new Position(new Vector(-3.5,-4.6,feet),new NormalizedAngle(-90,deg));//This is the position at which the robot parks at the end of auto
 
