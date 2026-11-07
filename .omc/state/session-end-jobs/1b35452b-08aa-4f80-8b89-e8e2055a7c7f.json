@@ -1,0 +1,361 @@
+{
+  "version": 1,
+  "jobId": "50dc7c18-bec2-4cb5-a516-fd579171eefa",
+  "sessionId": "1b35452b-08aa-4f80-8b89-e8e2055a7c7f",
+  "scopeKey": "066cf79d52f018b604a62861b99f8c4ad3d7173dfecc51aa83813224b77f083a",
+  "revision": 63,
+  "createdAt": "2026-11-07T04:07:22.507Z",
+  "updatedAt": "2026-11-07T04:07:53.560Z",
+  "producerGraceExpiresAt": "2026-11-07T04:07:52.508Z",
+  "bestEffortDeadlineAt": "2026-11-07T04:08:45.508Z",
+  "producers": {
+    "core": {
+      "state": "sealed",
+      "intentKey": "8fa5952d52d396e622ccff572569c924016ed37d501b6430d4967b9d008b65e2",
+      "payloadDigest": "8fa5952d52d396e622ccff572569c924016ed37d501b6430d4967b9d008b65e2",
+      "sealedAt": "2026-11-07T04:07:52.728Z",
+      "sealedBy": "recovery"
+    },
+    "wiki": {
+      "state": "no-op",
+      "sealedAt": "2026-11-07T04:07:22.507Z",
+      "sealedBy": "wiki-producer"
+    }
+  },
+  "actions": {
+    "foreground-cleanup": {
+      "class": "required",
+      "phase": "deferred-required",
+      "status": "completed",
+      "attempts": 1,
+      "idempotencyKey": "febf6dba2f2536433960a07f7cedce72e946b43ced0896570df80f017b8914d2",
+      "payload": {
+        "transcriptPath": "/Users/adamwu/.claude/projects/-Users-adamwu-StudioProjects-FTC24135-BioBuzz/1b35452b-08aa-4f80-8b89-e8e2055a7c7f.jsonl",
+        "cwd": "/Users/adamwu/StudioProjects/FTC24135_BioBuzz",
+        "reason": "other",
+        "input": {
+          "session_id": "1b35452b-08aa-4f80-8b89-e8e2055a7c7f",
+          "transcript_path": "/Users/adamwu/.claude/projects/-Users-adamwu-StudioProjects-FTC24135-BioBuzz/1b35452b-08aa-4f80-8b89-e8e2055a7c7f.jsonl",
+          "cwd": "/Users/adamwu/StudioProjects/FTC24135_BioBuzz",
+          "scratchpad_dir": "/private/tmp/claude-501/-Users-adamwu-StudioProjects-FTC24135-BioBuzz/1b35452b-08aa-4f80-8b89-e8e2055a7c7f/scratchpad",
+          "prompt_id": "5b272435-95e3-47ba-ae3f-f18b61300334",
+          "hook_event_name": "SessionEnd",
+          "reason": "other"
+        },
+        "initialTeamNames": [],
+        "openClawRouting": {},
+        "metrics": {
+          "session_id": "1b35452b-08aa-4f80-8b89-e8e2055a7c7f",
+          "ended_at": "2026-11-07T04:07:52.639Z",
+          "reason": "other",
+          "agents_spawned": 0,
+          "agents_completed": 0,
+          "modes_used": []
+        }
+      },
+      "budgetMs": 9000,
+      "claimedAt": "2026-11-07T04:07:52.550Z",
+      "runner": {
+        "attempt": 1,
+        "runnerNonce": "3edcb133-31a9-495f-912b-8b8687987e4c",
+        "phase": "terminal",
+        "deadlineAt": "2026-11-07T04:08:02.509Z"
+      },
+      "lastOutcomeCode": "completed",
+      "completedAt": "2026-11-07T04:07:52.720Z"
+    },
+    "wiki-capture": {
+      "class": "required",
+      "phase": "deferred-required",
+      "status": "completed",
+      "attempts": 0,
+      "idempotencyKey": "1719cd1ef5b51e0269b78c4cb8c9308c9c1f7b82fd1c067fc034c060f23863f5",
+      "payload": {},
+      "budgetMs": 9000,
+      "completedAt": "2026-11-07T04:07:22.507Z"
+    },
+    "team-cleanup": {
+      "class": "required",
+      "phase": "deferred-required",
+      "status": "completed",
+      "attempts": 1,
+      "idempotencyKey": "cee6ac31df545408e1e822247ac249b3f8182a98a5fe8e448ae3b251e55bdee1",
+      "payload": {
+        "transcriptPath": "/Users/adamwu/.claude/projects/-Users-adamwu-StudioProjects-FTC24135-BioBuzz/1b35452b-08aa-4f80-8b89-e8e2055a7c7f.jsonl",
+        "cwd": "/Users/adamwu/StudioProjects/FTC24135_BioBuzz",
+        "reason": "other",
+        "input": {
+          "session_id": "1b35452b-08aa-4f80-8b89-e8e2055a7c7f",
+          "transcript_path": "/Users/adamwu/.claude/projects/-Users-adamwu-StudioProjects-FTC24135-BioBuzz/1b35452b-08aa-4f80-8b89-e8e2055a7c7f.jsonl",
+          "cwd": "/Users/adamwu/StudioProjects/FTC24135_BioBuzz",
+          "scratchpad_dir": "/private/tmp/claude-501/-Users-adamwu-StudioProjects-FTC24135-BioBuzz/1b35452b-08aa-4f80-8b89-e8e2055a7c7f/scratchpad",
+          "prompt_id": "5b272435-95e3-47ba-ae3f-f18b61300334",
+          "hook_event_name": "SessionEnd",
+          "reason": "other"
+        },
+        "initialTeamNames": [],
+        "openClawRouting": {},
+        "metrics": {
+          "session_id": "1b35452b-08aa-4f80-8b89-e8e2055a7c7f",
+          "ended_at": "2026-11-07T04:07:52.639Z",
+          "reason": "other",
+          "agents_spawned": 0,
+          "agents_completed": 0,
+          "modes_used": []
+        }
+      },
+      "budgetMs": 9000,
+      "claimedAt": "2026-11-07T04:07:52.743Z",
+      "runner": {
+        "attempt": 1,
+        "runnerNonce": "02d90328-f7f7-41e7-94e3-22109105c055",
+        "phase": "terminal",
+        "deadlineAt": "2026-11-07T04:08:02.509Z"
+      },
+      "lastOutcomeCode": "completed",
+      "completedAt": "2026-11-07T04:07:52.841Z"
+    },
+    "python-cleanup": {
+      "class": "required",
+      "phase": "deferred-required",
+      "status": "completed",
+      "attempts": 1,
+      "idempotencyKey": "1f1370c4ac056606059d517e2f106b602d8cbcb04587b3fcc5f3b9f89e649cd0",
+      "payload": {
+        "transcriptPath": "/Users/adamwu/.claude/projects/-Users-adamwu-StudioProjects-FTC24135-BioBuzz/1b35452b-08aa-4f80-8b89-e8e2055a7c7f.jsonl",
+        "cwd": "/Users/adamwu/StudioProjects/FTC24135_BioBuzz",
+        "reason": "other",
+        "input": {
+          "session_id": "1b35452b-08aa-4f80-8b89-e8e2055a7c7f",
+          "transcript_path": "/Users/adamwu/.claude/projects/-Users-adamwu-StudioProjects-FTC24135-BioBuzz/1b35452b-08aa-4f80-8b89-e8e2055a7c7f.jsonl",
+          "cwd": "/Users/adamwu/StudioProjects/FTC24135_BioBuzz",
+          "scratchpad_dir": "/private/tmp/claude-501/-Users-adamwu-StudioProjects-FTC24135-BioBuzz/1b35452b-08aa-4f80-8b89-e8e2055a7c7f/scratchpad",
+          "prompt_id": "5b272435-95e3-47ba-ae3f-f18b61300334",
+          "hook_event_name": "SessionEnd",
+          "reason": "other"
+        },
+        "initialTeamNames": [],
+        "openClawRouting": {},
+        "metrics": {
+          "session_id": "1b35452b-08aa-4f80-8b89-e8e2055a7c7f",
+          "ended_at": "2026-11-07T04:07:52.639Z",
+          "reason": "other",
+          "agents_spawned": 0,
+          "agents_completed": 0,
+          "modes_used": []
+        }
+      },
+      "budgetMs": 9000,
+      "claimedAt": "2026-11-07T04:07:52.857Z",
+      "runner": {
+        "attempt": 1,
+        "runnerNonce": "1316d858-d335-4e66-8660-31f057102c61",
+        "phase": "terminal",
+        "deadlineAt": "2026-11-07T04:08:02.509Z"
+      },
+      "lastOutcomeCode": "completed",
+      "completedAt": "2026-11-07T04:07:52.970Z"
+    },
+    "reply-cleanup": {
+      "class": "required",
+      "phase": "deferred-required",
+      "status": "completed",
+      "attempts": 1,
+      "idempotencyKey": "0b3a8b47c28b26d56aca004d4f572b96c118f16819c0d35162418816f9a5420a",
+      "payload": {
+        "transcriptPath": "/Users/adamwu/.claude/projects/-Users-adamwu-StudioProjects-FTC24135-BioBuzz/1b35452b-08aa-4f80-8b89-e8e2055a7c7f.jsonl",
+        "cwd": "/Users/adamwu/StudioProjects/FTC24135_BioBuzz",
+        "reason": "other",
+        "input": {
+          "session_id": "1b35452b-08aa-4f80-8b89-e8e2055a7c7f",
+          "transcript_path": "/Users/adamwu/.claude/projects/-Users-adamwu-StudioProjects-FTC24135-BioBuzz/1b35452b-08aa-4f80-8b89-e8e2055a7c7f.jsonl",
+          "cwd": "/Users/adamwu/StudioProjects/FTC24135_BioBuzz",
+          "scratchpad_dir": "/private/tmp/claude-501/-Users-adamwu-StudioProjects-FTC24135-BioBuzz/1b35452b-08aa-4f80-8b89-e8e2055a7c7f/scratchpad",
+          "prompt_id": "5b272435-95e3-47ba-ae3f-f18b61300334",
+          "hook_event_name": "SessionEnd",
+          "reason": "other"
+        },
+        "initialTeamNames": [],
+        "openClawRouting": {}
+      },
+      "budgetMs": 9000,
+      "claimedAt": "2026-11-07T04:07:52.986Z",
+      "runner": {
+        "attempt": 1,
+        "runnerNonce": "d162f447-3d4d-491a-99d6-fc128b6fa5f3",
+        "phase": "terminal",
+        "deadlineAt": "2026-11-07T04:08:02.509Z"
+      },
+      "lastOutcomeCode": "completed",
+      "completedAt": "2026-11-07T04:07:53.088Z"
+    },
+    "callback": {
+      "class": "best-effort",
+      "phase": "deferred-best-effort",
+      "status": "completed",
+      "attempts": 1,
+      "idempotencyKey": "d068ede2655bf89e0c0950e087d0603d7dcf45538e94f20a654d08c6f4841895",
+      "payload": {
+        "transcriptPath": "/Users/adamwu/.claude/projects/-Users-adamwu-StudioProjects-FTC24135-BioBuzz/1b35452b-08aa-4f80-8b89-e8e2055a7c7f.jsonl",
+        "cwd": "/Users/adamwu/StudioProjects/FTC24135_BioBuzz",
+        "reason": "other",
+        "input": {
+          "session_id": "1b35452b-08aa-4f80-8b89-e8e2055a7c7f",
+          "transcript_path": "/Users/adamwu/.claude/projects/-Users-adamwu-StudioProjects-FTC24135-BioBuzz/1b35452b-08aa-4f80-8b89-e8e2055a7c7f.jsonl",
+          "cwd": "/Users/adamwu/StudioProjects/FTC24135_BioBuzz",
+          "scratchpad_dir": "/private/tmp/claude-501/-Users-adamwu-StudioProjects-FTC24135-BioBuzz/1b35452b-08aa-4f80-8b89-e8e2055a7c7f/scratchpad",
+          "prompt_id": "5b272435-95e3-47ba-ae3f-f18b61300334",
+          "hook_event_name": "SessionEnd",
+          "reason": "other"
+        },
+        "initialTeamNames": [],
+        "openClawRouting": {},
+        "metrics": {
+          "session_id": "1b35452b-08aa-4f80-8b89-e8e2055a7c7f",
+          "ended_at": "2026-11-07T04:07:52.639Z",
+          "reason": "other",
+          "agents_spawned": 0,
+          "agents_completed": 0,
+          "modes_used": []
+        }
+      },
+      "budgetMs": 2000,
+      "claimedAt": "2026-11-07T04:07:53.103Z",
+      "runner": {
+        "attempt": 1,
+        "runnerNonce": "26fc38ff-b063-48da-9850-bab70a02c842",
+        "phase": "terminal",
+        "deadlineAt": "2026-11-07T04:08:02.509Z"
+      },
+      "lastOutcomeCode": "completed",
+      "completedAt": "2026-11-07T04:07:53.200Z"
+    },
+    "notification": {
+      "class": "best-effort",
+      "phase": "deferred-best-effort",
+      "status": "completed",
+      "attempts": 1,
+      "idempotencyKey": "89c0438ff63097ce04beb60efb87292ff68a7af350a0ee331f3de9dbf42d62fc",
+      "payload": {
+        "transcriptPath": "/Users/adamwu/.claude/projects/-Users-adamwu-StudioProjects-FTC24135-BioBuzz/1b35452b-08aa-4f80-8b89-e8e2055a7c7f.jsonl",
+        "cwd": "/Users/adamwu/StudioProjects/FTC24135_BioBuzz",
+        "reason": "other",
+        "input": {
+          "session_id": "1b35452b-08aa-4f80-8b89-e8e2055a7c7f",
+          "transcript_path": "/Users/adamwu/.claude/projects/-Users-adamwu-StudioProjects-FTC24135-BioBuzz/1b35452b-08aa-4f80-8b89-e8e2055a7c7f.jsonl",
+          "cwd": "/Users/adamwu/StudioProjects/FTC24135_BioBuzz",
+          "scratchpad_dir": "/private/tmp/claude-501/-Users-adamwu-StudioProjects-FTC24135-BioBuzz/1b35452b-08aa-4f80-8b89-e8e2055a7c7f/scratchpad",
+          "prompt_id": "5b272435-95e3-47ba-ae3f-f18b61300334",
+          "hook_event_name": "SessionEnd",
+          "reason": "other"
+        },
+        "initialTeamNames": [],
+        "openClawRouting": {},
+        "metrics": {
+          "session_id": "1b35452b-08aa-4f80-8b89-e8e2055a7c7f",
+          "ended_at": "2026-11-07T04:07:52.639Z",
+          "reason": "other",
+          "agents_spawned": 0,
+          "agents_completed": 0,
+          "modes_used": []
+        }
+      },
+      "budgetMs": 2000,
+      "claimedAt": "2026-11-07T04:07:53.215Z",
+      "runner": {
+        "attempt": 1,
+        "runnerNonce": "f5ae2e64-025c-4b1d-8709-91d6256b6cd9",
+        "phase": "terminal",
+        "deadlineAt": "2026-11-07T04:08:02.509Z"
+      },
+      "lastOutcomeCode": "completed",
+      "completedAt": "2026-11-07T04:07:53.310Z"
+    },
+    "openclaw": {
+      "class": "best-effort",
+      "phase": "deferred-best-effort",
+      "status": "completed",
+      "attempts": 1,
+      "idempotencyKey": "31fe8f6e1cf204e27006de511df257326fdd98655122ca437013e8779ffc735b",
+      "payload": {
+        "transcriptPath": "/Users/adamwu/.claude/projects/-Users-adamwu-StudioProjects-FTC24135-BioBuzz/1b35452b-08aa-4f80-8b89-e8e2055a7c7f.jsonl",
+        "cwd": "/Users/adamwu/StudioProjects/FTC24135_BioBuzz",
+        "reason": "other",
+        "input": {
+          "session_id": "1b35452b-08aa-4f80-8b89-e8e2055a7c7f",
+          "transcript_path": "/Users/adamwu/.claude/projects/-Users-adamwu-StudioProjects-FTC24135-BioBuzz/1b35452b-08aa-4f80-8b89-e8e2055a7c7f.jsonl",
+          "cwd": "/Users/adamwu/StudioProjects/FTC24135_BioBuzz",
+          "scratchpad_dir": "/private/tmp/claude-501/-Users-adamwu-StudioProjects-FTC24135-BioBuzz/1b35452b-08aa-4f80-8b89-e8e2055a7c7f/scratchpad",
+          "prompt_id": "5b272435-95e3-47ba-ae3f-f18b61300334",
+          "hook_event_name": "SessionEnd",
+          "reason": "other"
+        },
+        "initialTeamNames": [],
+        "openClawRouting": {},
+        "metrics": {
+          "session_id": "1b35452b-08aa-4f80-8b89-e8e2055a7c7f",
+          "ended_at": "2026-11-07T04:07:52.639Z",
+          "reason": "other",
+          "agents_spawned": 0,
+          "agents_completed": 0,
+          "modes_used": []
+        }
+      },
+      "budgetMs": 2000,
+      "claimedAt": "2026-11-07T04:07:53.326Z",
+      "runner": {
+        "attempt": 1,
+        "runnerNonce": "0a1ac4fb-6760-4f1c-9d91-5f1d0cf4fa13",
+        "phase": "terminal",
+        "deadlineAt": "2026-11-07T04:08:02.509Z"
+      },
+      "lastOutcomeCode": "completed",
+      "completedAt": "2026-11-07T04:07:53.420Z"
+    },
+    "spawn-next": {
+      "class": "best-effort",
+      "phase": "deferred-best-effort",
+      "status": "completed",
+      "attempts": 1,
+      "idempotencyKey": "408951e1348d4a381fd7b22db242636c91151ee01597146cf28243ae3875d0be",
+      "payload": {
+        "transcriptPath": "/Users/adamwu/.claude/projects/-Users-adamwu-StudioProjects-FTC24135-BioBuzz/1b35452b-08aa-4f80-8b89-e8e2055a7c7f.jsonl",
+        "cwd": "/Users/adamwu/StudioProjects/FTC24135_BioBuzz",
+        "reason": "other",
+        "input": {
+          "session_id": "1b35452b-08aa-4f80-8b89-e8e2055a7c7f",
+          "transcript_path": "/Users/adamwu/.claude/projects/-Users-adamwu-StudioProjects-FTC24135-BioBuzz/1b35452b-08aa-4f80-8b89-e8e2055a7c7f.jsonl",
+          "cwd": "/Users/adamwu/StudioProjects/FTC24135_BioBuzz",
+          "scratchpad_dir": "/private/tmp/claude-501/-Users-adamwu-StudioProjects-FTC24135-BioBuzz/1b35452b-08aa-4f80-8b89-e8e2055a7c7f/scratchpad",
+          "prompt_id": "5b272435-95e3-47ba-ae3f-f18b61300334",
+          "hook_event_name": "SessionEnd",
+          "reason": "other"
+        },
+        "initialTeamNames": [],
+        "openClawRouting": {}
+      },
+      "budgetMs": 2000,
+      "claimedAt": "2026-11-07T04:07:53.437Z",
+      "runner": {
+        "attempt": 1,
+        "runnerNonce": "89810624-afc3-48e2-9800-cca517e5f9cc",
+        "phase": "terminal",
+        "deadlineAt": "2026-11-07T04:08:02.509Z"
+      },
+      "lastOutcomeCode": "completed",
+      "completedAt": "2026-11-07T04:07:53.531Z"
+    }
+  },
+  "owner": null,
+  "phase": "complete",
+  "recoverableFailure": {
+    "reason": "actions-settled",
+    "releasedAt": "2026-11-07T04:07:53.544Z",
+    "ownerNonce": "e302018a-6d31-4e94-96a4-b2acc60da06b"
+  },
+  "completion": {
+    "completedAt": "2026-11-07T04:07:53.544Z",
+    "terminalDigest": "1da1ce866232f1d7ba0d57306cb3d8e0862e32fecb353f4843bd7d0533e2db89",
+    "terminalRevision": 62
+  }
+}

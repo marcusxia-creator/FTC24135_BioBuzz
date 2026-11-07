@@ -1,0 +1,148 @@
+{
+  "version": "1.0.0",
+  "lastScanned": 1794023861731,
+  "projectRoot": "/Users/adamwu/StudioProjects/FTC24135_BioBuzz",
+  "techStack": {
+    "languages": [
+      {
+        "name": "Java/Kotlin",
+        "version": null,
+        "confidence": "high",
+        "markers": [
+          "build.gradle"
+        ]
+      }
+    ],
+    "frameworks": [],
+    "packageManager": "gradle",
+    "runtime": null
+  },
+  "build": {
+    "buildCommand": null,
+    "testCommand": null,
+    "lintCommand": null,
+    "devCommand": null,
+    "scripts": {}
+  },
+  "conventions": {
+    "namingStyle": null,
+    "importStyle": null,
+    "testPattern": null,
+    "fileOrganization": null
+  },
+  "structure": {
+    "isMonorepo": false,
+    "workspaces": [],
+    "mainDirectories": [],
+    "gitBranches": {
+      "defaultBranch": "master",
+      "branchingStrategy": null
+    }
+  },
+  "customNotes": [],
+  "directoryMap": {
+    "FtcRobotController": {
+      "path": "FtcRobotController",
+      "purpose": null,
+      "fileCount": 1,
+      "lastAccessed": 1794023861724,
+      "keyFiles": [
+        "build.gradle"
+      ]
+    },
+    "TeamCode": {
+      "path": "TeamCode",
+      "purpose": null,
+      "fileCount": 1,
+      "lastAccessed": 1794023861725,
+      "keyFiles": [
+        "build.gradle"
+      ]
+    },
+    "build": {
+      "path": "build",
+      "purpose": "Build output",
+      "fileCount": 0,
+      "lastAccessed": 1794023861725,
+      "keyFiles": []
+    },
+    "doc": {
+      "path": "doc",
+      "purpose": null,
+      "fileCount": 0,
+      "lastAccessed": 1794023861726,
+      "keyFiles": []
+    },
+    "gradle": {
+      "path": "gradle",
+      "purpose": null,
+      "fileCount": 1,
+      "lastAccessed": 1794023861726,
+      "keyFiles": [
+        "gradle-daemon-jvm.properties"
+      ]
+    },
+    "libs": {
+      "path": "libs",
+      "purpose": null,
+      "fileCount": 2,
+      "lastAccessed": 1794023861726,
+      "keyFiles": [
+        "README.txt",
+        "ftc.debug.keystore"
+      ]
+    },
+    "FtcRobotController/build": {
+      "path": "FtcRobotController/build",
+      "purpose": "Build output",
+      "fileCount": 0,
+      "lastAccessed": 1794023861726,
+      "keyFiles": []
+    },
+    "FtcRobotController/src": {
+      "path": "FtcRobotController/src",
+      "purpose": "Source code",
+      "fileCount": 0,
+      "lastAccessed": 1794023861727,
+      "keyFiles": []
+    },
+    "TeamCode/build": {
+      "path": "TeamCode/build",
+      "purpose": "Build output",
+      "fileCount": 0,
+      "lastAccessed": 1794023861727,
+      "keyFiles": []
+    },
+    "TeamCode/lib": {
+      "path": "TeamCode/lib",
+      "purpose": "Library code",
+      "fileCount": 1,
+      "lastAccessed": 1794023861727,
+      "keyFiles": [
+        "OpModeAnnotationProcessor.jar"
+      ]
+    },
+    "TeamCode/src": {
+      "path": "TeamCode/src",
+      "purpose": "Source code",
+      "fileCount": 0,
+      "lastAccessed": 1794023861727,
+      "keyFiles": []
+    }
+  },
+  "hotPaths": [
+    {
+      "path": "README.md",
+      "accessCount": 1,
+      "lastAccessed": 1794024036567,
+      "type": "file"
+    },
+    {
+      "path": "README_CODEBASE.md",
+      "accessCount": 1,
+      "lastAccessed": 1794024187278,
+      "type": "file"
+    }
+  ],
+  "userDirectives": []
+}
