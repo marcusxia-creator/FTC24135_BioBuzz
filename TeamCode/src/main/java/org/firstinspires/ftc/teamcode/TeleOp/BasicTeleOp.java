@@ -1,7 +1,6 @@
 package org.firstinspires.ftc.teamcode.TeleOp;
 
 import com.acmerobotics.dashboard.FtcDashboard;
-import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.seattlesolvers.solverslib.command.CommandOpMode;
@@ -15,7 +14,6 @@ import org.firstinspires.ftc.teamcode.src.Subsystems.RobotDriveSubsystem;
 import org.firstinspires.ftc.teamcode.src.Subsystems.ShooterSubsystem;
 import org.firstinspires.ftc.teamcode.src.UniversalTools.RobotHardware;
 
-@Config
 @TeleOp(name = "Basic TeleOp", group = "TeleOp")
 public class BasicTeleOp extends CommandOpMode {
     private RobotDriveSubsystem robotDrive;
@@ -25,8 +23,6 @@ public class BasicTeleOp extends CommandOpMode {
     private GamepadEx gamepad1Ex;
     private GamepadEx gamepad2Ex;
 
-    public static double targetShooterRPM = 1500;
-    public static double actualShooterRPM;
 
 
     @Override
@@ -66,14 +62,15 @@ public class BasicTeleOp extends CommandOpMode {
     @Override
     public void run() {
         super.run();
-        targetShooterRPM = shooter.getTargetRPM();
-        actualShooterRPM = shooter.getShooterRPM();
-        shooter.setShooterRPM(targetShooterRPM);
+        // ShooterSubsystem owns the targets edited by Dashboard and the gamepad.
 
         telemetry.addData("Intake Motor Power", intake.getIntakeMotorPower());
         telemetry.addLine("--- SHOOTER TELEMETRY ---");
+        telemetry.addData("Left Shooter Motor Power", "%.3f", shooter.getLeftShooterMotorPower());
+        telemetry.addData("Right Shooter Motor Power", "%.3f", shooter.getRightShooterMotorPower());
         telemetry.addData("Target Speed", "%.0f RPM (%.0f TPS)", shooter.getTargetRPM(), shooter.getTargetTicksPerSecond());
         telemetry.addData("Target RPM", shooter.getTargetRPM());
+        telemetry.addData("Right Target RPM", ShooterSubsystem.rightShooterTargetRPM);
         telemetry.addData("Actual Speed", "%.0f RPM (%.0f TPS)", shooter.getShooterRPM(), shooter.getShooterTicksPerSecond());
         telemetry.addData("Current RPM", shooter.getShooterRPM());
         //telemetry.addData("Gate Position", robot.);
