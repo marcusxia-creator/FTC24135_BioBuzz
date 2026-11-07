@@ -22,8 +22,8 @@ public class ShooterSubsystem extends SubsystemBase {
     private boolean isShooting = false;
     private RobotHardware robot;
 
-    public static double leftShooterKp = 0.01, leftShooterKi = 0.0, leftShooterKd = 0.0, leftShooterKf = 0.00084;
-    public static double rightShooterKp = 0.0016, rightShooterKi = 0.0, rightShooterKd = 0.00001, rightShooterKf = 0.00005;
+    public static double leftShooterKp = 0.01, leftShooterKi = 0.0, leftShooterKd = 0.0, leftShooterKf = 1.0;
+    public static double rightShooterKp = 0.0016, rightShooterKi = 0.0, rightShooterKd = 0.00001, rightShooterKf = 1.0;
 
     public static double leftShooterTargetRPM = 700.0;
     public static double rightShooterTargetRPM = 700.0;
@@ -57,7 +57,7 @@ public class ShooterSubsystem extends SubsystemBase {
     public void runFlywheel() {
 
         double left_currentTickPerSecond = robot.leftShooterMotor.getVelocity();
-        double right_currentTickPerSecond = robot.leftShooterMotor.getVelocity();
+        double right_currentTickPerSecond = robot.rightShooterMotor.getVelocity();
 
         leftMotor_rpmMeasured = ticksPerSecondToRPM(left_currentTickPerSecond);
         rightMotor_rpmMeasured = ticksPerSecondToRPM(right_currentTickPerSecond);
@@ -71,7 +71,7 @@ public class ShooterSubsystem extends SubsystemBase {
         double rightCurrentNorm = (double) rightMotor_rpmMeasured / maxRPMDynamic;
 
         leftTargetNorm = clamp01(leftTargetNorm);
-        rightTargetNorm = clamp01(rightCurrentNorm);
+        rightTargetNorm = clamp01(rightTargetNorm);
         leftCurrentNorm = clamp01(leftCurrentNorm);
         rightCurrentNorm = clamp01(rightCurrentNorm);
 
