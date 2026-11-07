@@ -28,7 +28,7 @@ public class RobotDriveSubsystem extends SubsystemBase {
     private final double SWITCH_MARGIN = 6.0; //inch
     private final double STICK_DEADBAND = 0.05;
     public static double HEADING_DEADBAND = 1.5;
-    public static double KP_TURN = 0.002;
+    public static double KP_TURN = 0.01;
     public static double MAX_TURN_POWER = 0.5;
 
     private double FLPower = 0;
@@ -73,14 +73,14 @@ public class RobotDriveSubsystem extends SubsystemBase {
         if (ps) {
             lastForward = forward;
             lastStrafe = strafe;
-            lastTurn = turn;
 
             if (Math.abs(error) < HEADING_DEADBAND) {
                 turn = 0;
             }
             else {
-                turn = Range.clip(KP_TURN * error, -MAX_TURN_POWER, MAX_TURN_POWER);
+                turn = Range.clip(-KP_TURN * error, -MAX_TURN_POWER, MAX_TURN_POWER);
             }
+            lastTurn = turn;
 
             FLPower = forward + strafe + turn;
             FRPower = forward - strafe - turn;
@@ -145,7 +145,7 @@ public class RobotDriveSubsystem extends SubsystemBase {
     private double getTargetHeading(double x, double y, Pose2D targetCell) {
         double dx = targetCell.getX(DistanceUnit.INCH) - x;
         double dy = targetCell.getY(DistanceUnit.INCH) - y;
-        return Math.toDegrees(Math.atan2(dy, dx)) + 180;
+        return Math.toDegrees(Math.atan2(dy, dx));// + 180;
     }
 
     private double wrapDegrees(double angle) {
