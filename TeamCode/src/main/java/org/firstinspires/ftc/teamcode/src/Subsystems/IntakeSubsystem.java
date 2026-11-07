@@ -69,7 +69,7 @@ public class IntakeSubsystem extends SubsystemBase {
         robot.rightFlowerRampServo.setPosition(flowerRampUpPos);
         robot.gateServo.setPosition(gateDownPos);
         robot.pollenLimitingServo.setPosition(pollenUpPos);
-        robot.intakeMotor.setPower(-0.3);
+        robot.intakeMotor.setPower(-1);
     }
 
     public double getIntakeMotorPower() {
