@@ -35,6 +35,7 @@ public class ControlSubsystem extends GamepadDriver {
                 .whenPressed(new ShooterCommand(shooter, intake));
 
         bindShooterSpeedControls(gamepad2, shooter);
+        bindIntakeSpeedControls(gamepad1, intake);
         bindIntakeSpeedControls(gamepad2, intake);
 
         new GamepadButton(gamepad1, GamepadKeys.Button.B)
@@ -76,14 +77,16 @@ public class ControlSubsystem extends GamepadDriver {
         new GamepadButton(gamepad, GamepadKeys.Button.DPAD_UP)
                 .whenPressed(new InstantCommand(() -> {
                     if (!gamepad.getButton(GamepadKeys.Button.DPAD_LEFT)
-                            && !gamepad.getButton(GamepadKeys.Button.DPAD_RIGHT)) {
+                            && !gamepad.getButton(GamepadKeys.Button.DPAD_RIGHT)
+                            && !gamepad.getButton(GamepadKeys.Button.RIGHT_BUMPER)) {
                         shooter.increaseTargetRPM();
                     }
                 }, shooter));
         new GamepadButton(gamepad, GamepadKeys.Button.DPAD_DOWN)
                 .whenPressed(new InstantCommand(() -> {
                     if (!gamepad.getButton(GamepadKeys.Button.DPAD_LEFT)
-                            && !gamepad.getButton(GamepadKeys.Button.DPAD_RIGHT)) {
+                            && !gamepad.getButton(GamepadKeys.Button.DPAD_RIGHT)
+                            && !gamepad.getButton(GamepadKeys.Button.LEFT_BUMPER)) {
                         shooter.decreaseTargetRPM();
                     }
                 }, shooter));

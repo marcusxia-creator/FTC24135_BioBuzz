@@ -22,11 +22,11 @@ public class ShooterSubsystem extends SubsystemBase {
     private boolean isShooting = false;
     private RobotHardware robot;
 
-    public static double leftShooterKp = 0.01, leftShooterKi = 0.0, leftShooterKd = 0.0, leftShooterKf = 0.00084;
-    public static double rightShooterKp = 0.0016, rightShooterKi = 0.0, rightShooterKd = 0.00001, rightShooterKf = 0.00005;
+    public static double leftShooterKp = 0.01, leftShooterKi = 0.0, leftShooterKd = 0.0, leftShooterKf = 1.0;
+    public static double rightShooterKp = 0.1, rightShooterKi = 0.0, rightShooterKd = 0.00001, rightShooterKf = 1.0;
 
-    public static double leftShooterTargetRPM = 700.0;
-    public static double rightShooterTargetRPM = 700.0;
+    public static double leftShooterTargetRPM = 3000.0;
+    public static double rightShooterTargetRPM = 3470.0;
 
     private double leftMotor_rpmMeasured;
     private double rightMotor_rpmMeasured;
@@ -57,7 +57,7 @@ public class ShooterSubsystem extends SubsystemBase {
     public void runFlywheel() {
 
         double left_currentTickPerSecond = robot.leftShooterMotor.getVelocity();
-        double right_currentTickPerSecond = robot.leftShooterMotor.getVelocity();
+        double right_currentTickPerSecond = robot.rightShooterMotor.getVelocity();
 
         leftMotor_rpmMeasured = ticksPerSecondToRPM(left_currentTickPerSecond);
         rightMotor_rpmMeasured = ticksPerSecondToRPM(right_currentTickPerSecond);
@@ -71,7 +71,7 @@ public class ShooterSubsystem extends SubsystemBase {
         double rightCurrentNorm = (double) rightMotor_rpmMeasured / maxRPMDynamic;
 
         leftTargetNorm = clamp01(leftTargetNorm);
-        rightTargetNorm = clamp01(rightCurrentNorm);
+        rightTargetNorm = clamp01(rightTargetNorm);
         leftCurrentNorm = clamp01(leftCurrentNorm);
         rightCurrentNorm = clamp01(rightCurrentNorm);
 
@@ -91,8 +91,6 @@ public class ShooterSubsystem extends SubsystemBase {
         double rightOutput = rightShooterPIDF.calculate(rightCurrentNorm, rightTargetNorm);
         robot.rightShooterMotor.setPower(Range.clip(rightOutput, 0.0, 1.0));
 
-        robot.intakeMotor.setPower(0.6);
-
         updatePids();
     }
 
@@ -106,7 +104,7 @@ public class ShooterSubsystem extends SubsystemBase {
 
         robot.intakeMotor.setPower(0.8);
 
-        if (shootingTime.seconds() >= 0.75) {
+        if (shootingTime.seconds() >= 0) {
             robot.pollenLimitingServo.setPosition(pollenUpPos);
         } else {
             robot.pollenLimitingServo.setPosition(pollenDownPos);
@@ -211,33 +209,33 @@ public class ShooterSubsystem extends SubsystemBase {
     }
 
     //Check pid controllers against coeff variables, and updates if needed.
-     void updatePids(){
-         if(leftShooterPIDF.getP()!=leftShooterKp){
-             leftShooterPIDF.setP(leftShooterKp);
-         }
-         if(leftShooterPIDF.getI()!=leftShooterKi){
-             leftShooterPIDF.setI(leftShooterKi);
-         }
-         if(leftShooterPIDF.getD()!=leftShooterKd){
-             leftShooterPIDF.setD(leftShooterKd);
-         }
-         if(leftShooterPIDF.getF()!=leftShooterKf){
-             leftShooterPIDF.setF(leftShooterKf);
-         }
+    void updatePids(){
+        if(leftShooterPIDF.getP()!=leftShooterKp){
+            leftShooterPIDF.setP(leftShooterKp);
+        }
+        if(leftShooterPIDF.getI()!=leftShooterKi){
+            leftShooterPIDF.setI(leftShooterKi);
+        }
+        if(leftShooterPIDF.getD()!=leftShooterKd){
+            leftShooterPIDF.setD(leftShooterKd);
+        }
+        if(leftShooterPIDF.getF()!=leftShooterKf){
+            leftShooterPIDF.setF(leftShooterKf);
+        }
 
 
-         if(rightShooterPIDF.getP()!=rightShooterKp){
-             rightShooterPIDF.setP(rightShooterKp);
-         }
-         if(rightShooterPIDF.getI()!=rightShooterKi){
-             rightShooterPIDF.setI(rightShooterKi);
-         }
-         if(rightShooterPIDF.getD()!=rightShooterKd){
-             rightShooterPIDF.setD(rightShooterKd);
-         }
-         if(rightShooterPIDF.getF()!=rightShooterKf){
-             rightShooterPIDF.setF(rightShooterKf);
-         }
+        if(rightShooterPIDF.getP()!=rightShooterKp){
+            rightShooterPIDF.setP(rightShooterKp);
+        }
+        if(rightShooterPIDF.getI()!=rightShooterKi){
+            rightShooterPIDF.setI(rightShooterKi);
+        }
+        if(rightShooterPIDF.getD()!=rightShooterKd){
+            rightShooterPIDF.setD(rightShooterKd);
+        }
+        if(rightShooterPIDF.getF()!=rightShooterKf){
+            rightShooterPIDF.setF(rightShooterKf);
+        }
     }
 
     private static double clamp01(double x) {
