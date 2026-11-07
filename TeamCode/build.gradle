@@ -29,6 +29,8 @@ android {
 repositories {
     maven {
         url = 'https://maven.brott.dev/'
+    }
+    maven {
         url = 'https://repo.dairy.foundation/releases'
     }
 }
@@ -43,6 +45,7 @@ dependencies {
     implementation 'com.fasterxml.jackson.core:jackson-databind:2.12.7'
     implementation "com.acmerobotics.dashboard:dashboard:0.6.0"
     implementation "org.solverslib:core:0.3.5" // core
-    // Pedro 3.0.2 is supplied by build.dependencies.gradle (revhub).
+    implementation 'com.pedropathing:revhub:3.0.2'
+    implementation 'com.pedropathing:tuning:1.0.0'
 }
 
