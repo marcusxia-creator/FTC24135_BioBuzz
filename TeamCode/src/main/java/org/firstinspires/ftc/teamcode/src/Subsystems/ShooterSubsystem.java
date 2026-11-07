@@ -20,14 +20,16 @@ public class ShooterSubsystem extends SubsystemBase {
 
     private ElapsedTime shootingTime = new ElapsedTime();
     private boolean isShooting = false;
-    private final RobotHardware robot;
+    private RobotHardware robot;
 
-    public static double leftShooterKp = 0.01, leftShooterKi = 0.0, leftShooterKd = 0.0, leftShooterKf = 0.00084
-            ;
-    public static double rightShooterKp = 0.01, rightShooterKi = 0.0, rightShooterKd = 0.0, rightShooterKf = 0.001;
+    public static double leftShooterKp = 0.01, leftShooterKi = 0.0, leftShooterKd = 0.0, leftShooterKf = 0.00084;
+    public static double rightShooterKp = 0.0016, rightShooterKi = 0.0, rightShooterKd = 0.00001, rightShooterKf = 0.00005;
 
     public static double leftShooterTargetRPM = 700.0;
     public static double rightShooterTargetRPM = 700.0;
+
+    private double leftMotor_rpmMeasured;
+    private double rightMotor_rpmMeasured;
 
     private final PIDFController leftShooterPIDF = new PIDFController(leftShooterKp, leftShooterKi, leftShooterKd, leftShooterKf);
     private final PIDFController rightShooterPIDF = new PIDFController(rightShooterKp, rightShooterKi, rightShooterKd, rightShooterKf);
@@ -53,19 +55,40 @@ public class ShooterSubsystem extends SubsystemBase {
     }
 
     public void runFlywheel() {
+
+        double left_currentTickPerSecond = robot.leftShooterMotor.getVelocity();
+        double right_currentTickPerSecond = robot.leftShooterMotor.getVelocity();
+
+        leftMotor_rpmMeasured = ticksPerSecondToRPM(left_currentTickPerSecond);
+        rightMotor_rpmMeasured = ticksPerSecondToRPM(right_currentTickPerSecond);
+
+        double voltage = robot.voltageSensor.getVoltage();
+        double maxRPMDynamic = maxVelocityRPM * voltage / REF_VOLTAGE;
+
+        double leftTargetNorm = (double) leftShooterTargetRPM / maxRPMDynamic;
+        double rightTargetNorm = (double) rightShooterTargetRPM / maxRPMDynamic;
+        double leftCurrentNorm = (double) leftMotor_rpmMeasured / maxRPMDynamic;
+        double rightCurrentNorm = (double) rightMotor_rpmMeasured / maxRPMDynamic;
+
+        leftTargetNorm = clamp01(leftTargetNorm);
+        rightTargetNorm = clamp01(rightCurrentNorm);
+        leftCurrentNorm = clamp01(leftCurrentNorm);
+        rightCurrentNorm = clamp01(rightCurrentNorm);
+
         robot.gateServo.setPosition(gateUpPos);
 
         leftShooterPIDF.setPIDF(leftShooterKp, leftShooterKi, leftShooterKd, leftShooterKf);
         rightShooterPIDF.setPIDF(rightShooterKp, rightShooterKi, rightShooterKd, rightShooterKf);
 
-        double leftVelTicks = robot.leftShooterMotor.getVelocity();
-        double leftTargetTicks = rpmToTicksPerSecond(leftShooterTargetRPM);
-        double leftOutput = leftShooterPIDF.calculate(leftVelTicks, leftTargetTicks);
+        ///Depreciated
+        //double leftVelTicks = robot.leftShooterMotor.getVelocity();
+        //double leftTargetTicks = rpmToTicksPerSecond(leftTargetNorm);
+        double leftOutput = leftShooterPIDF.calculate(leftCurrentNorm, leftTargetNorm);
         robot.leftShooterMotor.setPower(Range.clip(leftOutput, 0.0, 1.0));
 
-        double rightVelTicks = robot.rightShooterMotor.getVelocity();
-        double rightTargetTicks = rpmToTicksPerSecond(rightShooterTargetRPM);
-        double rightOutput = rightShooterPIDF.calculate(rightVelTicks, rightTargetTicks);
+        //double rightVelTicks = robot.rightShooterMotor.getVelocity();
+        //double rightTargetTicks = rpmToTicksPerSecond(rightShooterTargetRPM);
+        double rightOutput = rightShooterPIDF.calculate(rightCurrentNorm, rightTargetNorm);
         robot.rightShooterMotor.setPower(Range.clip(rightOutput, 0.0, 1.0));
 
         robot.intakeMotor.setPower(0.6);
@@ -81,7 +104,7 @@ public class ShooterSubsystem extends SubsystemBase {
         }
         robot.gateServo.setPosition(gateUpPos);
 
-        robot.intakeMotor.setPower(1.0);
+        robot.intakeMotor.setPower(0.8);
 
         if (shootingTime.seconds() >= 0.75) {
             robot.pollenLimitingServo.setPosition(pollenUpPos);
@@ -216,4 +239,9 @@ public class ShooterSubsystem extends SubsystemBase {
              rightShooterPIDF.setF(rightShooterKf);
          }
     }
+
+    private static double clamp01(double x) {
+        return x < 0 ? 0 : (x > 1 ? 1 : x);
+    }
+
 }

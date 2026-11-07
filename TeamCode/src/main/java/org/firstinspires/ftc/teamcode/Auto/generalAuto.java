@@ -3,6 +3,8 @@ package org.firstinspires.ftc.teamcode.Auto;
 import static org.firstinspires.ftc.teamcode.lib.CommandBase.PrebuiltActions.ActionParallel.TERMINATIONTYPE.*;
 import static org.firstinspires.ftc.teamcode.lib.IceWaddler2.src.Math.Measurement.Units.Unit.*;
 import static org.firstinspires.ftc.teamcode.src.UniversalTools.RobotActionConfig.flowerRampUpPos;
+import static org.firstinspires.ftc.teamcode.src.UniversalTools.RobotActionConfig.gateUpPos;
+import static org.firstinspires.ftc.teamcode.src.UniversalTools.RobotActionConfig.pollenDownPos;
 
 import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
@@ -36,6 +38,7 @@ public class generalAuto extends ScheduledOpMode {
     public static Position leftHive=new Position(new Vector(5,-1.5,feet),new NormalizedAngle(-90,deg));   //The position that the robot goes to to shoot into the left hive. This is the first hive that the robot visits
     public static Position rightHive=new Position(new Vector(-4.5,-1,feet),new NormalizedAngle(90,deg));  //The position that the robot goes to to shoot into the right hive.
     public static Position flower1=new Position(new Vector(2,-4.6,feet),new NormalizedAngle(180,deg));  //The position that the robot goes to intake from the first flower. This is on the alliance side wall
+    public static Position prep_flower2=new Position(new Vector(-3.5,-2,feet),new NormalizedAngle(-90,deg));
     public static Position flower2=new Position(new Vector(-4.6,-2,feet),new NormalizedAngle(-90,deg)); //The position that the robot goes to intake from the second flower. This is the flower closest to the right hive.
     public static Position parkPoint=new Position(new Vector(-3.8,-5,feet),new NormalizedAngle(-90,deg));//This is the position at which the robot parks at the end of auto
 
@@ -61,6 +64,8 @@ public class generalAuto extends ScheduledOpMode {
         //sofstart ramp servos
         robot.leftFlowerRampServo.setPosition(flowerRampUpPos);
         robot.rightFlowerRampServo.setPosition(flowerRampUpPos);
+        robot.pollenLimitingServo.setPosition(pollenDownPos);
+        robot.gateServo.setPosition(gateUpPos);
 
         //The path is an action series, which starts at action 1 and moves to the next as soon as the current action is complete
 
@@ -112,16 +117,22 @@ public class generalAuto extends ScheduledOpMode {
 
                 //Move and intake from the second flower
                 //As before, this action moves toward the flower in a straight line while running the intake to lower the ramp
-                new ActionParallel(ALL,intake.new flowerIntakeAction(),
+                new ActionParallel(ALL,
+                        waddler.new MotionAction(new Line(new PathingPoint(prep_flower2), new maxSpeedMP(), new linearHP(), new String[]{}))),
+                new ActionParallel(ALL,
+                        intake.new flowerIntakeAction(),
                         waddler.new MotionAction(new Line(new PathingPoint(flower2), new maxSpeedMP(), new linearHP(), new String[]{}))),
-                new ActionParallel(FIRST,new Delay(intakeTime),intake.new flowerIntakeAction(),
+                new ActionParallel(FIRST,
+                        new Delay(intakeTime),intake.new flowerIntakeAction(),
                         waddler.new MotionAction(new holdPos(new String[]{}))),
 
                 //Move to the right hive shooting pos and shoot
-                new ActionParallel(ALL,shooter.new spoolFlywheelAction(),
+                new ActionParallel(ALL,
+                        shooter.new spoolFlywheelAction(),
                         waddler.new MotionAction(new Line(new PathingPoint(rightHive), new maxSpeedMP(), new linearHP(), new String[]{})),
                         intake.new flowerIntakeAction()),
-                new ActionParallel(FIRST,new Delay(shootTime),shooter.new ShootAction(),
+                new ActionParallel(FIRST,
+                        new Delay(shootTime),shooter.new ShootAction(),
                         waddler.new MotionAction(new holdPos(new String[]{}))),
 
                 //Move to park
