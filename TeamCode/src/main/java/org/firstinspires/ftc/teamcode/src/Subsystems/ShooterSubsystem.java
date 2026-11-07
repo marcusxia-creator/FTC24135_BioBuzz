@@ -24,9 +24,12 @@ public class ShooterSubsystem extends SubsystemBase {
 
     public static double leftShooterKp = 0.01, leftShooterKi = 0.0, leftShooterKd = 0.0, leftShooterKf = 1.0;
     public static double rightShooterKp = 0.13, rightShooterKi = 0.000033, rightShooterKd = 0.010, rightShooterKf = 0.96;
+    ///rightShooterKp = 0.13, rightShooterKi = 0.000033, rightShooterKd = 0.010, rightShooterKf = 0.96;
 
     public static double leftShooterTargetRPM = 3000.0;
     public static double rightShooterTargetRPM = 3430; // 3470.0, 3440, 3535
+
+    public static double AUTO_rightShooterTargetRPM = 1000;
 
     private double leftMotor_rpmMeasured;
     private double rightMotor_rpmMeasured;
@@ -94,6 +97,46 @@ public class ShooterSubsystem extends SubsystemBase {
         updatePids();
     }
 
+    public void runFlywheel(double targetRPM) {
+
+        double left_currentTickPerSecond = robot.leftShooterMotor.getVelocity();
+        double right_currentTickPerSecond = robot.rightShooterMotor.getVelocity();
+
+        leftMotor_rpmMeasured = ticksPerSecondToRPM(left_currentTickPerSecond);
+        rightMotor_rpmMeasured = ticksPerSecondToRPM(right_currentTickPerSecond);
+
+        double voltage = robot.voltageSensor.getVoltage();
+        double maxRPMDynamic = maxVelocityRPM * voltage / REF_VOLTAGE;
+
+        double leftTargetNorm = (double) targetRPM / maxRPMDynamic;
+        double rightTargetNorm = (double) targetRPM / maxRPMDynamic;
+        double leftCurrentNorm = (double) leftMotor_rpmMeasured / maxRPMDynamic;
+        double rightCurrentNorm = (double) rightMotor_rpmMeasured / maxRPMDynamic;
+
+        leftTargetNorm = clamp01(leftTargetNorm);
+        rightTargetNorm = clamp01(rightTargetNorm);
+        leftCurrentNorm = clamp01(leftCurrentNorm);
+        rightCurrentNorm = clamp01(rightCurrentNorm);
+
+        robot.gateServo.setPosition(gateUpPos);
+
+        leftShooterPIDF.setPIDF(leftShooterKp, leftShooterKi, leftShooterKd, leftShooterKf);
+        rightShooterPIDF.setPIDF(rightShooterKp, rightShooterKi, rightShooterKd, rightShooterKf);
+
+        ///Depreciated
+        //double leftVelTicks = robot.leftShooterMotor.getVelocity();
+        //double leftTargetTicks = rpmToTicksPerSecond(leftTargetNorm);
+        double leftOutput = leftShooterPIDF.calculate(leftCurrentNorm, leftTargetNorm);
+        robot.leftShooterMotor.setPower(Range.clip(leftOutput, 0.0, 1.0));
+
+        //double rightVelTicks = robot.rightShooterMotor.getVelocity();
+        //double rightTargetTicks = rpmToTicksPerSecond(rightShooterTargetRPM);
+        double rightOutput = rightShooterPIDF.calculate(rightCurrentNorm, rightTargetNorm);
+        robot.rightShooterMotor.setPower(Range.clip(rightOutput, 0.0, 1.0));
+
+        updatePids();
+    }
+
     public void shootFlywheel() {
         if (!isShooting) {
             isShooting = true;
@@ -104,7 +147,7 @@ public class ShooterSubsystem extends SubsystemBase {
 
         robot.intakeMotor.setPower(0.8);
 
-        if (shootingTime.seconds() >= 0) {
+        if (shootingTime.seconds() >= 0.6) {
             robot.pollenLimitingServo.setPosition(pollenUpPos);
         } else {
             robot.pollenLimitingServo.setPosition(pollenDownPos);
