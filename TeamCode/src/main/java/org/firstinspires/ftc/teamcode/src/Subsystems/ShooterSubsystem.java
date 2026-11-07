@@ -2,7 +2,6 @@ package org.firstinspires.ftc.teamcode.src.Subsystems;
 
 import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 import com.seattlesolvers.solverslib.command.SubsystemBase;
 import com.seattlesolvers.solverslib.controller.PIDFController;
@@ -18,8 +17,6 @@ public class ShooterSubsystem extends SubsystemBase {
 
     public static double TICKS_PER_REV = 28.0;
 
-    private ElapsedTime shootingTime = new ElapsedTime();
-    private boolean isShooting = false;
     private RobotHardware robot;
 
     public static double leftShooterKp = 0.01, leftShooterKi = 0.0, leftShooterKd = 0.0, leftShooterKf = 1.0;
@@ -97,22 +94,16 @@ public class ShooterSubsystem extends SubsystemBase {
     }
 
     public void shootFlywheel() {
-        if (!isShooting) {
-            isShooting = true;
-            shootingTime.reset();
-            robot.pollenLimitingServo.setPosition(pollenDownPos);
-        }
-        robot.gateServo.setPosition(gateUpPos);
+        runFlywheel();
+        setFeederPower(intakeShootingPower);
 
-        robot.intakeMotor.setPower(0.8);
-
-        if (shootingTime.seconds() >= 0.75) {
-            robot.pollenLimitingServo.setPosition(pollenUpPos);
+        if (leftShooterTargetRPM > 0.0 && rightShooterTargetRPM > 0.0
+                && leftMotor_rpmMeasured >= leftShooterTargetRPM
+                && rightMotor_rpmMeasured >= rightShooterTargetRPM) {
+            openPollenGate();
         } else {
-            robot.pollenLimitingServo.setPosition(pollenDownPos);
+            closePollenGate();
         }
-
-        updatePids();
     }
 
     public void openPollenGate() {
@@ -149,6 +140,14 @@ public class ShooterSubsystem extends SubsystemBase {
         return getLeftShooterCurrentRPM();
     }
 
+    public double getLeftShooterMotorPower() {
+        return robot.leftShooterMotor.getPower();
+    }
+
+    public double getRightShooterMotorPower() {
+        return robot.rightShooterMotor.getPower();
+    }
+
     public double getShooterTicksPerSecond() {
         return robot.leftShooterMotor.getVelocity();
     }
@@ -170,9 +169,6 @@ public class ShooterSubsystem extends SubsystemBase {
     }
 
     public void stop() {
-        isShooting = false;
-        shootingTime.reset();
-
         leftShooterPIDF.reset();
         rightShooterPIDF.reset();
         robot.leftShooterMotor.setPower(0);
