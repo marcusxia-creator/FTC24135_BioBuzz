@@ -14,7 +14,8 @@ public class RobotActionConfig {
     public static double intakeShootingPower        = 0.7;
     public static double intakeIdleSpeed            = 0.0;
 
-    public static double maxVelocityRPM             = 5200.0;
-    public static double REF_VOLTAGE                =13.1;
+    public static double maxShooterRpm              = 5200.0;
+    public static double maxFeederRpm               = 1150*0.8;
+    public static double REF_VOLTAGE                = 13.1;
 
 }
