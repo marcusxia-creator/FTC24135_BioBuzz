@@ -23,7 +23,7 @@ public class ShooterCommand extends CommandBase {
 
     @Override
     public void execute() {
-        shooterSubsystem.shootFlywheel();
+        shooterSubsystem.shootRightFlywheel();
     }
 
     @Override
