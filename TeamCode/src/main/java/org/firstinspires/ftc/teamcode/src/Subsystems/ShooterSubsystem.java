@@ -20,7 +20,7 @@ public class ShooterSubsystem extends SubsystemBase {
     private RobotHardware robot;
 
     public static double leftShooterKp = 0.01, leftShooterKi = 0.0, leftShooterKd = 0.0, leftShooterKf = 1.0;
-    public static double rightShooterKp = 0.0016, rightShooterKi = 0.0, rightShooterKd = 0.00001, rightShooterKf = 1.0;
+    public static double rightShooterKp = 0.13, rightShooterKi = 0.000033, rightShooterKd = 0.010, rightShooterKf = 0.96;
 
     public static double leftShooterTargetRPM = 700.0;
     public static double rightShooterTargetRPM = 700.0;
@@ -87,8 +87,6 @@ public class ShooterSubsystem extends SubsystemBase {
         //double rightTargetTicks = rpmToTicksPerSecond(rightShooterTargetRPM);
         double rightOutput = rightShooterPIDF.calculate(rightCurrentNorm, rightTargetNorm);
         robot.rightShooterMotor.setPower(Range.clip(rightOutput, 0.0, 1.0));
-
-        robot.intakeMotor.setPower(0.6);
 
         updatePids();
     }

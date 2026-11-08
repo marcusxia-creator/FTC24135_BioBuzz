@@ -48,15 +48,15 @@ public class IntakeSubsystem extends SubsystemBase {
     }
 
     public void increasePower() {
-        intakePower = Math.min(1.0, intakePower + 0.1);
-        if (robot.intakeMotor.getPower() > 0) {
+        intakePower = Math.min(1.0, Math.round((intakePower + 0.1) * 10.0) / 10.0);
+        if (Math.abs(robot.intakeMotor.getPower()) > 0.05) {
             robot.intakeMotor.setPower(intakePower);
         }
     }
 
     public void decreasePower() {
-        intakePower = Math.max(0.0, intakePower - 0.1);
-        if (robot.intakeMotor.getPower() > 0) {
+        intakePower = Math.max(0.0, Math.round((intakePower - 0.1) * 10.0) / 10.0);
+        if (Math.abs(robot.intakeMotor.getPower()) > 0.05) {
             robot.intakeMotor.setPower(intakePower);
         }
     }
@@ -69,7 +69,7 @@ public class IntakeSubsystem extends SubsystemBase {
         robot.rightFlowerRampServo.setPosition(flowerRampUpPos);
         robot.gateServo.setPosition(gateDownPos);
         robot.pollenLimitingServo.setPosition(pollenUpPos);
-        robot.intakeMotor.setPower(-0.3);
+        robot.intakeMotor.setPower(-1);
     }
 
     public double getIntakeMotorPower() {
@@ -100,5 +100,22 @@ public class IntakeSubsystem extends SubsystemBase {
         public boolean finished() {
             return true;
         }
+    }
+
+    public class wallIntakeAction implements Action {
+        @Override
+        public void init() {
+            runRollersPollen();
+        }
+
+        @Override
+        public void loop() {}
+
+        @Override
+        public void shutdown() {
+            stop();
+        }
+
+        public boolean finished() {return true;}
     }
 }

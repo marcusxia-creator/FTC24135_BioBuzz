@@ -11,7 +11,7 @@ public class RobotActionConfig {
     public static double gateUpPos                  = 0.21;
     public static double pollenDownPos              = 0.57;
     public static double pollenUpPos                = 0.67;
-    public static double intakeShootingPower        = 0.9;
+    public static double intakeShootingPower        = 0.7;
     public static double intakeIdleSpeed            = 0.0;
 
     public static double maxVelocityRPM             = 5200.0;
