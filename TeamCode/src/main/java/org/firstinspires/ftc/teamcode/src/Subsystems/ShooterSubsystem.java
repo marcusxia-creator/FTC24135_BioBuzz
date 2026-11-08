@@ -16,6 +16,7 @@ public class ShooterSubsystem extends SubsystemBase {
     public static double GEAR_RATIO = 30.0 / 40.0;
 
     public static double TICKS_PER_REV = 28.0;
+    public static double FEEDER_TICK_PER_REV = 384.5;
 
     private RobotHardware robot;
 
@@ -24,21 +25,44 @@ public class ShooterSubsystem extends SubsystemBase {
 
     public static double leftShooterTargetRPM = 700.0;
     public static double rightShooterTargetRPM = 3430.0;
+    private double rightShooter_maxRPMDynamic;
+
+    public static double intakeKp = 0.0, intakeKi = 0.0, intakeKd = 0.0, intakeKf = 1.0;
+
+    private static double intakeMotorTargetRRM = 640;
 
     private double leftMotor_rpmMeasured;
     private double rightMotor_rpmMeasured;
+    private double intakeRPMMeasured;
+
+    private double leftMotor_CurrentTickPerSecond;
+    private double rightMotor_CurrentTickPerSecond;
+    private double intakeMotor_CurrentTickPerSecond;
+
+    private double voltage;
 
     private final PIDFController leftShooterPIDF = new PIDFController(leftShooterKp, leftShooterKi, leftShooterKd, leftShooterKf);
     private final PIDFController rightShooterPIDF = new PIDFController(rightShooterKp, rightShooterKi, rightShooterKd, rightShooterKf);
+    private final PIDFController intakePIDF = new PIDFController(intakeKp, intakeKi, intakeKd, intakeKf);
 
+    private boolean rightShooterReady;
+    ///Constructor
     public ShooterSubsystem(RobotHardware robot) {
         this.robot = robot;
         robot.leftShooterMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         robot.rightShooterMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
     }
 
+    ///Depreciated
+    /**
     public static double rpmToTicksPerSecond(double flywheelRPM) {
         double motorRPM = flywheelRPM / GEAR_RATIO;
+        return (motorRPM * TICKS_PER_REV) / 60.0;
+    }
+     */
+
+    public static double rpmToTicksPerSecond(double RPM, double GEAR_RATIO, double TICKS_PER_REV) {
+        double motorRPM = RPM / GEAR_RATIO;
         return (motorRPM * TICKS_PER_REV) / 60.0;
     }
 
@@ -46,62 +70,67 @@ public class ShooterSubsystem extends SubsystemBase {
      * Converts measured Encoder Ticks Per Second back to Flywheel RPM for telemetry.
      * Formula: Flywheel RPM = ( (TicksPerSec * 60) / TicksPerRev ) * Gear Ratio
      */
+    /** Depreciated
     public static double ticksPerSecondToRPM(double ticksPerSecond) {
         double motorRPM = (ticksPerSecond * 60.0) / TICKS_PER_REV;
         return motorRPM * GEAR_RATIO;
     }
+     */
+    public static double ticksPerSecondToRPM(double ticksPerSecond, double tickPerRev, double gearRatio) {
+        double motorRPM = (ticksPerSecond * 60.0) / tickPerRev;
+        return motorRPM * gearRatio;
+    }
 
-    public void runFlywheel() {
+    public void spoolRightFlyWheel() {
+        getVoltage();
+        rightMotor_CurrentTickPerSecond = robot.rightShooterMotor.getVelocity();
 
-        double left_currentTickPerSecond = robot.leftShooterMotor.getVelocity();
-        double right_currentTickPerSecond = robot.rightShooterMotor.getVelocity();
+        rightMotor_rpmMeasured = ticksPerSecondToRPM(rightMotor_CurrentTickPerSecond,TICKS_PER_REV,GEAR_RATIO);
 
-        leftMotor_rpmMeasured = ticksPerSecondToRPM(left_currentTickPerSecond);
-        rightMotor_rpmMeasured = ticksPerSecondToRPM(right_currentTickPerSecond);
+        rightShooter_maxRPMDynamic = maxShooterRpm * voltage / REF_VOLTAGE;
 
-        double voltage = robot.voltageSensor.getVoltage();
-        double maxRPMDynamic = maxVelocityRPM * voltage / REF_VOLTAGE;
+        double rightTargetNorm = (double) rightShooterTargetRPM / rightShooter_maxRPMDynamic;
+         double rightCurrentNorm = (double) rightMotor_rpmMeasured / rightShooter_maxRPMDynamic;
 
-        double leftTargetNorm = (double) leftShooterTargetRPM / maxRPMDynamic;
-        double rightTargetNorm = (double) rightShooterTargetRPM / maxRPMDynamic;
-        double leftCurrentNorm = (double) leftMotor_rpmMeasured / maxRPMDynamic;
-        double rightCurrentNorm = (double) rightMotor_rpmMeasured / maxRPMDynamic;
-
-        leftTargetNorm = clamp01(leftTargetNorm);
         rightTargetNorm = clamp01(rightTargetNorm);
-        leftCurrentNorm = clamp01(leftCurrentNorm);
         rightCurrentNorm = clamp01(rightCurrentNorm);
 
         robot.gateServo.setPosition(gateUpPos);
 
-        leftShooterPIDF.setPIDF(leftShooterKp, leftShooterKi, leftShooterKd, leftShooterKf);
         rightShooterPIDF.setPIDF(rightShooterKp, rightShooterKi, rightShooterKd, rightShooterKf);
 
-        ///Depreciated
-        //double leftVelTicks = robot.leftShooterMotor.getVelocity();
-        //double leftTargetTicks = rpmToTicksPerSecond(leftTargetNorm);
-        double leftOutput = leftShooterPIDF.calculate(leftCurrentNorm, leftTargetNorm);
-        robot.leftShooterMotor.setPower(Range.clip(leftOutput, 0.0, 1.0));
-
-        //double rightVelTicks = robot.rightShooterMotor.getVelocity();
-        //double rightTargetTicks = rpmToTicksPerSecond(rightShooterTargetRPM);
         double rightOutput = rightShooterPIDF.calculate(rightCurrentNorm, rightTargetNorm);
         robot.rightShooterMotor.setPower(Range.clip(rightOutput, 0.0, 1.0));
-
         updatePids();
     }
 
-    public void shootFlywheel() {
-        runFlywheel();
-        setFeederPower(intakeShootingPower);
+    public void spoolLeftFlyWheel() {
+        getVoltage();
+        leftMotor_CurrentTickPerSecond = robot.leftShooterMotor.getVelocity();
 
-        if (leftShooterTargetRPM > 0.0 && rightShooterTargetRPM > 0.0
-                && leftMotor_rpmMeasured >= leftShooterTargetRPM
-                && rightMotor_rpmMeasured >= rightShooterTargetRPM) {
-            openPollenGate();
-        } else {
-            closePollenGate();
-        }
+        leftMotor_rpmMeasured = ticksPerSecondToRPM(leftMotor_CurrentTickPerSecond,TICKS_PER_REV,GEAR_RATIO);
+
+        double maxRPMDynamic = maxShooterRpm * voltage / REF_VOLTAGE;
+
+        double leftTargetNorm = (double) leftShooterTargetRPM / maxRPMDynamic;
+        double leftCurrentNorm = (double) leftMotor_rpmMeasured / maxRPMDynamic;
+
+        leftTargetNorm = clamp01(leftTargetNorm);
+        leftCurrentNorm = clamp01(leftCurrentNorm);
+
+        leftShooterPIDF.setPIDF(leftShooterKp, leftShooterKi, leftShooterKd, leftShooterKf);
+
+        ///Depreciated
+        double leftOutput = leftShooterPIDF.calculate(leftCurrentNorm, leftTargetNorm);
+        robot.leftShooterMotor.setPower(Range.clip(leftOutput, 0.0, 1.0));
+        updatePids();
+        upSeparatorGate();
+        openPollenGate();
+    }
+
+    public void shootRightFlywheel() {
+        spoolRightFlyWheel();
+        updateFeederWhenReady(intakeMotorTargetRRM);
     }
 
     public void openPollenGate() {
@@ -112,9 +141,59 @@ public class ShooterSubsystem extends SubsystemBase {
         robot.pollenLimitingServo.setPosition(pollenDownPos);
     }
 
+    public void upSeparatorGate(){
+        robot.gateServo.setPosition(gateUpPos);
+    }
+
+    public void downSeparatorGate(){
+        robot.gateServo.setPosition(gateDownPos);
+    }
+
+    public void updateFeederWhenReady(double feederRPM) {
+        // Small tolerance prevents switching from tiny RPM fluctuations.
+        double rpmTolerance = 50.0;
+
+        boolean targetsActive =
+                leftShooterTargetRPM > 0 && rightShooterTargetRPM > 0;
+
+        rightShooterReady =
+               rightMotor_rpmMeasured >= Math.max(0, rightShooterTargetRPM - rpmTolerance);
+
+        if (targetsActive && rightShooterReady) {
+            setFeederRPM(feederRPM);
+        } else {
+            setFeederRPM(0.0);
+        }
+    }
+
     public void setFeederPower(double power) {
         robot.intakeMotor.setPower(power);
     }
+    public void setFeederRPM(double targetRPM) {
+        // Read intake velocity once per call.
+        intakeMotor_CurrentTickPerSecond = robot.intakeMotor.getVelocity();
+        intakeRPMMeasured = intakeMotor_CurrentTickPerSecond * 60.0 / FEEDER_TICK_PER_REV;
+
+        double maxRPMDynamic = maxFeederRpm * voltage / REF_VOLTAGE;
+
+        if (targetRPM <= 0.0) {
+            intakePIDF.reset();
+            robot.intakeMotor.setPower(0.0);
+            return;
+        }
+
+        intakePIDF.setPIDF(intakeKp, intakeKi, intakeKd, intakeKf);
+
+        double targetNorm = clamp01(targetRPM / maxRPMDynamic);
+        double currentNorm = intakeRPMMeasured / maxRPMDynamic;
+        double output = intakePIDF.calculate(currentNorm, targetNorm);
+        robot.intakeMotor.setPower(Range.clip(output, 0.0, 1.0));
+    }
+
+    public boolean feederReady(double rpmTolerance){
+        return intakeRPMMeasured >= Math.max(0, intakeMotorTargetRRM - rpmTolerance);
+    }
+
 
     public void increaseTargetRPM() {
         leftShooterTargetRPM += 50.0;
@@ -134,10 +213,10 @@ public class ShooterSubsystem extends SubsystemBase {
     }
     ///
     /// Getter
-    public double getShooterRPM() {
-        return getLeftShooterCurrentRPM();
+    public void getVoltage(){
+        voltage = robot.voltageSensor.getVoltage();
     }
-
+    // Power
     public double getLeftShooterMotorPower() {
         return robot.leftShooterMotor.getPower();
     }
@@ -146,24 +225,48 @@ public class ShooterSubsystem extends SubsystemBase {
         return robot.rightShooterMotor.getPower();
     }
 
-    public double getShooterTicksPerSecond() {
-        return robot.leftShooterMotor.getVelocity();
+    public double getFeederMotorPower() {
+        return robot.intakeMotor.getPower();
+    }
+    //Ticks
+    public double getRightShooterTicksPerSecond() {
+        return rightMotor_CurrentTickPerSecond;
+    }
+
+    public double getLeftShooterTicksPerSecond() {
+        return leftMotor_CurrentTickPerSecond;
+    }
+    public double getFeederTicks(){
+        return intakeMotor_CurrentTickPerSecond;
+    }
+
+    //RPM
+    public double getFeederCurrentRPM(){
+        return intakeRPMMeasured;
     }
 
     public double getLeftShooterCurrentRPM() {
-        return ticksPerSecondToRPM(robot.leftShooterMotor.getVelocity());
+        return leftMotor_rpmMeasured;
     }
 
     public double getRightShooterCurrentRPM() {
-        return ticksPerSecondToRPM(robot.rightShooterMotor.getVelocity());
+        return rightMotor_rpmMeasured;
     }
 
-    public double getTargetRPM() {
-        return leftShooterTargetRPM;
+    public double getRightShooterTargetRPM() {
+        return rightShooterTargetRPM;
+    }
+
+    public double getIntakeTargetRPM() {
+        return intakeMotorTargetRRM;
+    }
+
+    public double getRightShooter_maxRPMDynamic() {
+        return rightShooter_maxRPMDynamic;
     }
 
     public double getTargetTicksPerSecond() {
-        return rpmToTicksPerSecond(leftShooterTargetRPM);
+        return rpmToTicksPerSecond(leftShooterTargetRPM,TICKS_PER_REV, GEAR_RATIO);
     }
 
     public void stop() {
@@ -178,7 +281,7 @@ public class ShooterSubsystem extends SubsystemBase {
     public class spoolFlywheelAction implements Action {
         @Override
         public void loop() {
-            runFlywheel();//Constantly run flywheel pid continuously without shooting
+            spoolRightFlyWheel();//Constantly run flywheel pid continuously without shooting
         }
 
         @Override
@@ -190,7 +293,7 @@ public class ShooterSubsystem extends SubsystemBase {
     public class ShootAction implements Action {
         @Override
         public void loop() {
-            shootFlywheel();//retracts limiter for shooting
+            shootRightFlywheel();//retracts limiter for shooting
         }
 
         @Override
