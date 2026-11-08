@@ -23,7 +23,7 @@ public class ShooterSubsystem extends SubsystemBase {
     public static double rightShooterKp = 0.13, rightShooterKi = 0.000033, rightShooterKd = 0.010, rightShooterKf = 0.96;
 
     public static double leftShooterTargetRPM = 700.0;
-    public static double rightShooterTargetRPM = 700.0;
+    public static double rightShooterTargetRPM = 3430.0;
 
     private double leftMotor_rpmMeasured;
     private double rightMotor_rpmMeasured;
