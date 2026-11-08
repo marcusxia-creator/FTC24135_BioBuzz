@@ -68,11 +68,10 @@ public class BasicTeleOp extends CommandOpMode {
         telemetry.addLine("--- SHOOTER TELEMETRY ---");
         telemetry.addData("Left Shooter Motor Power", "%.3f", shooter.getLeftShooterMotorPower());
         telemetry.addData("Right Shooter Motor Power", "%.3f", shooter.getRightShooterMotorPower());
-        telemetry.addData("Target Speed", "%.0f RPM (%.0f TPS)", shooter.getTargetRPM(), shooter.getTargetTicksPerSecond());
-        telemetry.addData("Target RPM", shooter.getTargetRPM());
-        telemetry.addData("Right Target RPM", ShooterSubsystem.rightShooterTargetRPM);
-        telemetry.addData("Actual Speed", "%.0f RPM (%.0f TPS)", shooter.getShooterRPM(), shooter.getShooterTicksPerSecond());
-        telemetry.addData("Current RPM", shooter.getShooterRPM());
+        telemetry.addData("Right Shooter Target Speed", "%.0f RPM (%.0f TPS)", shooter.getRightShooterTargetRPM(), shooter.getTargetTicksPerSecond());
+        telemetry.addData("Right Actual Speed", "%.0f RPM (%.0f TPS)", shooter.getRightShooterCurrentRPM(), shooter.getRightShooterTicksPerSecond());
+        telemetry.addData("Feeder Target RPM", shooter.getIntakeTargetRPM());
+        telemetry.addData("Feeder Acutal RPM", shooter.getFeederCurrentRPM());
         //telemetry.addData("Gate Position", robot.);
         telemetry.update();
     }
