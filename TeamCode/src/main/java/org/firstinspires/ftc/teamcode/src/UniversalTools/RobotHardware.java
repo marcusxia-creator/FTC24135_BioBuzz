@@ -4,6 +4,7 @@ import static com.qualcomm.hardware.gobilda.GoBildaPinpointDriver.EncoderDirecti
 import static org.firstinspires.ftc.teamcode.lib.IceWaddler2.src.Math.Measurement.Units.Unit.*;
 
 import com.qualcomm.hardware.gobilda.GoBildaPinpointDriver;
+import com.qualcomm.hardware.limelightvision.Limelight3A;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotor.*;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
@@ -41,6 +42,8 @@ public class RobotHardware {
 
     public IWDriveTrain driveTrain;
     public IWLocalizer localizer;
+
+    public Limelight3A limelight;
 
 
     public RobotHardware(HardwareMap hardwareMap) {
@@ -114,5 +117,7 @@ public class RobotHardware {
 
         rightFlowerRampServo.setDirection(Servo.Direction.REVERSE);
         gateServo.setDirection(Servo.Direction.REVERSE);
+
+        limelight = hardwareMap.get(Limelight3A.class, "limelight");
     }
 }
