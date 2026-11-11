@@ -6,6 +6,7 @@ import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.seattlesolvers.solverslib.command.CommandOpMode;
 import com.seattlesolvers.solverslib.gamepad.GamepadEx;
+import com.seattlesolvers.solverslib.gamepad.GamepadKeys;
 
 import org.firstinspires.ftc.teamcode.src.Commands.RobotDriveCommand;
 import org.firstinspires.ftc.teamcode.src.Commands.ShooterCommand;
@@ -53,7 +54,8 @@ public class BasicTeleOp extends CommandOpMode {
                 () -> Math.abs(gamepad1Ex.getRightX()) > 0.05
                         ? gamepad1Ex.getRightX() : gamepad2Ex.getRightX(),
                 () -> Math.abs(gamepad1Ex.getLeftX()) > 0.05
-                        ? gamepad1Ex.getLeftX() : gamepad2Ex.getLeftX()
+                        ? gamepad1Ex.getLeftX() : gamepad2Ex.getLeftX(),
+                () -> gamepad1Ex.getButton(GamepadKeys.Button.PS)
         ));
 
         controls.configureControls(gamepad1Ex, gamepad2Ex, intake, shooter);
