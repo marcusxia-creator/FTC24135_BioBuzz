@@ -3,27 +3,18 @@ package org.firstinspires.ftc.teamcode.src.Subsystems;
 import static org.apache.commons.math3.util.FastMath.signum;
 import static org.firstinspires.ftc.teamcode.lib.IceWaddler2.src.Math.Measurement.Units.Unit.*;
 
-import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
 import org.firstinspires.ftc.teamcode.lib.IceWaddler2.src.Hardware.IWDriveTrain;
 import org.firstinspires.ftc.teamcode.lib.IceWaddler2.src.Math.Measurement.*;
 import org.firstinspires.ftc.teamcode.lib.IceWaddler2.src.Math.Measurement.SpecialMeasurements.*;
 import org.firstinspires.ftc.teamcode.src.UniversalTools.RobotHardware;
+import static org.firstinspires.ftc.teamcode.src.UniversalTools.RobotActionConfig.*;
 
 /// An example IceWaddler drive train object, built on our robot hardwaremap.<br>
 /// If also using a hardwaremap, change class and motor names to match<br>
 /// If not using a hardware map, modify the constructor to input and store the four motors as individual parameters
-@Config
 public class DriveTrain implements IWDriveTrain {
-    public static double k_v    =9;
-    public static double k_vAng =2;
-    public static double k_s    =0;
-    public static double k_sAng =0;
-    public static double k_a    =1.6;
-    public static double k_aAng =0.4;
-    public static double maxAllowableLinPower=11;
-    public static Scalar wheelPivotRadius       = new Scalar(10, in); //The distance between the pivot point and each of the wheels, or half the length of the diagonal
     RobotHardware robot;
     ///In this implimentation, the constructor simply stores our hardware map
     public DriveTrain(RobotHardware robot){

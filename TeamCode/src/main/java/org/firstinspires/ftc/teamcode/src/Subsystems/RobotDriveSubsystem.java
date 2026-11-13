@@ -2,9 +2,9 @@ package org.firstinspires.ftc.teamcode.src.Subsystems;
 import com.seattlesolvers.solverslib.command.SubsystemBase;
 
 import org.firstinspires.ftc.teamcode.src.UniversalTools.RobotHardware;
+import static org.firstinspires.ftc.teamcode.src.UniversalTools.RobotActionConfig.driveLerp;
 
 public class RobotDriveSubsystem extends SubsystemBase {
-    private static final double DRIVE_LERP = 0.35;
     double lastForward;
     double lastStrafe;
     double lastTurn;
@@ -13,9 +13,9 @@ public class RobotDriveSubsystem extends SubsystemBase {
         this.robot = robot;
     }
     public void mecanumDrive (double forward, double strafe, double turn){
-        lastForward += DRIVE_LERP * (forward - lastForward);
-        lastStrafe += DRIVE_LERP * (strafe - lastStrafe);
-        lastTurn += DRIVE_LERP * (turn - lastTurn);
+        lastForward += driveLerp * (forward - lastForward);
+        lastStrafe += driveLerp * (strafe - lastStrafe);
+        lastTurn += driveLerp * (turn - lastTurn);
 
         double FLPower = lastForward + lastStrafe + lastTurn;
         double FRPower = lastForward - lastStrafe - lastTurn;

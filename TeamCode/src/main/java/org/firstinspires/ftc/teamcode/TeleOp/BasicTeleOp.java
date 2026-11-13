@@ -68,15 +68,18 @@ public class BasicTeleOp extends CommandOpMode {
     public void run() {
         super.run();
         targetShooterRPM = shooter.getTargetRPM();
-        actualShooterRPM = shooter.getShooterRPM();
+        double actualShooterTicksPerSecond = shooter.getShooterTicksPerSecond();
+        actualShooterRPM = ShooterSubsystem.ticksPerSecondToRPM(actualShooterTicksPerSecond);
 
         telemetry.addData("Intake Target Power", "%.1f", intake.getIntakeMotorPower());
         telemetry.addData("Intake Active Power", "%.2f", robot.intakeMotor.getPower());
         telemetry.addLine("--- SHOOTER TELEMETRY ---");
-        telemetry.addData("Target Speed", "%.0f RPM (%.0f TPS)", shooter.getTargetRPM(), shooter.getTargetTicksPerSecond());
-        telemetry.addData("Target RPM", shooter.getTargetRPM());
-        telemetry.addData("Actual Speed", "%.0f RPM (%.0f TPS)", shooter.getShooterRPM(), shooter.getShooterTicksPerSecond());
-        telemetry.addData("Current RPM", shooter.getShooterRPM());
+        telemetry.addData("Target RPM", "%.1f", targetShooterRPM);
+        telemetry.addData("Shooter On", shooter.isShooterOn());
+        telemetry.addData("Reference RPM", "%.1f", shooter.getShooterReferenceRPM());
+        telemetry.addData("Reference Captured", shooter.isShooterReferenceCaptured());
+        telemetry.addData("Right Flywheel RPM", "%.1f", actualShooterRPM);
+        telemetry.addData("Right Flywheel TPS", "%.1f", actualShooterTicksPerSecond);
         telemetry.addData("Shooter power", robot.rightShooterMotor.getPower());
         telemetry.update();
     }

@@ -1,6 +1,5 @@
 package org.firstinspires.ftc.teamcode.src.Commands;
 
-import com.qualcomm.robotcore.util.ElapsedTime;
 import com.seattlesolvers.solverslib.command.CommandBase;
 
 import org.firstinspires.ftc.teamcode.src.Subsystems.ShooterSubsystem;
@@ -11,7 +10,6 @@ import static org.firstinspires.ftc.teamcode.src.UniversalTools.RobotActionConfi
 public class ShooterCommand extends CommandBase {
     private final ShooterSubsystem shooterSubsystem;
     private final IntakeSubsystem intakeSubsystem;
-    private final ElapsedTime timer = new ElapsedTime();
 
     public ShooterCommand(ShooterSubsystem shooterSubsystem, IntakeSubsystem intakeSubsystem) {
         this.shooterSubsystem = shooterSubsystem;
@@ -21,27 +19,28 @@ public class ShooterCommand extends CommandBase {
 
     @Override
     public void initialize() {
-        timer.reset();
+        shooterSubsystem.resetShooterSpeedReference();
         shooterSubsystem.closePollenGate();
     }
 
     @Override
     public void execute() {
-        // Keep the flywheel regulated while feeding balls into it.
+        // Regulate the flywheel and open the pollen gate while it spools up.
         shooterSubsystem.runFlywheel();
-        shooterSubsystem.setFeederPower(0.8);
+        shooterSubsystem.openPollenGate();
 
-        // After 0.75 seconds, automatically lift pollen gate while keeping intake running
-        if (timer.seconds() > 0.6) {
-            shooterSubsystem.openPollenGate();
+        // Recheck every scheduler cycle, stop feeding below target and resume when ready again.
+        boolean shooterReady = shooterSubsystem.updateShooterSpeedReference();
+        if (shooterReady) {
+            intakeSubsystem.setFeederPower(intakeShootingPower);
         } else {
-            shooterSubsystem.closePollenGate();
+            intakeSubsystem.setFeederPower(0.0);
         }
     }
 
     @Override
     public void end(boolean interrupted) {
-        shooterSubsystem.setFeederPower(0);
+        intakeSubsystem.setFeederPower(0.0);
         shooterSubsystem.closePollenGate();
     }
 

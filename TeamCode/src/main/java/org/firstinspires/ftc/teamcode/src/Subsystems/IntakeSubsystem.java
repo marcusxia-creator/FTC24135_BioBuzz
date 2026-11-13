@@ -7,9 +7,8 @@ import org.firstinspires.ftc.teamcode.src.UniversalTools.RobotHardware;
 import static org.firstinspires.ftc.teamcode.src.UniversalTools.RobotActionConfig.*;
 
 public class IntakeSubsystem extends SubsystemBase {
-    public static double intakeKp = 0.001, intakeKi = 0, intakeKd = 0;
     private final RobotHardware robot;
-    private double intakePower = 0.7;
+    private double intakePower = intakeInitialPower;
 
     public IntakeSubsystem(RobotHardware robot) {
         this.robot = robot;
@@ -74,6 +73,11 @@ public class IntakeSubsystem extends SubsystemBase {
 
     public double getIntakeMotorPower() {
         return intakePower;
+    }
+
+    /** Set the shared intake motor power used to feed game pieces into the shooter. */
+    public void setFeederPower(double power) {
+        robot.intakeMotor.setPower(power);
     }
 
     public void stop() {

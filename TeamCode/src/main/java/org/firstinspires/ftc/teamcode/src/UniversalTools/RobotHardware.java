@@ -29,7 +29,6 @@ public class RobotHardware {
     public VoltageSensor voltageSensor;
 
     public DcMotorEx intakeMotor;
-    public DcMotorEx leftShooterMotor;
     public DcMotorEx rightShooterMotor;
 
     public Servo gateServo;
@@ -97,13 +96,9 @@ public class RobotHardware {
         intakeMotor.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
 
         ///Shooter
-        leftShooterMotor = hardwareMap.get(DcMotorEx.class, "Left_Shooter_Motor");
         rightShooterMotor = hardwareMap.get(DcMotorEx.class, "Right_Shooter_Motor");
 
-        leftShooterMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        rightShooterMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-
-        leftShooterMotor.setDirection(DcMotorSimple.Direction.REVERSE);
+        rightShooterMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
         ///Servos
         gateServo = hardwareMap.get(Servo.class, "Gate_Servo");

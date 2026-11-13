@@ -1,7 +1,6 @@
 package org.firstinspires.ftc.teamcode.src.Subsystems;
 
 import com.seattlesolvers.solverslib.command.InstantCommand;
-import com.seattlesolvers.solverslib.command.RunCommand;
 import com.seattlesolvers.solverslib.command.button.GamepadButton;
 import com.seattlesolvers.solverslib.command.button.Trigger;
 import com.seattlesolvers.solverslib.gamepad.GamepadEx;
@@ -22,16 +21,10 @@ public class ControlSubsystem extends GamepadDriver {
         bindIntakeControls(gamepad1, intake);
         bindIntakeControls(gamepad2, intake);
 
-        // X continuously updates flywheel velocity control until another shooter command interrupts it.
+        // X spools the flywheel and automatically feeds once it reaches velocity.
         new GamepadButton(gamepad1, GamepadKeys.Button.X)
-                .whenPressed(new RunCommand(shooter::runFlywheel, shooter));
-        new GamepadButton(gamepad2, GamepadKeys.Button.X)
-                .whenPressed(new RunCommand(shooter::runFlywheel, shooter));
-
-        // Y feeds continuously. ShooterCommand ends the feeder safely when interrupted by B or another action.
-        new GamepadButton(gamepad1, GamepadKeys.Button.Y)
                 .whenPressed(new ShooterCommand(shooter, intake));
-        new GamepadButton(gamepad2, GamepadKeys.Button.Y)
+        new GamepadButton(gamepad2, GamepadKeys.Button.X)
                 .whenPressed(new ShooterCommand(shooter, intake));
 
         bindShooterSpeedControls(gamepad2, shooter);
