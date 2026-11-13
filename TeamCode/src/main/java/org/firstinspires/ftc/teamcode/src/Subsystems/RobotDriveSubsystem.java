@@ -29,7 +29,7 @@ public class RobotDriveSubsystem extends SubsystemBase {
     private final double STICK_DEADBAND = 0.05;
     public static double HEADING_DEADBAND = 1.5;
     public static double KP_TURN = 0.02;
-    public static double MAX_TURN_POWER = 0.5;
+    public static double MAX_TURN_POWER = 0.62;
 
     private double FLPower = 0;
     private double FRPower = 0;
