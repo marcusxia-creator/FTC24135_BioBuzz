@@ -1,6 +1,5 @@
 package org.firstinspires.ftc.teamcode.src.Subsystems;
 
-import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 import com.seattlesolvers.solverslib.command.SubsystemBase;
@@ -17,16 +16,11 @@ public class ShooterSubsystem extends SubsystemBase {
     private RobotHardware robot;
 
     private double rightMotor_rpmMeasured;
-    private double previousShooterRPM = -1.0;
-    private double shooterReferenceRPM = 0.0;
-    private int stableShooterSamples = 0;
-    private boolean shooterReferenceCaptured = false;
 
     private final PIDFController rightShooterPIDF = new PIDFController(rightShooterKp, rightShooterKi, rightShooterKd, rightShooterKf);
 
     public ShooterSubsystem(RobotHardware robot) {
         this.robot = robot;
-        robot.rightShooterMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
     }
 
     public static double rpmToTicksPerSecond(double flywheelRPM) {
@@ -48,12 +42,12 @@ public class ShooterSubsystem extends SubsystemBase {
 
         double right_currentTickPerSecond = robot.rightShooterMotor.getVelocity();
 
-        rightMotor_rpmMeasured = ticksPerSecondToRPM(right_currentTickPerSecond);
+        rightMotor_rpmMeasured = Math.abs(ticksPerSecondToRPM(right_currentTickPerSecond));
 
         double voltage = robot.voltageSensor.getVoltage();
         double maxRPMDynamic = maxVelocityRPM * voltage / REF_VOLTAGE;
 
-        double rightTargetNorm = rightShooterTargetRPM / maxRPMDynamic;
+        double rightTargetNorm = shooterTargetVelocityRPM / maxRPMDynamic;
         double rightCurrentNorm = (double) rightMotor_rpmMeasured / maxRPMDynamic;
 
         rightTargetNorm = clamp01(rightTargetNorm);
@@ -97,16 +91,16 @@ public class ShooterSubsystem extends SubsystemBase {
     }
 
     public void increaseTargetRPM() {
-        rightShooterTargetRPM += 50.0;
+        shooterTargetVelocityRPM += 50.0;
     }
 
     public void decreaseTargetRPM() {
-        rightShooterTargetRPM = Math.max(0.0, rightShooterTargetRPM - 50.0);
+        shooterTargetVelocityRPM = Math.max(0.0, shooterTargetVelocityRPM - 50.0);
     }
 
     ///Setter
     public double setShooterRPM(double rpm) {
-        rightShooterTargetRPM = rpm;
+        shooterTargetVelocityRPM = rpm;
         return rpm;
     }
     ///
@@ -120,72 +114,31 @@ public class ShooterSubsystem extends SubsystemBase {
     }
 
     public double getRightShooterCurrentRPM() {
-        return ticksPerSecondToRPM(robot.rightShooterMotor.getVelocity());
+        return Math.abs(ticksPerSecondToRPM(getShooterTicksPerSecond()));
     }
 
     public double getTargetRPM() {
-        return rightShooterTargetRPM;
+        return shooterTargetVelocityRPM;
+    }
+
+    public int getShooterEncoderPosition() {
+        return robot.rightShooterMotor.getCurrentPosition();
     }
 
     public boolean isShooterOn() {
         return shooterOn;
     }
-
-    public void resetShooterSpeedReference() {
-        previousShooterRPM = -1.0;
-        shooterReferenceRPM = 0.0;
-        stableShooterSamples = 0;
-        shooterReferenceCaptured = false;
+    public void runUsingPower (){
+        robot.rightShooterMotor.setPower(0.1);
     }
-
-    /** Learn the flywheel speed when it has stabilized before feeding begins. */
-    public boolean updateShooterSpeedReference() {
-        double currentRPM = getShooterRPM();
-
-        if (!shooterReferenceCaptured) {
-            if (previousShooterRPM >= 0.0
-                    && Math.abs(currentRPM - previousShooterRPM) <= shooterReferenceStableDeltaRPM) {
-                stableShooterSamples++;
-            } else {
-                stableShooterSamples = 0;
-            }
-
-            if (stableShooterSamples >= shooterReferenceStableSamples) {
-                shooterReferenceRPM = currentRPM;
-                shooterReferenceCaptured = true;
-            }
-
-            previousShooterRPM = currentRPM;
-        }
-
-        return shooterReferenceCaptured && Math.abs(currentRPM - shooterReferenceRPM) <= shooterVelocityToleranceRPM;
-    }
-
-    public double getShooterReferenceRPM() {
-        return shooterReferenceRPM;
-    }
-
-    public boolean isShooterReferenceCaptured() {
-        return shooterReferenceCaptured;
-    }
-
-    // Original target-based readiness check
-    // public boolean isShooterAtVelocity() {
-    //     double toleranceTicksPerSecond = rpmToTicksPerSecond(shooterVelocityToleranceRPM);
-    //     double targetTicksPerSecond = rpmToTicksPerSecond(rightShooterTargetRPM);
-    //     double actualTicksPerSecond = robot.rightShooterMotor.getVelocity();
-    //     return Math.abs(actualTicksPerSecond - targetTicksPerSecond) <= toleranceTicksPerSecond;
-    // }
 
     public double getTargetTicksPerSecond() {
-        return rpmToTicksPerSecond(rightShooterTargetRPM);
+        return rpmToTicksPerSecond(shooterTargetVelocityRPM);
     }
     public void stop() {
         shooterOn = false;
         isShooting = false;
         shootingTime.reset();
-        resetShooterSpeedReference();
-
         rightShooterPIDF.reset();
         robot.rightShooterMotor.setPower(0);
         robot.intakeMotor.setPower(0);

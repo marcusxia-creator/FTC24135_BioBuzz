@@ -92,8 +92,8 @@ public class RobotHardware {
 
         ///Intake
         intakeMotor = hardwareMap.get(DcMotorEx.class, "Intake_Motor");
-
-        intakeMotor.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
+        intakeMotor.setZeroPowerBehavior(ZeroPowerBehavior.FLOAT);
+        intakeMotor.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
 
         ///Shooter
         rightShooterMotor = hardwareMap.get(DcMotorEx.class, "Right_Shooter_Motor");

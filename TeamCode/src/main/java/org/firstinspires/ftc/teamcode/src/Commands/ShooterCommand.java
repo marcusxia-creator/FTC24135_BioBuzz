@@ -1,15 +1,19 @@
 package org.firstinspires.ftc.teamcode.src.Commands;
 
+import com.qualcomm.robotcore.util.ElapsedTime;
 import com.seattlesolvers.solverslib.command.CommandBase;
 
 import org.firstinspires.ftc.teamcode.src.Subsystems.ShooterSubsystem;
 import org.firstinspires.ftc.teamcode.src.Subsystems.IntakeSubsystem;
 
 import static org.firstinspires.ftc.teamcode.src.UniversalTools.RobotActionConfig.intakeShootingPower;
+import static org.firstinspires.ftc.teamcode.src.UniversalTools.RobotActionConfig.shooterLimiterRetractTimeSeconds;
+import static org.firstinspires.ftc.teamcode.src.UniversalTools.RobotActionConfig.shooterSpoolUpTimeSeconds;
 
 public class ShooterCommand extends CommandBase {
     private final ShooterSubsystem shooterSubsystem;
     private final IntakeSubsystem intakeSubsystem;
+    private final ElapsedTime spoolUpTimer = new ElapsedTime();
 
     public ShooterCommand(ShooterSubsystem shooterSubsystem, IntakeSubsystem intakeSubsystem) {
         this.shooterSubsystem = shooterSubsystem;
@@ -19,19 +23,24 @@ public class ShooterCommand extends CommandBase {
 
     @Override
     public void initialize() {
-        shooterSubsystem.resetShooterSpeedReference();
+        spoolUpTimer.reset();
         shooterSubsystem.closePollenGate();
     }
 
     @Override
     public void execute() {
-        // Regulate the flywheel and open the pollen gate while it spools up.
+        // Regulate the flywheel while keeping the limiter engaged during initial spool-up.
         shooterSubsystem.runFlywheel();
-        shooterSubsystem.openPollenGate();
+        if (spoolUpTimer.seconds() >= shooterLimiterRetractTimeSeconds) {
+            shooterSubsystem.openPollenGate();
+        } else {
+            shooterSubsystem.closePollenGate();
+        }
 
-        // Recheck every scheduler cycle, stop feeding below target and resume when ready again.
-        boolean shooterReady = shooterSubsystem.updateShooterSpeedReference();
-        if (shooterReady) {
+        // Reference-speed feeder control is disabled
+        // boolean referenceReady = shooterSubsystem.updateShooterSpeedReference();
+        boolean spoolUpComplete = spoolUpTimer.seconds() >= shooterSpoolUpTimeSeconds;
+        if (spoolUpComplete) {
             intakeSubsystem.setFeederPower(intakeShootingPower);
         } else {
             intakeSubsystem.setFeederPower(0.0);

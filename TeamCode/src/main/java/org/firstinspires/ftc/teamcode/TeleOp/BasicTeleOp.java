@@ -8,7 +8,6 @@ import com.seattlesolvers.solverslib.command.CommandOpMode;
 import com.seattlesolvers.solverslib.gamepad.GamepadEx;
 
 import org.firstinspires.ftc.teamcode.src.Commands.RobotDriveCommand;
-import org.firstinspires.ftc.teamcode.src.Commands.ShooterCommand;
 import org.firstinspires.ftc.teamcode.src.Subsystems.ControlSubsystem;
 import org.firstinspires.ftc.teamcode.src.Subsystems.IntakeSubsystem;
 import org.firstinspires.ftc.teamcode.src.Subsystems.RobotDriveSubsystem;
@@ -26,7 +25,6 @@ public class BasicTeleOp extends CommandOpMode {
     private GamepadEx gamepad2Ex;
     private RobotHardware robot;
 
-    public static double targetShooterRPM = 1500;
     public static double actualShooterRPM;
 
 
@@ -67,20 +65,23 @@ public class BasicTeleOp extends CommandOpMode {
     @Override
     public void run() {
         super.run();
-        targetShooterRPM = shooter.getTargetRPM();
+        double targetShooterRPM = shooter.getTargetRPM();
+        double targetShooterTPS = ShooterSubsystem.rpmToTicksPerSecond(targetShooterRPM);
         double actualShooterTicksPerSecond = shooter.getShooterTicksPerSecond();
-        actualShooterRPM = ShooterSubsystem.ticksPerSecondToRPM(actualShooterTicksPerSecond);
+        actualShooterRPM = Math.abs(ShooterSubsystem.ticksPerSecondToRPM(actualShooterTicksPerSecond));
+        telemetry.addData("Run time timer type shi", getRuntime());
 
         telemetry.addData("Intake Target Power", "%.1f", intake.getIntakeMotorPower());
         telemetry.addData("Intake Active Power", "%.2f", robot.intakeMotor.getPower());
+        telemetry.addData("Intake velocity", robot.intakeMotor.getVelocity());
         telemetry.addLine("--- SHOOTER TELEMETRY ---");
         telemetry.addData("Target RPM", "%.1f", targetShooterRPM);
+        telemetry.addData("Target TPS", "%.1f", targetShooterTPS);
         telemetry.addData("Shooter On", shooter.isShooterOn());
-        telemetry.addData("Reference RPM", "%.1f", shooter.getShooterReferenceRPM());
-        telemetry.addData("Reference Captured", shooter.isShooterReferenceCaptured());
-        telemetry.addData("Right Flywheel RPM", "%.1f", actualShooterRPM);
-        telemetry.addData("Right Flywheel TPS", "%.1f", actualShooterTicksPerSecond);
+        telemetry.addData("Right Flywheel RPM", actualShooterRPM);
+        telemetry.addData("Right Flywheel TPS", robot.rightShooterMotor.getVelocity());
         telemetry.addData("Shooter power", robot.rightShooterMotor.getPower());
+        telemetry.addData("Shooter Encoder Position", shooter.getShooterEncoderPosition());
         telemetry.update();
     }
 }

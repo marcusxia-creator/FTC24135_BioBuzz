@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.src.Subsystems;
 
+import com.qualcomm.robotcore.util.ElapsedTime;
 import com.seattlesolvers.solverslib.command.SubsystemBase;
 
 import org.firstinspires.ftc.teamcode.lib.CommandBase.Action;
@@ -8,8 +9,8 @@ import static org.firstinspires.ftc.teamcode.src.UniversalTools.RobotActionConfi
 
 public class IntakeSubsystem extends SubsystemBase {
     private final RobotHardware robot;
-    private double intakePower = intakeInitialPower;
-
+    private boolean rollersRunning = false;
+    private ElapsedTime jamTimer = new ElapsedTime();
     public IntakeSubsystem(RobotHardware robot) {
         this.robot = robot;
     }
@@ -23,6 +24,7 @@ public class IntakeSubsystem extends SubsystemBase {
     }
 
     public void runRollersPollen() {
+        rollersRunning = true;
         robot.leftFlowerRampServo.setPosition(flowerRampUpPos);
         robot.rightFlowerRampServo.setPosition(flowerRampUpPos);
         robot.gateServo.setPosition(gateUpPos);
@@ -31,6 +33,7 @@ public class IntakeSubsystem extends SubsystemBase {
     }
 
     public void runRollersNectar() {
+        rollersRunning = true;
         robot.leftFlowerRampServo.setPosition(flowerRampUpPos);
         robot.rightFlowerRampServo.setPosition(flowerRampUpPos);
         robot.gateServo.setPosition(gateDownPos);
@@ -39,6 +42,7 @@ public class IntakeSubsystem extends SubsystemBase {
     }
 
     public void runRollersFlower() {
+        rollersRunning = true;
         robot.leftFlowerRampServo.setPosition(flowerRampDownPos);
         robot.rightFlowerRampServo.setPosition(flowerRampDownPos);
         robot.gateServo.setPosition(gateUpPos);
@@ -48,14 +52,14 @@ public class IntakeSubsystem extends SubsystemBase {
 
     public void increasePower() {
         intakePower = Math.min(1.0, Math.round((intakePower + 0.1) * 10.0) / 10.0);
-        if (Math.abs(robot.intakeMotor.getPower()) > 0.05) {
+        if (rollersRunning) {
             robot.intakeMotor.setPower(intakePower);
         }
     }
 
     public void decreasePower() {
         intakePower = Math.max(0.0, Math.round((intakePower - 0.1) * 10.0) / 10.0);
-        if (Math.abs(robot.intakeMotor.getPower()) > 0.05) {
+        if (rollersRunning) {
             robot.intakeMotor.setPower(intakePower);
         }
     }
@@ -64,6 +68,7 @@ public class IntakeSubsystem extends SubsystemBase {
      * Opens intake gates and runs rollers in reverse at -0.3 power to eject game pieces cleanly.
      */
     public void reverseIntake() {
+        rollersRunning = false;
         robot.leftFlowerRampServo.setPosition(flowerRampUpPos);
         robot.rightFlowerRampServo.setPosition(flowerRampUpPos);
         robot.gateServo.setPosition(gateDownPos);
@@ -77,13 +82,32 @@ public class IntakeSubsystem extends SubsystemBase {
 
     /** Set the shared intake motor power used to feed game pieces into the shooter. */
     public void setFeederPower(double power) {
+        rollersRunning = false;
         robot.intakeMotor.setPower(power);
     }
 
     public void stop() {
+        rollersRunning = false;
         robot.intakeMotor.setPower(intakeIdleSpeed);
         robot.leftFlowerRampServo.setPosition(flowerRampUpPos);
         robot.rightFlowerRampServo.setPosition(flowerRampUpPos);
+    }
+
+    /*
+    public boolean isIntakeJammed () {
+
+        if (robot.intakeMotor.getPower() <= )
+        return isIntakeJammed();
+    }
+
+     */
+
+
+    @Override
+    public void periodic() {
+        if (rollersRunning) {
+            robot.intakeMotor.setPower(intakePower);
+        }
     }
 
     public class flowerIntakeAction implements Action {
