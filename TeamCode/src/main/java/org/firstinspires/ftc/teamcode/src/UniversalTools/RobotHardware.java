@@ -29,6 +29,7 @@ public class RobotHardware {
     public VoltageSensor voltageSensor;
 
     public DcMotorEx intakeMotor;
+    public DcMotorEx transferMotor;
     public DcMotorEx leftShooterMotor;
     public DcMotorEx rightShooterMotor;
 
@@ -93,6 +94,7 @@ public class RobotHardware {
 
         ///Intake
         intakeMotor = hardwareMap.get(DcMotorEx.class, "Intake_Motor");
+        transferMotor = hardwareMap.get(DcMotorEx.class,"Transfer_Motor");
 
         intakeMotor.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
 
@@ -106,13 +108,11 @@ public class RobotHardware {
         leftShooterMotor.setDirection(DcMotorSimple.Direction.REVERSE);
 
         ///Servos
-        gateServo = hardwareMap.get(Servo.class, "Gate_Servo");
         pollenLimitingServo = hardwareMap.get(Servo.class, "Limit_Servo");
         leftFlowerRampServo = hardwareMap.get(Servo.class, "Left_Flower_Servo");
         rightFlowerRampServo = hardwareMap.get(Servo.class, "Right_Flower_Servo");
         limelightAdjServo = hardwareMap.get(Servo.class, "Limelight_Servo");
 
         rightFlowerRampServo.setDirection(Servo.Direction.REVERSE);
-        gateServo.setDirection(Servo.Direction.REVERSE);
     }
 }

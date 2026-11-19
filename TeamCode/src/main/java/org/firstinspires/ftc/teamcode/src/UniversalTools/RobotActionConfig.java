@@ -9,8 +9,8 @@ public class RobotActionConfig {
     public static double flowerRampUpPos            = 1.0;
     public static double gateDownPos                = 0.145;
     public static double gateUpPos                  = 0.21;
-    public static double pollenDownPos              = 0.57;
-    public static double pollenUpPos                = 0.67;
+    public static double pollenDownPos              = 0.60;
+    public static double pollenUpPos                = 0.50;
     public static double intakeShootingPower        = 0.7;
     public static double intakeIdleSpeed            = 0.0;
 
