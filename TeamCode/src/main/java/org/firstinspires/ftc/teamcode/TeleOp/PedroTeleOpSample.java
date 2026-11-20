@@ -45,7 +45,12 @@ public class PedroTeleOpSample extends CommandOpMode {
         telemetry.addData("X (in)", pose.x());
         telemetry.addData("Y (in)", pose.y());
         telemetry.addData("Heading (deg)", Math.toDegrees(pose.heading()));
+        telemetry.addData("Loop Frequency (Hz)", "%.1f", loopFrequencyHz(dt));
         telemetry.update();
+    }
+
+    private static double loopFrequencyHz(double elapsedSeconds) {
+        return elapsedSeconds > 0.0 ? 1.0 / elapsedSeconds : 0.0;
     }
 
     @Override

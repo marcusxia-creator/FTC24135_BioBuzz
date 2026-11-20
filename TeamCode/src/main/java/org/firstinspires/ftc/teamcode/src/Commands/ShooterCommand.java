@@ -4,31 +4,59 @@ import com.seattlesolvers.solverslib.command.CommandBase;
 
 import org.firstinspires.ftc.teamcode.src.Subsystems.ShooterSubsystem;
 import org.firstinspires.ftc.teamcode.src.Subsystems.IntakeSubsystem;
-
+import org.firstinspires.ftc.teamcode.src.Subsystems.TransferSubsystem;
+import org.firstinspires.ftc.teamcode.src.UniversalTools.DistanceShooterRPM;
 
 public class ShooterCommand extends CommandBase {
     private final ShooterSubsystem shooterSubsystem;
     private final IntakeSubsystem intakeSubsystem;
+    private final TransferSubsystem transferSubsystem;
+    private final DistanceShooterRPM rpmSelector;
 
-    public ShooterCommand(ShooterSubsystem shooterSubsystem, IntakeSubsystem intakeSubsystem) {
+    public ShooterCommand(ShooterSubsystem shooterSubsystem, IntakeSubsystem intakeSubsystem, TransferSubsystem transferSubsystem,
+                          DistanceShooterRPM rpmSelector) {
         this.shooterSubsystem = shooterSubsystem;
         this.intakeSubsystem = intakeSubsystem;
-        addRequirements(shooterSubsystem, intakeSubsystem);
+        this.transferSubsystem = transferSubsystem;
+        this.rpmSelector = rpmSelector;
+        addRequirements(shooterSubsystem, intakeSubsystem, transferSubsystem);
     }
 
     @Override
     public void initialize() {
-        shooterSubsystem.closePollenGate();
+        stopFeeding();
     }
 
     @Override
     public void execute() {
-        shooterSubsystem.shootRightFlywheel();
+        double targetRPM = rpmSelector.selectRPM();
+
+        if (shooterSubsystem.spoolRightFlyWheel(targetRPM) && shooterSubsystem.isRightFlywheelReady(targetRPM)) {
+            shooterSubsystem.openPollenGate();
+            intakeSubsystem.runFeederIntakeAtTargetRPM();
+            transferSubsystem.runTransferAtTargetSpeed();
+            if(transferSubsystem.isTransferAtTargetSpeedRPM()){
+                shooterSubsystem.openPollenGate();
+            }
+        } else {
+            stopFeeding();
+        }
     }
 
     @Override
     public void end(boolean interrupted) {
-        shooterSubsystem.setFeederPower(0);
+        stopShotting();
+    }
+
+    private void stopShotting(){
+        shooterSubsystem.closePollenGate();
+        intakeSubsystem.stopFeederIntake();
+        transferSubsystem.stopTransfer();
+        shooterSubsystem.stop();
+    }
+    private void stopFeeding() {
+        //intakeSubsystem.stopFeederIntake();
+        transferSubsystem.stopTransfer();
         shooterSubsystem.closePollenGate();
     }
 

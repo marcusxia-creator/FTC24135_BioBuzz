@@ -12,6 +12,11 @@ public class RobotDriveSubsystem extends SubsystemBase {
     public RobotDriveSubsystem (RobotHardware robot) {
         this.robot = robot;
     }
+
+    public void clearTurnSmoothing() {
+        lastTurn = 0.0;
+    }
+
     public void mecanumDrive (double forward, double strafe, double turn){
         lastForward += DRIVE_LERP * (forward - lastForward);
         lastStrafe += DRIVE_LERP * (strafe - lastStrafe);

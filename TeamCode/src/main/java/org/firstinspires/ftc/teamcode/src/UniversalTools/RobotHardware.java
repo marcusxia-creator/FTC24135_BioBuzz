@@ -29,6 +29,7 @@ public class RobotHardware {
     public VoltageSensor voltageSensor;
 
     public DcMotorEx intakeMotor;
+    public DcMotorEx transferMotor;
     public DcMotorEx leftShooterMotor;
     public DcMotorEx rightShooterMotor;
 
@@ -48,6 +49,10 @@ public class RobotHardware {
     }
 
     public void init() {
+        init(true);
+    }
+
+    public void init(boolean requirePinpoint) {
         ///Drive
         frontLeftMotor = hardwareMap.get(DcMotorEx.class, "FL_Motor");
         backLeftMotor = hardwareMap.get(DcMotorEx.class, "BL_Motor");
@@ -79,22 +84,17 @@ public class RobotHardware {
 
         voltageSensor=hardwareMap.get(VoltageSensor.class,"Control Hub");
 
-        odo=hardwareMap.get(GoBildaPinpointDriver.class,"pinpoint");
-
         driveTrain=new DriveTrain(this);
-        localizer=new goBildaOdoComputer(
-                odo,
-                new Scalar(-25,mm),
-                new Scalar(-150,mm),//value larp
-                GoBildaPinpointDriver.GoBildaOdometryPods.goBILDA_4_BAR_POD,
-                REVERSED,
-                REVERSED
-        );
+        initializePinpoint(requirePinpoint);
 
         ///Intake
         intakeMotor = hardwareMap.get(DcMotorEx.class, "Intake_Motor");
 
         intakeMotor.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
+
+        //Transfer
+        transferMotor = hardwareMap.get(DcMotorEx.class, "Transfer_Motor");
+        transferMotor.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
 
         ///Shooter
         leftShooterMotor = hardwareMap.get(DcMotorEx.class, "Left_Shooter_Motor");
@@ -114,5 +114,28 @@ public class RobotHardware {
 
         rightFlowerRampServo.setDirection(Servo.Direction.REVERSE);
         gateServo.setDirection(Servo.Direction.REVERSE);
+    }
+
+    private void initializePinpoint(boolean required) {
+        try {
+            odo = required ? hardwareMap.get(GoBildaPinpointDriver.class, "pinpoint")
+                    : hardwareMap.tryGet(GoBildaPinpointDriver.class, "pinpoint");
+            if (odo != null) {
+                localizer = new goBildaOdoComputer(
+                        odo, new Scalar(-25, mm), new Scalar(-150, mm),
+                        GoBildaPinpointDriver.GoBildaOdometryPods.goBILDA_4_BAR_POD,
+                        REVERSED, REVERSED);
+                if (!required) {
+                    // Calibrate before Play so the field starting pose can be set at Play.
+                    odo.resetPosAndIMU();
+                }
+            }
+        } catch (RuntimeException failure) {
+            if (required) {
+                throw failure;
+            }
+            odo = null;
+            localizer = null;
+        }
     }
 }
