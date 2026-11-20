@@ -34,6 +34,7 @@ public class BasicTeleOp extends CommandOpMode {
     private boolean autoAimActive;
 
     private JoystickDriveProcessor.Output drive;
+    private JoystickDriveProcessor.Output operator;
 
     private final ElapsedTime driveTimer = new ElapsedTime();
     // Starter settings: deadzone, exponent, acceleration, deceleration.
@@ -64,8 +65,8 @@ public class BasicTeleOp extends CommandOpMode {
 
         robotDrive.setDefaultCommand(new RobotDriveCommand(
                 robotDrive,
-                () -> drive.forward,
-                () -> drive.strafe,
+                () ->gamepad1Ex.right_stick_y != 0? drive.forward : operator.forward,
+                () -> gamepad1Ex.right_stick_x != 0? drive.strafe : operator.strafe,
                 this::selectTurn
         ));
 
@@ -87,9 +88,14 @@ public class BasicTeleOp extends CommandOpMode {
         double dt = driveTimer.seconds();
         driveTimer.reset();
         drive = joystick.update(
-            -gamepad1.left_stick_y,
-            -gamepad1.left_stick_x,
-            -gamepad1.right_stick_x,
+            -gamepad1Ex.right_stick_y,
+            -gamepad1Ex.right_stick_x,
+            -gamepad1Ex.left_stick_x,
+            dt);
+        operator = joystick.update(
+            -gamepad2Ex.right_stick_y,
+            -gamepad2Ex.right_stick_x,
+            -gamepad2Ex.left_stick_x,
             dt);
         super.run();
 
