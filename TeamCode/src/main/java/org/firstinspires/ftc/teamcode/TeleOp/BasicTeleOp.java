@@ -65,8 +65,8 @@ public class BasicTeleOp extends CommandOpMode {
 
         robotDrive.setDefaultCommand(new RobotDriveCommand(
                 robotDrive,
-                () ->gamepad1Ex.right_stick_y != 0? drive.forward : operator.forward,
-                () -> gamepad1Ex.right_stick_x != 0? drive.strafe : operator.strafe,
+                () -> drive.forward,
+                () -> drive.strafe,
                 this::selectTurn
         ));
 
@@ -88,14 +88,9 @@ public class BasicTeleOp extends CommandOpMode {
         double dt = driveTimer.seconds();
         driveTimer.reset();
         drive = joystick.update(
-            -gamepad1Ex.right_stick_y,
-            -gamepad1Ex.right_stick_x,
-            -gamepad1Ex.left_stick_x,
-            dt);
-        operator = joystick.update(
-            -gamepad2Ex.right_stick_y,
-            -gamepad2Ex.right_stick_x,
-            -gamepad2Ex.left_stick_x,
+            -selectAxis(gamepad1.right_stick_y, gamepad2.right_stick_y),
+            -selectAxis(gamepad1.right_stick_x, gamepad2.right_stick_x),
+            -selectAxis(gamepad1.left_stick_x, gamepad2.left_stick_x),
             dt);
         super.run();
 
@@ -103,6 +98,7 @@ public class BasicTeleOp extends CommandOpMode {
         telemetry.addLine("--------------------");
         telemetry.addData("Intake Motor Power", intake.getIntakeMotorPower());
         telemetry.addLine("--- SHOOTER TELEMETRY ---");
+        telemetry.addData("Gamepad 2 right trigger", gamepad2.right_trigger);
         telemetry.addData("Shot mode", shooterRPM.getMode());
         telemetry.addData("RPM selection", shooterRPM.getStatus());
         telemetry.addData("Fixed manual RPM", "%.0f", DistanceShooterRPM.manualRPM);
@@ -121,6 +117,7 @@ public class BasicTeleOp extends CommandOpMode {
         telemetry.addData("Right Shooter Actual Speed tps", "%.1f",shooter.getRightShooterTicksPerSecond());
         telemetry.addData("Right Shooter Actual Speed RPM", "%.1f",shooter.getRightShooterCurrentRPM());
         telemetry.addData("shooter is at RPM or not", shooter.isRightFlywheelReady(shooter.getRightShooterTargetRPM()));
+        telemetry.addLine("--- INTAKE & TRANSFER TELEMETRY ---");
         telemetry.addData("Feeder Configured RPM", "%.0f", intake.getFeederTargetRPM());
         telemetry.addData("Intake Actual RPM", "%.0f", intake.getFeederCurrentRPM());
         telemetry.addData("Transfer Target RPM", "%.0f", transfer.getFeederTargetRPM());
@@ -134,8 +131,13 @@ public class BasicTeleOp extends CommandOpMode {
         super.reset();
     }
 
+    ///helper method to select the axis from either gamepad1 or gamepad2, prioritizing gamepad1 if it has a non-zero input.
+    private static double selectAxis(double primary, double secondary) {
+       return Math.abs(primary) > 0.05 ? primary : secondary;
+    }
+
     private double selectTurn() {
-        double autoTurn = gamepad1.left_trigger > 0.5 ? targeting.getAimTurn() : Double.NaN;
+        double autoTurn = gamepad1Ex.getLeft_trigger()  > 0.5 ? targeting.getAimTurn() : Double.NaN;
         boolean aiming = Double.isFinite(autoTurn);
         if (aiming != autoAimActive || (aiming && autoTurn == 0.0)) {
             robotDrive.clearTurnSmoothing();

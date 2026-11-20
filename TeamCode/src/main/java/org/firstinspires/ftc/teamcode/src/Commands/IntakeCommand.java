@@ -5,6 +5,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.src.Subsystems.IntakeSubsystem;
 import org.firstinspires.ftc.teamcode.src.Subsystems.TransferSubsystem;
+import org.firstinspires.ftc.teamcode.src.UniversalTools.RobotActionConfig;
 
 public class IntakeCommand extends CommandBase {
     private static final double MIN_SPEED_FRACTION = 0.20;
@@ -28,10 +29,14 @@ public class IntakeCommand extends CommandBase {
     @Override
     public void initialize() {
         startRollers.run();
-        transferSubsystem.setTransferSpeedRPM(100);
-        transferSubsystem.runTransferAtTargetSpeed();
         lowSpeedSince = Double.NaN;
         runTime.reset();
+    }
+    
+    @Override 
+    public void execute() {
+        transferSubsystem.setTransferSpeedRPM(RobotActionConfig.IntakeTransferTargetRPM);
+        transferSubsystem.runTransferAtTargetSpeed();
     }
 
     @Override

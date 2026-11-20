@@ -6,6 +6,7 @@ import org.firstinspires.ftc.teamcode.src.Subsystems.ShooterSubsystem;
 import org.firstinspires.ftc.teamcode.src.Subsystems.IntakeSubsystem;
 import org.firstinspires.ftc.teamcode.src.Subsystems.TransferSubsystem;
 import org.firstinspires.ftc.teamcode.src.UniversalTools.DistanceShooterRPM;
+import org.firstinspires.ftc.teamcode.src.UniversalTools.RobotActionConfig;
 
 public class ShooterCommand extends CommandBase {
     private final ShooterSubsystem shooterSubsystem;
@@ -30,16 +31,20 @@ public class ShooterCommand extends CommandBase {
     @Override
     public void execute() {
         double targetRPM = rpmSelector.selectRPM();
+        if (!shooterSubsystem.spoolRightFlyWheel(targetRPM) ||
+                !shooterSubsystem.isRightFlywheelReady(targetRPM)){
+                    stopFeeding();
+                    return;
+                }
+        intakeSubsystem.runFeederIntakeAtTargetRPM();
+        transferSubsystem.setTransferSpeedRPM(RobotActionConfig.transferTargetRPM);
+        transferSubsystem.runTransferAtTargetSpeed();
 
-        if (shooterSubsystem.spoolRightFlyWheel(targetRPM) && shooterSubsystem.isRightFlywheelReady(targetRPM)) {
+        if(transferSubsystem.isTransferAtTargetSpeedRPM()){
             shooterSubsystem.openPollenGate();
-            intakeSubsystem.runFeederIntakeAtTargetRPM();
-            transferSubsystem.runTransferAtTargetSpeed();
-            if(transferSubsystem.isTransferAtTargetSpeedRPM()){
-                shooterSubsystem.openPollenGate();
             }
-        } else {
-            stopFeeding();
+        else {
+            shooterSubsystem.closePollenGate();
         }
     }
 
@@ -55,9 +60,9 @@ public class ShooterCommand extends CommandBase {
         shooterSubsystem.stop();
     }
     private void stopFeeding() {
-        //intakeSubsystem.stopFeederIntake();
+        intakeSubsystem.stopFeederIntake();
         transferSubsystem.stopTransfer();
-        shooterSubsystem.closePollenGate();
+        //shooterSubsystem.closePollenGate();
     }
 
     @Override

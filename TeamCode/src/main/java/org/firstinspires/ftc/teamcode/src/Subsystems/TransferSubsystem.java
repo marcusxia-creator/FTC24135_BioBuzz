@@ -29,7 +29,7 @@ public class TransferSubsystem extends SubsystemBase {
     public void periodic() {
 
         sampleTransferVelocity();
-        setTransferSpeedRPM(transferTargetRPM);
+        //setTransferSpeedRPM(transferTargetRPM);
     }
 
     ///conversion 
@@ -72,17 +72,22 @@ public class TransferSubsystem extends SubsystemBase {
 
     public boolean isTransferAtTargetSpeedRPM() {
         double currentRPM = getTransferSpeedRPM();
-        return Math.abs(currentRPM - transferSpeedTargetRPM) <= TRANSFER_RPM_TOLERANCE;
+        return transferSpeedTargetRPM > 0.0
+                && Double.isFinite(currentRPM)
+                && currentRPM > 0.0
+                && Math.abs(currentRPM - transferSpeedTargetRPM) <= TRANSFER_RPM_TOLERANCE;
     }
 
 
     public void increaseRPM() {
-        transferSpeedTargetRPM = Math.min(1150,transferSpeedTargetRPM + 25.0);
-        runTransferAtTargetSpeed();
+        transferTargetRPM = Math.min(1150,transferSpeedTargetRPM + 25.0);
+        //setTransferSpeedRPM(transferSpeedTargetRPM);
+        //runTransferAtTargetSpeed();
     }
 
     public void decreaseRPM() {
-        transferSpeedTargetRPM = Math.max(0.0, transferSpeedTargetRPM - 25.0);
-        runTransferAtTargetSpeed();
+        transferTargetRPM = Math.max(0.0, transferSpeedTargetRPM - 25.0);
+        //setTransferSpeedRPM(transferSpeedTargetRPM);
+        //runTransferAtTargetSpeed();
     }
 }

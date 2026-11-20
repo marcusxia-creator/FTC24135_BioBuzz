@@ -11,10 +11,11 @@ public class RobotActionConfig {
     public static double gateUpPos                  = 0.21;
     public static double pollenDownPos              = 0.48;
     public static double pollenUpPos                = 0.61;
-    public static double intakeShootingPower        = 0.7;
+    public static double intakeTargetRPM            = 500.0;
     public static double intakeIdleSpeed            = 0.0;
     public static double intakeTransferRPM          = 600;
     public static double transferTargetRPM          = 300.0;
+    public static double IntakeTransferTargetRPM      = 100.0;
     public static double transferToleranceRPM       = 150.0;
     public static double shooterTargetRPM            = 3430.0;
     public static double shooterToleranceRPM         = 150.0;
