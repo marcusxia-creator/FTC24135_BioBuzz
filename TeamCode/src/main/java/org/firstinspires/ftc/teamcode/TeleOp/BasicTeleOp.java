@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.TeleOp;
 
+import com.qualcomm.robotcore.util.ElapsedTime;
+
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
@@ -15,6 +17,8 @@ import org.firstinspires.ftc.teamcode.src.Subsystems.TransferSubsystem;
 import org.firstinspires.ftc.teamcode.src.UniversalTools.DistanceShooterRPM;
 import org.firstinspires.ftc.teamcode.src.UniversalTools.RobotHardware;
 import org.firstinspires.ftc.teamcode.src.UniversalTools.ShotTargeting;
+import org.firstinspires.ftc.teamcode.TeleOp.UniversalTools.JoystickDriveProcessor;
+
 
 @TeleOp(name = "BioBuzz_Marcus", group = "TeleOp")
 public class BasicTeleOp extends CommandOpMode {
@@ -28,6 +32,15 @@ public class BasicTeleOp extends CommandOpMode {
     private ShotTargeting targeting;
     private DistanceShooterRPM shooterRPM;
     private boolean autoAimActive;
+
+    private JoystickDriveProcessor.Output drive;
+
+    private final ElapsedTime driveTimer = new ElapsedTime();
+    // Starter settings: deadzone, exponent, acceleration, deceleration.
+    // Translation: 0 -> full power in 0.5 s; full -> zero in 0.25 s.
+    private final JoystickDriveProcessor joystick = new JoystickDriveProcessor(
+            new JoystickDriveProcessor.JoystickResponseConfig(0.05, 2.0, 2.0, 4.0),
+            new JoystickDriveProcessor.JoystickResponseConfig(0.05, 2.0, 1.5, 3.0));
 
     @Override
     public void initialize() {
@@ -48,12 +61,11 @@ public class BasicTeleOp extends CommandOpMode {
         telemetry=new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
 
         // Right stick X/Y moves and left stick X rotates; either driver can take over each axis.
+
         robotDrive.setDefaultCommand(new RobotDriveCommand(
                 robotDrive,
-                () -> Math.abs(gamepad1Ex.getRightY()) > 0.05
-                        ? -gamepad1Ex.getRightY() : -gamepad2Ex.getRightY(),
-                () -> Math.abs(gamepad1Ex.getRightX()) > 0.05
-                        ? gamepad1Ex.getRightX() : gamepad2Ex.getRightX(),
+                () -> drive.forward,
+                () -> drive.strafe,
                 this::selectTurn
         ));
 
@@ -65,13 +77,24 @@ public class BasicTeleOp extends CommandOpMode {
         targeting.initializeFieldPose();
         intake.setInitialServoPositions();
         shooter.closePollenGate();
+        joystick.reset();
+        driveTimer.reset();
     }
 
     @Override
     public void run() {
         targeting.beginLoop();
+        double dt = driveTimer.seconds();
+        driveTimer.reset();
+        drive = joystick.update(
+            -gamepad1.left_stick_y,
+            -gamepad1.left_stick_x,
+            -gamepad1.right_stick_x,
+            dt);
         super.run();
 
+        telemetry.addData("Loop Frequency (Hz)", "%.1f", loopFrequencyHz(dt));
+        telemetry.addLine("--------------------");
         telemetry.addData("Intake Motor Power", intake.getIntakeMotorPower());
         telemetry.addLine("--- SHOOTER TELEMETRY ---");
         telemetry.addData("Shot mode", shooterRPM.getMode());
@@ -99,6 +122,12 @@ public class BasicTeleOp extends CommandOpMode {
         telemetry.update();
     }
 
+    @Override
+    public void reset() {
+        joystick.reset();
+        super.reset();
+    }
+
     private double selectTurn() {
         double autoTurn = gamepad1.left_trigger > 0.5 ? targeting.getAimTurn() : Double.NaN;
         boolean aiming = Double.isFinite(autoTurn);
@@ -109,7 +138,12 @@ public class BasicTeleOp extends CommandOpMode {
         if (aiming) {
             return autoTurn;
         }
-        double primaryTurn = gamepad1Ex.getLeftX();
-        return Math.abs(primaryTurn) > 0.05 ? primaryTurn : gamepad2Ex.getLeftX();
+        return -drive.turn ;
     }
+
+    private static double loopFrequencyHz(double elapsedSeconds) {
+        return elapsedSeconds > 0.0 ? 1.0 / elapsedSeconds : 0.0;
+    }
+
+
 }
