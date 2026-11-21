@@ -8,8 +8,7 @@ import static org.firstinspires.ftc.teamcode.lib.IceWaddler2.src.Math.Measuremen
 import static org.firstinspires.ftc.teamcode.lib.IceWaddler2.src.Math.Measurement.Units.Unit.metersPerSecond;
 import static org.firstinspires.ftc.teamcode.lib.IceWaddler2.src.Math.Measurement.Units.Unit.s;
 import static org.firstinspires.ftc.teamcode.src.UniversalTools.RobotActionConfig.flowerRampUpPos;
-import static org.firstinspires.ftc.teamcode.src.UniversalTools.RobotActionConfig.gateUpPos;
-import static org.firstinspires.ftc.teamcode.src.UniversalTools.RobotActionConfig.pollenDownPos;
+import static org.firstinspires.ftc.teamcode.src.UniversalTools.RobotActionConfig.limiterDownPos;
 
 import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
@@ -24,12 +23,9 @@ import org.firstinspires.ftc.teamcode.lib.IceWaddler2.src.Math.Measurement.Scala
 import org.firstinspires.ftc.teamcode.lib.IceWaddler2.src.Math.Measurement.SpecialMeasurements.NormalizedAngle;
 import org.firstinspires.ftc.teamcode.lib.IceWaddler2.src.Math.Measurement.SpecialMeasurements.PathingPoint;
 import org.firstinspires.ftc.teamcode.lib.IceWaddler2.src.Math.Measurement.SpecialMeasurements.Position;
-import org.firstinspires.ftc.teamcode.lib.IceWaddler2.src.Math.Measurement.SpecialMeasurements.PositiveAngle;
 import org.firstinspires.ftc.teamcode.lib.IceWaddler2.src.Math.Measurement.Vector;
-import org.firstinspires.ftc.teamcode.lib.IceWaddler2.src.Pathing.ArcDirection;
 import org.firstinspires.ftc.teamcode.lib.IceWaddler2.src.Pathing.PrebuiltMotionProfiles.linearHP;
 import org.firstinspires.ftc.teamcode.lib.IceWaddler2.src.Pathing.PrebuiltMotionProfiles.maxSpeedMP;
-import org.firstinspires.ftc.teamcode.lib.IceWaddler2.src.Pathing.PrebuiltPathingElements.FixedArc;
 import org.firstinspires.ftc.teamcode.lib.IceWaddler2.src.Pathing.PrebuiltPathingElements.Line;
 import org.firstinspires.ftc.teamcode.lib.IceWaddler2.src.Pathing.PrebuiltPathingElements.holdPos;
 import org.firstinspires.ftc.teamcode.src.Subsystems.IntakeSubsystem;
@@ -81,7 +77,7 @@ public class RightSideAuto_1Tip extends ScheduledOpMode {
         //sofstart ramp servos
         robot.leftFlowerRampServo.setPosition(flowerRampUpPos);
         robot.rightFlowerRampServo.setPosition(flowerRampUpPos);
-        robot.pollenLimitingServo.setPosition(pollenDownPos);
+        robot.pollenLimitingServo.setPosition(limiterDownPos);
 
         //The path is an action series, which starts at action 1 and moves to the next as soon as the current action is complete
 

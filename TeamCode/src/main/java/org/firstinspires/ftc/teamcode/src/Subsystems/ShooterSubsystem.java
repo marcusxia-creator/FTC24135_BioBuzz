@@ -70,25 +70,25 @@ public class  ShooterSubsystem extends SubsystemBase {
         if (!isShooting) {
             isShooting = true;
             shootingTime.reset();
-            robot.pollenLimitingServo.setPosition(pollenDownPos);
+            robot.pollenLimitingServo.setPosition(limiterDownPos);
         }
         transferSubsystem.runTransfer();
 
         if (shootingTime.seconds() >= 0) {
-            robot.pollenLimitingServo.setPosition(pollenUpPos);
+            robot.pollenLimitingServo.setPosition(limiterUpPos);
         } else {
-            robot.pollenLimitingServo.setPosition(pollenDownPos);
+            robot.pollenLimitingServo.setPosition(limiterDownPos);
         }
 
         updatePids();
     }
 
     public void openPollenGate() {
-        robot.pollenLimitingServo.setPosition(pollenUpPos);
+        robot.pollenLimitingServo.setPosition(limiterUpPos);
     }
 
     public void closePollenGate() {
-        robot.pollenLimitingServo.setPosition(pollenDownPos);
+        robot.pollenLimitingServo.setPosition(limiterDownPos);
     }
 
     public void increaseTargetRPM() {

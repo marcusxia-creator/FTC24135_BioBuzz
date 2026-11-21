@@ -4,8 +4,7 @@ import static org.firstinspires.ftc.teamcode.lib.CommandBase.PrebuiltActions.Act
 import static org.firstinspires.ftc.teamcode.lib.IceWaddler2.src.Math.Measurement.Units.Unit.*;
 import static org.firstinspires.ftc.teamcode.lib.IceWaddler2.src.Pathing.ArcDirection.COUNTERCLOCKWISE;
 import static org.firstinspires.ftc.teamcode.src.UniversalTools.RobotActionConfig.flowerRampUpPos;
-import static org.firstinspires.ftc.teamcode.src.UniversalTools.RobotActionConfig.gateUpPos;
-import static org.firstinspires.ftc.teamcode.src.UniversalTools.RobotActionConfig.pollenDownPos;
+import static org.firstinspires.ftc.teamcode.src.UniversalTools.RobotActionConfig.limiterDownPos;
 
 import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
@@ -72,7 +71,7 @@ public class RightSideAuto_2Tip extends ScheduledOpMode {
         //sofstart ramp servos
         robot.leftFlowerRampServo.setPosition(flowerRampUpPos);
         robot.rightFlowerRampServo.setPosition(flowerRampUpPos);
-        robot.pollenLimitingServo.setPosition(pollenDownPos);
+        robot.pollenLimitingServo.setPosition(limiterDownPos);
 
         //The path is an action series, which starts at action 1 and moves to the next as soon as the current action is complete
 

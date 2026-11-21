@@ -20,7 +20,7 @@ public class IntakeSubsystem extends SubsystemBase {
     public void setInitialServoPositions() {
         robot.leftFlowerRampServo.setPosition(flowerRampUpPos);
         robot.rightFlowerRampServo.setPosition(flowerRampUpPos);
-        robot.pollenLimitingServo.setPosition(pollenDownPos);
+        robot.pollenLimitingServo.setPosition(limiterDownPos);
     }
 
     public void runRollersPollen() {
@@ -28,7 +28,7 @@ public class IntakeSubsystem extends SubsystemBase {
         rollersRunning = true;
         robot.leftFlowerRampServo.setPosition(flowerRampUpPos);
         robot.rightFlowerRampServo.setPosition(flowerRampUpPos);
-        robot.pollenLimitingServo.setPosition(pollenDownPos);
+        robot.pollenLimitingServo.setPosition(limiterDownPos);
         robot.intakeMotor.setPower(intakePower);
     }
 
@@ -37,7 +37,7 @@ public class IntakeSubsystem extends SubsystemBase {
         rollersRunning = true;
         robot.leftFlowerRampServo.setPosition(flowerRampUpPos);
         robot.rightFlowerRampServo.setPosition(flowerRampUpPos);
-        robot.pollenLimitingServo.setPosition(pollenUpPos);
+        robot.pollenLimitingServo.setPosition(limiterUpPos);
         robot.intakeMotor.setPower(intakePower);
     }
 
@@ -46,7 +46,7 @@ public class IntakeSubsystem extends SubsystemBase {
         rollersRunning = true;
         robot.leftFlowerRampServo.setPosition(flowerRampDownPos);
         robot.rightFlowerRampServo.setPosition(flowerRampDownPos);
-        robot.pollenLimitingServo.setPosition(pollenDownPos);
+        robot.pollenLimitingServo.setPosition(limiterDownPos);
         robot.intakeMotor.setPower(intakePower);
     }
 
@@ -71,7 +71,7 @@ public class IntakeSubsystem extends SubsystemBase {
         rollersRunning = false;
         robot.leftFlowerRampServo.setPosition(flowerRampUpPos);
         robot.rightFlowerRampServo.setPosition(flowerRampUpPos);
-        robot.pollenLimitingServo.setPosition(pollenUpPos);
+        robot.pollenLimitingServo.setPosition(limiterUpPos);
         robot.intakeMotor.setPower(-1);
     }
 
@@ -101,7 +101,8 @@ public class IntakeSubsystem extends SubsystemBase {
         intakeLowVelocityTimer.reset();
         return false;
     }
-
+    ///if under 75 then bad
+    /// for transfer stopping
 
     @Override
     public void periodic() {

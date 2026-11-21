@@ -13,15 +13,15 @@ public class RobotActionConfig {
     public static double flowerRampUpPos            = 0.85;
     public static double gateDownPos                = 0.145;
     public static double gateUpPos                  = 0.21;
-    public static double pollenDownPos              = 0.57;
-    public static double pollenUpPos                = 0.67;
+    public static double limiterDownPos = 0.5;
+    public static double limiterUpPos = 0.62;
     public static double intakeIdleSpeed            = 0.0;
     public static double intakePower                = 0.7;
     public static double intakeKp                   = 0.001;
     public static double intakeKi                   = 0.0;
     public static double intakeKd                   = 0.0;
     // Intake encoder velocity threshold in ticks per second for full/jammed detection.
-    public static double intakeFullVelocityThreshold = 100.0;
+    public static double intakeFullVelocityThreshold = 450.0;
 
     // Transfer subsystem
     public static double transferGearRatio          = 1.0;
@@ -44,7 +44,7 @@ public class RobotActionConfig {
     public static double rightShooterKi              = 0.000033;
     public static double rightShooterKd              = 0.010;
     public static double rightShooterKf              = 0.96;
-    public static double shooterTargetVelocityRPM    = 2830.0;
+    public static double shooterTargetVelocityRPM    = 3480.0;
     public static double maxVelocityRPM              = 5200.0;
     public static double REF_VOLTAGE                 = 13.1;
 

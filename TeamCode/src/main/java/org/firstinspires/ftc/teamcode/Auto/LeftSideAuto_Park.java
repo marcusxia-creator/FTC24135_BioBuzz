@@ -1,14 +1,11 @@
 package org.firstinspires.ftc.teamcode.Auto;
 
-import static org.firstinspires.ftc.teamcode.lib.CommandBase.PrebuiltActions.ActionParallel.TERMINATIONTYPE.ALL;
-import static org.firstinspires.ftc.teamcode.lib.CommandBase.PrebuiltActions.ActionParallel.TERMINATIONTYPE.FIRST;
 import static org.firstinspires.ftc.teamcode.lib.CommandBase.PrebuiltActions.ActionParallel.TERMINATIONTYPE.NONE;
 import static org.firstinspires.ftc.teamcode.lib.IceWaddler2.src.Math.Measurement.Units.Unit.deg;
 import static org.firstinspires.ftc.teamcode.lib.IceWaddler2.src.Math.Measurement.Units.Unit.feet;
 import static org.firstinspires.ftc.teamcode.lib.IceWaddler2.src.Math.Measurement.Units.Unit.s;
 import static org.firstinspires.ftc.teamcode.src.UniversalTools.RobotActionConfig.flowerRampUpPos;
-import static org.firstinspires.ftc.teamcode.src.UniversalTools.RobotActionConfig.gateUpPos;
-import static org.firstinspires.ftc.teamcode.src.UniversalTools.RobotActionConfig.pollenDownPos;
+import static org.firstinspires.ftc.teamcode.src.UniversalTools.RobotActionConfig.limiterDownPos;
 
 import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
@@ -16,7 +13,6 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import org.firstinspires.ftc.teamcode.lib.CommandBase.Action;
 import org.firstinspires.ftc.teamcode.lib.CommandBase.PrebuiltActions.ActionParallel;
 import org.firstinspires.ftc.teamcode.lib.CommandBase.PrebuiltActions.ActionSeries;
-import org.firstinspires.ftc.teamcode.lib.CommandBase.PrebuiltActions.Delay;
 import org.firstinspires.ftc.teamcode.lib.CommandBase.ScheduledOpMode;
 import org.firstinspires.ftc.teamcode.lib.IceWaddler2.src.IceWaddler;
 import org.firstinspires.ftc.teamcode.lib.IceWaddler2.src.Math.Measurement.Scalar;
@@ -27,7 +23,6 @@ import org.firstinspires.ftc.teamcode.lib.IceWaddler2.src.Math.Measurement.Vecto
 import org.firstinspires.ftc.teamcode.lib.IceWaddler2.src.Pathing.PrebuiltMotionProfiles.linearHP;
 import org.firstinspires.ftc.teamcode.lib.IceWaddler2.src.Pathing.PrebuiltMotionProfiles.maxSpeedMP;
 import org.firstinspires.ftc.teamcode.lib.IceWaddler2.src.Pathing.PrebuiltPathingElements.Line;
-import org.firstinspires.ftc.teamcode.lib.IceWaddler2.src.Pathing.PrebuiltPathingElements.holdPos;
 import org.firstinspires.ftc.teamcode.src.Subsystems.IntakeSubsystem;
 import org.firstinspires.ftc.teamcode.src.Subsystems.ShooterSubsystem;
 import org.firstinspires.ftc.teamcode.src.Subsystems.TransferSubsystem;
@@ -76,7 +71,7 @@ public class LeftSideAuto_Park extends ScheduledOpMode {
         //sofstart ramp servos
         robot.leftFlowerRampServo.setPosition(flowerRampUpPos);
         robot.rightFlowerRampServo.setPosition(flowerRampUpPos);
-        robot.pollenLimitingServo.setPosition(pollenDownPos);
+        robot.pollenLimitingServo.setPosition(limiterDownPos);
 
         //The path is an action series, which starts at action 1 and moves to the next as soon as the current action is complete
 

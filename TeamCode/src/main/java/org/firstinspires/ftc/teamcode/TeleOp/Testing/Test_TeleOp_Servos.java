@@ -30,8 +30,7 @@ public class Test_TeleOp_Servos extends OpMode {
         robotHardware.init();
 
         // Initial servo positions from RobotActionConfig
-        if (robotHardware.gateServo != null) robotHardware.gateServo.setPosition(gateDownPos);
-        if (robotHardware.pollenLimitingServo != null) robotHardware.pollenLimitingServo.setPosition(pollenUpPos);
+        if (robotHardware.pollenLimitingServo != null) robotHardware.pollenLimitingServo.setPosition(limiterUpPos);
         if (robotHardware.leftFlowerRampServo != null) robotHardware.leftFlowerRampServo.setPosition(flowerRampUpPos);
         if (robotHardware.rightFlowerRampServo != null) robotHardware.rightFlowerRampServo.setPosition(flowerRampUpPos);
         if (robotHardware.limelightAdjServo != null) robotHardware.limelightAdjServo.setPosition(0.0);
@@ -55,14 +54,6 @@ public class Test_TeleOp_Servos extends OpMode {
         // ==================== SERVO CONTROLS (+0.01 / -0.01) ====================
 
         // 1. Transfer Servo (Gamepad 1: Right/Left Bumper)
-        if (gamepad1Ex.getButton(GamepadKeys.Button.RIGHT_BUMPER) && debounceTimer.seconds() >= DEBOUNCE_THRESHOLD) {
-            adjustServo(robotHardware.gateServo, 0.01);
-            debounceTimer.reset();
-        }
-        if (gamepad1Ex.getButton(GamepadKeys.Button.LEFT_BUMPER) && debounceTimer.seconds() >= DEBOUNCE_THRESHOLD) {
-            adjustServo(robotHardware.gateServo, -0.01);
-            debounceTimer.reset();
-        }
 
         // 2. Pollen Limiting Servo (Gamepad 1: Dpad Up/Down)
         if (gamepad1Ex.getButton(GamepadKeys.Button.DPAD_UP) && debounceTimer.seconds() >= DEBOUNCE_THRESHOLD) {
@@ -98,7 +89,6 @@ public class Test_TeleOp_Servos extends OpMode {
 
         // ==================== SERVO TELEMETRY ====================
         telemetry.addLine("--- SERVO POSITIONS ---");
-        telemetry.addData("1. Gate Servo", "%.2f", robotHardware.gateServo != null ? robotHardware.gateServo.getPosition() : 0.0);
         telemetry.addData("2. Limit Servo", "%.2f", robotHardware.pollenLimitingServo != null ? robotHardware.pollenLimitingServo.getPosition() : 0.0);
         telemetry.addData("3. Left Ramp Servo", "%.2f", robotHardware.leftFlowerRampServo != null ? robotHardware.leftFlowerRampServo.getPosition() : 0.0);
         telemetry.addData("4. Right Ramp Servo", "%.2f", robotHardware.rightFlowerRampServo != null ? robotHardware.rightFlowerRampServo.getPosition() : 0.0);

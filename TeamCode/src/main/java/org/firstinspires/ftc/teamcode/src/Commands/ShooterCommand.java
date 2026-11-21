@@ -27,12 +27,6 @@ public class ShooterCommand extends CommandBase {
         shooterSubsystem.runFlywheel();
         boolean flywheelReady = shooterSubsystem.isFlywheelReady();
         if (flywheelReady) {
-            shooterSubsystem.openPollenGate();
-        } else {
-            shooterSubsystem.closePollenGate();
-        }
-
-        if (flywheelReady) {
             transferSubsystem.runTransfer();
         } else {
             transferSubsystem.stopTransfer();
