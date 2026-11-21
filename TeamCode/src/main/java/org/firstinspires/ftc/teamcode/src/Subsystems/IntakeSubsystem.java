@@ -19,7 +19,6 @@ public class IntakeSubsystem extends SubsystemBase {
     public void setInitialServoPositions() {
         robot.leftFlowerRampServo.setPosition(flowerRampUpPos);
         robot.rightFlowerRampServo.setPosition(flowerRampUpPos);
-        robot.gateServo.setPosition(gateUpPos);
         robot.pollenLimitingServo.setPosition(pollenDownPos);
     }
 
@@ -27,7 +26,6 @@ public class IntakeSubsystem extends SubsystemBase {
         rollersRunning = true;
         robot.leftFlowerRampServo.setPosition(flowerRampUpPos);
         robot.rightFlowerRampServo.setPosition(flowerRampUpPos);
-        robot.gateServo.setPosition(gateUpPos);
         robot.pollenLimitingServo.setPosition(pollenDownPos);
         robot.intakeMotor.setPower(intakePower);
     }
@@ -36,7 +34,6 @@ public class IntakeSubsystem extends SubsystemBase {
         rollersRunning = true;
         robot.leftFlowerRampServo.setPosition(flowerRampUpPos);
         robot.rightFlowerRampServo.setPosition(flowerRampUpPos);
-        robot.gateServo.setPosition(gateDownPos);
         robot.pollenLimitingServo.setPosition(pollenUpPos);
         robot.intakeMotor.setPower(intakePower);
     }
@@ -45,7 +42,6 @@ public class IntakeSubsystem extends SubsystemBase {
         rollersRunning = true;
         robot.leftFlowerRampServo.setPosition(flowerRampDownPos);
         robot.rightFlowerRampServo.setPosition(flowerRampDownPos);
-        robot.gateServo.setPosition(gateUpPos);
         robot.pollenLimitingServo.setPosition(pollenDownPos);
         robot.intakeMotor.setPower(intakePower);
     }
@@ -71,19 +67,12 @@ public class IntakeSubsystem extends SubsystemBase {
         rollersRunning = false;
         robot.leftFlowerRampServo.setPosition(flowerRampUpPos);
         robot.rightFlowerRampServo.setPosition(flowerRampUpPos);
-        robot.gateServo.setPosition(gateDownPos);
         robot.pollenLimitingServo.setPosition(pollenUpPos);
         robot.intakeMotor.setPower(-1);
     }
 
     public double getIntakeMotorPower() {
         return intakePower;
-    }
-
-    /** Set the shared intake motor power used to feed game pieces into the shooter. */
-    public void setFeederPower(double power) {
-        rollersRunning = false;
-        robot.intakeMotor.setPower(power);
     }
 
     public void stop() {

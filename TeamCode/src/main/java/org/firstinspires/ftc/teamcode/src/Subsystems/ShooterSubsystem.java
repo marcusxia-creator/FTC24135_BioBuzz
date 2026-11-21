@@ -7,20 +7,25 @@ import com.seattlesolvers.solverslib.controller.PIDFController;
 
 import org.firstinspires.ftc.teamcode.lib.CommandBase.Action;
 import org.firstinspires.ftc.teamcode.src.UniversalTools.RobotHardware;
+
 import static org.firstinspires.ftc.teamcode.src.UniversalTools.RobotActionConfig.*;
 
-public class ShooterSubsystem extends SubsystemBase {
+public class  ShooterSubsystem extends SubsystemBase {
     private ElapsedTime shootingTime = new ElapsedTime();
     private boolean isShooting = false;
     private boolean shooterOn = false;
     private RobotHardware robot;
+    private final TransferSubsystem transferSubsystem;
 
     private double rightMotor_rpmMeasured;
 
+    private final ElapsedTime flywheelReadyClock = new ElapsedTime();
+
     private final PIDFController rightShooterPIDF = new PIDFController(rightShooterKp, rightShooterKi, rightShooterKd, rightShooterKf);
 
-    public ShooterSubsystem(RobotHardware robot) {
+    public ShooterSubsystem(RobotHardware robot, TransferSubsystem transferSubsystem) {
         this.robot = robot;
+        this.transferSubsystem = transferSubsystem;
     }
 
     public static double rpmToTicksPerSecond(double flywheelRPM) {
@@ -53,8 +58,6 @@ public class ShooterSubsystem extends SubsystemBase {
         rightTargetNorm = clamp01(rightTargetNorm);
         rightCurrentNorm = clamp01(rightCurrentNorm);
 
-        robot.gateServo.setPosition(gateUpPos);
-
         rightShooterPIDF.setPIDF(rightShooterKp, rightShooterKi, rightShooterKd, rightShooterKf);
 
         double rightOutput = rightShooterPIDF.calculate(rightCurrentNorm, rightTargetNorm);
@@ -69,9 +72,7 @@ public class ShooterSubsystem extends SubsystemBase {
             shootingTime.reset();
             robot.pollenLimitingServo.setPosition(pollenDownPos);
         }
-        robot.gateServo.setPosition(gateUpPos);
-
-        robot.intakeMotor.setPower(intakeShootingPower);
+        transferSubsystem.runTransfer();
 
         if (shootingTime.seconds() >= 0) {
             robot.pollenLimitingServo.setPosition(pollenUpPos);
@@ -108,7 +109,6 @@ public class ShooterSubsystem extends SubsystemBase {
     public double getShooterRPM() {
         return getRightShooterCurrentRPM();
     }
-
     public double getShooterTicksPerSecond() {
         return robot.rightShooterMotor.getVelocity();
     }
@@ -119,6 +119,26 @@ public class ShooterSubsystem extends SubsystemBase {
 
     public double getTargetRPM() {
         return shooterTargetVelocityRPM;
+    }
+
+    /**
+     * Reports ready after the flywheel stays above the minimum target speed
+     * for the configured stability window.
+     */
+    public boolean isFlywheelReady() {
+        double currentRPM = getRightShooterCurrentRPM();
+        double minimumReadyRPM = shooterTargetVelocityRPM * shooterReadyMinimumTargetFraction;
+
+        if (currentRPM < minimumReadyRPM) {
+            flywheelReadyClock.reset();
+            return false;
+        }
+
+        return flywheelReadyClock.seconds() >= shooterReadyStabilityWindowSeconds;
+    }
+
+    public void resetFlywheelReadiness() {
+        flywheelReadyClock.reset();
     }
 
     public int getShooterEncoderPosition() {
@@ -141,7 +161,7 @@ public class ShooterSubsystem extends SubsystemBase {
         shootingTime.reset();
         rightShooterPIDF.reset();
         robot.rightShooterMotor.setPower(0);
-        robot.intakeMotor.setPower(0);
+        transferSubsystem.stopTransfer();
         closePollenGate();
     }
 

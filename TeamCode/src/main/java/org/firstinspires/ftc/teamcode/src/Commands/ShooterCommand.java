@@ -1,29 +1,23 @@
 package org.firstinspires.ftc.teamcode.src.Commands;
 
-import com.qualcomm.robotcore.util.ElapsedTime;
 import com.seattlesolvers.solverslib.command.CommandBase;
 
 import org.firstinspires.ftc.teamcode.src.Subsystems.ShooterSubsystem;
-import org.firstinspires.ftc.teamcode.src.Subsystems.IntakeSubsystem;
-
-import static org.firstinspires.ftc.teamcode.src.UniversalTools.RobotActionConfig.intakeShootingPower;
-import static org.firstinspires.ftc.teamcode.src.UniversalTools.RobotActionConfig.shooterLimiterRetractTimeSeconds;
-import static org.firstinspires.ftc.teamcode.src.UniversalTools.RobotActionConfig.shooterSpoolUpTimeSeconds;
+import org.firstinspires.ftc.teamcode.src.Subsystems.TransferSubsystem;
 
 public class ShooterCommand extends CommandBase {
     private final ShooterSubsystem shooterSubsystem;
-    private final IntakeSubsystem intakeSubsystem;
-    private final ElapsedTime spoolUpTimer = new ElapsedTime();
+    private final TransferSubsystem transferSubsystem;
 
-    public ShooterCommand(ShooterSubsystem shooterSubsystem, IntakeSubsystem intakeSubsystem) {
+    public ShooterCommand(ShooterSubsystem shooterSubsystem, TransferSubsystem transferSubsystem) {
         this.shooterSubsystem = shooterSubsystem;
-        this.intakeSubsystem = intakeSubsystem;
-        addRequirements(shooterSubsystem, intakeSubsystem);
+        this.transferSubsystem = transferSubsystem;
+        addRequirements(shooterSubsystem, transferSubsystem);
     }
 
     @Override
     public void initialize() {
-        spoolUpTimer.reset();
+        shooterSubsystem.resetFlywheelReadiness();
         shooterSubsystem.closePollenGate();
     }
 
@@ -31,25 +25,23 @@ public class ShooterCommand extends CommandBase {
     public void execute() {
         // Regulate the flywheel while keeping the limiter engaged during initial spool-up.
         shooterSubsystem.runFlywheel();
-        if (spoolUpTimer.seconds() >= shooterLimiterRetractTimeSeconds) {
+        boolean flywheelReady = shooterSubsystem.isFlywheelReady();
+        if (flywheelReady) {
             shooterSubsystem.openPollenGate();
         } else {
             shooterSubsystem.closePollenGate();
         }
 
-        // Reference-speed feeder control is disabled
-        // boolean referenceReady = shooterSubsystem.updateShooterSpeedReference();
-        boolean spoolUpComplete = spoolUpTimer.seconds() >= shooterSpoolUpTimeSeconds;
-        if (spoolUpComplete) {
-            intakeSubsystem.setFeederPower(intakeShootingPower);
+        if (flywheelReady) {
+            transferSubsystem.runTransfer();
         } else {
-            intakeSubsystem.setFeederPower(0.0);
+            transferSubsystem.stopTransfer();
         }
     }
 
     @Override
     public void end(boolean interrupted) {
-        intakeSubsystem.setFeederPower(0.0);
+        transferSubsystem.stopTransfer();
         shooterSubsystem.closePollenGate();
     }
 

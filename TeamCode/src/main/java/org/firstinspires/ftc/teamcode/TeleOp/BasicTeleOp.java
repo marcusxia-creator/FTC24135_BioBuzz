@@ -12,6 +12,7 @@ import org.firstinspires.ftc.teamcode.src.Subsystems.ControlSubsystem;
 import org.firstinspires.ftc.teamcode.src.Subsystems.IntakeSubsystem;
 import org.firstinspires.ftc.teamcode.src.Subsystems.RobotDriveSubsystem;
 import org.firstinspires.ftc.teamcode.src.Subsystems.ShooterSubsystem;
+import org.firstinspires.ftc.teamcode.src.Subsystems.TransferSubsystem;
 import org.firstinspires.ftc.teamcode.src.UniversalTools.RobotHardware;
 
 @Config
@@ -20,6 +21,7 @@ public class BasicTeleOp extends CommandOpMode {
     private RobotDriveSubsystem robotDrive;
     private IntakeSubsystem intake;
     private ShooterSubsystem shooter;
+    private TransferSubsystem transfer;
     private ControlSubsystem controls;
     private GamepadEx gamepad1Ex;
     private GamepadEx gamepad2Ex;
@@ -35,7 +37,8 @@ public class BasicTeleOp extends CommandOpMode {
 
         robotDrive = new RobotDriveSubsystem(robot);
         intake = new IntakeSubsystem(robot);
-        shooter = new ShooterSubsystem(robot);
+        transfer = new TransferSubsystem(robot);
+        shooter = new ShooterSubsystem(robot, transfer);
         controls = new ControlSubsystem();
 
         gamepad1Ex = new GamepadEx(gamepad1);
@@ -54,7 +57,7 @@ public class BasicTeleOp extends CommandOpMode {
                         ? gamepad1Ex.getLeftX() : gamepad2Ex.getLeftX()
         ));
 
-        controls.configureControls(gamepad1Ex, gamepad2Ex, intake, shooter);
+        controls.configureControls(gamepad1Ex, gamepad2Ex, intake, shooter, transfer);
     }
 
     @Override

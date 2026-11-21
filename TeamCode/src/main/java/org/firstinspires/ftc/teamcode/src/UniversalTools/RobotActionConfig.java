@@ -15,16 +15,27 @@ public class RobotActionConfig {
     public static double gateUpPos                  = 0.21;
     public static double pollenDownPos              = 0.57;
     public static double pollenUpPos                = 0.67;
-    public static double intakeShootingPower        = 0.3;
     public static double intakeIdleSpeed            = 0.0;
     public static double intakePower                = 0.7;
     public static double intakeKp                   = 0.001;
     public static double intakeKi                   = 0.0;
     public static double intakeKd                   = 0.0;
 
+    // Transfer subsystem
+    public static double transferGearRatio          = 1.0;
+    public static double transferTicksPerRev        = 28.0;
+    public static double transferMaxRPM             = 600.0;
+    public static double transferIntakePower        = 0.5;
+    public static double transferKp                 = 0.13;
+    public static double transferKi                 = 0.000033;
+    public static double transferKd                 = 0.010;
+    public static double transferKf                 = 0.96;
+
     // Shooter subsystem
     public static double shooterSpoolUpTimeSeconds = 2.0;
     public static double shooterLimiterRetractTimeSeconds = 1.75;
+    public static double shooterReadyMinimumTargetFraction = 0.95;
+    public static double shooterReadyStabilityWindowSeconds = 0.30;
     public static double shooterGearRatio            = 30.0 / 40.0;
     public static double shooterTicksPerRev          = 28.0;
     public static double rightShooterKp              = 0.13;

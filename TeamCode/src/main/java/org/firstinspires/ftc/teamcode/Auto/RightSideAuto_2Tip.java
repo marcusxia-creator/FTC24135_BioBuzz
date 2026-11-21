@@ -13,6 +13,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import org.firstinspires.ftc.teamcode.lib.IceWaddler2.src.Pathing.ArcDirection;
 import org.firstinspires.ftc.teamcode.src.Subsystems.IntakeSubsystem;
 import org.firstinspires.ftc.teamcode.src.Subsystems.ShooterSubsystem;
+import org.firstinspires.ftc.teamcode.src.Subsystems.TransferSubsystem;
 import org.firstinspires.ftc.teamcode.src.UniversalTools.RobotHardware;
 import org.firstinspires.ftc.teamcode.lib.CommandBase.Action;
 import org.firstinspires.ftc.teamcode.lib.CommandBase.PrebuiltActions.*;
@@ -32,6 +33,7 @@ public class RightSideAuto_2Tip extends ScheduledOpMode {
     Action path;
 
     IntakeSubsystem intake;
+    TransferSubsystem transfer;
     ShooterSubsystem shooter;
 
     //Pathing Positions. All positions are in x,y, as on a graph, and headings are clockwise from vertical
@@ -62,7 +64,8 @@ public class RightSideAuto_2Tip extends ScheduledOpMode {
         waddler.init(startPoint,false);
 
         intake=new IntakeSubsystem(robot);
-        shooter=new ShooterSubsystem(robot);
+        transfer=new TransferSubsystem(robot);
+        shooter=new ShooterSubsystem(robot, transfer);
 
         //All just inits, like in teleop
 
@@ -70,7 +73,6 @@ public class RightSideAuto_2Tip extends ScheduledOpMode {
         robot.leftFlowerRampServo.setPosition(flowerRampUpPos);
         robot.rightFlowerRampServo.setPosition(flowerRampUpPos);
         robot.pollenLimitingServo.setPosition(pollenDownPos);
-        robot.gateServo.setPosition(gateUpPos);
 
         //The path is an action series, which starts at action 1 and moves to the next as soon as the current action is complete
 

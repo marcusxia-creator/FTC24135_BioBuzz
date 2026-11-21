@@ -30,6 +30,7 @@ import org.firstinspires.ftc.teamcode.lib.IceWaddler2.src.Pathing.PrebuiltPathin
 import org.firstinspires.ftc.teamcode.lib.IceWaddler2.src.Pathing.PrebuiltPathingElements.holdPos;
 import org.firstinspires.ftc.teamcode.src.Subsystems.IntakeSubsystem;
 import org.firstinspires.ftc.teamcode.src.Subsystems.ShooterSubsystem;
+import org.firstinspires.ftc.teamcode.src.Subsystems.TransferSubsystem;
 import org.firstinspires.ftc.teamcode.src.UniversalTools.RobotHardware;
 
 @Config
@@ -41,6 +42,7 @@ public class LeftSideAuto_Park extends ScheduledOpMode {
     Action path;
 
     IntakeSubsystem intake;
+    TransferSubsystem transfer;
     ShooterSubsystem shooter;
 
     //Pathing Positions. All positions are in x,y, as on a graph, and headings are clockwise from vertical
@@ -66,7 +68,8 @@ public class LeftSideAuto_Park extends ScheduledOpMode {
         waddler.init(startPoint,false);
 
         intake=new IntakeSubsystem(robot);
-        shooter=new ShooterSubsystem(robot);
+        transfer=new TransferSubsystem(robot);
+        shooter=new ShooterSubsystem(robot, transfer);
 
         //All just inits, like in teleop
 
@@ -74,7 +77,6 @@ public class LeftSideAuto_Park extends ScheduledOpMode {
         robot.leftFlowerRampServo.setPosition(flowerRampUpPos);
         robot.rightFlowerRampServo.setPosition(flowerRampUpPos);
         robot.pollenLimitingServo.setPosition(pollenDownPos);
-        robot.gateServo.setPosition(gateUpPos);
 
         //The path is an action series, which starts at action 1 and moves to the next as soon as the current action is complete
 

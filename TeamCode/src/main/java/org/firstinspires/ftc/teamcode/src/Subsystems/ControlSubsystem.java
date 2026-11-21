@@ -17,16 +17,17 @@ public class ControlSubsystem extends GamepadDriver {
             GamepadEx gamepad1,
             GamepadEx gamepad2,
             IntakeSubsystem intake,
-            ShooterSubsystem shooter) {
+            ShooterSubsystem shooter,
+            TransferSubsystem transfer) {
 
         bindIntakeControls(gamepad1, intake);
         bindIntakeControls(gamepad2, intake);
 
         // X spools the flywheel and automatically feeds once it reaches velocity.
         new GamepadButton(gamepad1, GamepadKeys.Button.X)
-                .whenPressed(new ShooterCommand(shooter, intake));
+                .whenPressed(new ShooterCommand(shooter, transfer));
         new GamepadButton(gamepad2, GamepadKeys.Button.X)
-                .whenPressed(new ShooterCommand(shooter, intake));
+                .whenPressed(new ShooterCommand(shooter, transfer));
 
         bindShooterSpeedControls(gamepad2, shooter);
         bindIntakeSpeedControls(gamepad1, intake);
