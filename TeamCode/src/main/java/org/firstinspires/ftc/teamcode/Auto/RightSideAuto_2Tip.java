@@ -98,7 +98,7 @@ public class RightSideAuto_2Tip extends ScheduledOpMode {
 
                 new ActionParallel(FIRST,
                         waddler.new MotionAction(new Line(new PathingPoint(wallIntake),new maxSpeedMP(wallIntakeSpeed),new linearHP(), new String[]{})),
-                        intake.new wallIntakeAction()),
+                        intake.new pollenIntakeAction()),
                 //Move back to shootpos
                 new ActionParallel(FIRST,
                         waddler.new MotionAction(new Line(new PathingPoint(leftHive),new maxSpeedMP(),new SCurveHP(),new String[]{})),

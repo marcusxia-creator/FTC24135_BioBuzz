@@ -82,6 +82,40 @@ public class IntakeSubsystem extends SubsystemBase {
         robot.rightFlowerRampServo.setPosition(flowerRampUpPos);
     }
 
+    public class pollenIntakeAction implements Action {
+        @Override
+        public void init() {
+            runRollersPollen();
+        }
+
+        @Override
+        public void loop() {}
+
+        @Override
+        public void shutdown() {
+            stop();
+        }
+
+        public boolean finished() {return true;}
+    }
+
+    public class nectarIntakeAction implements Action {
+        @Override
+        public void init() {
+            runRollersNectar();
+        }
+
+        @Override
+        public void loop() {}
+
+        @Override
+        public void shutdown() {
+            stop();
+        }
+
+        public boolean finished() {return true;}
+    }
+
     public class flowerIntakeAction implements Action {
         @Override
         public void init() {
@@ -100,22 +134,5 @@ public class IntakeSubsystem extends SubsystemBase {
         public boolean finished() {
             return true;
         }
-    }
-
-    public class wallIntakeAction implements Action {
-        @Override
-        public void init() {
-            runRollersPollen();
-        }
-
-        @Override
-        public void loop() {}
-
-        @Override
-        public void shutdown() {
-            stop();
-        }
-
-        public boolean finished() {return true;}
     }
 }
