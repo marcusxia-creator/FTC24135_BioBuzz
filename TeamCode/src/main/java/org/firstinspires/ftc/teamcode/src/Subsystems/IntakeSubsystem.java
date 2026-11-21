@@ -10,7 +10,6 @@ import static org.firstinspires.ftc.teamcode.src.UniversalTools.RobotActionConfi
 public class IntakeSubsystem extends SubsystemBase {
     private final RobotHardware robot;
     private boolean rollersRunning = false;
-    private double justToPush = 0.1;
     private final ElapsedTime intakeLowVelocityTimer = new ElapsedTime();
     private static final double INTAKE_FULL_DETECTION_SECONDS = 0.3;
     public IntakeSubsystem(RobotHardware robot) {
