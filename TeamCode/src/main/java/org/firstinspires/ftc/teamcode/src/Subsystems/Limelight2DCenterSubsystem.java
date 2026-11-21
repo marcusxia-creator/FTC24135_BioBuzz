@@ -6,7 +6,9 @@ import com.seattlesolvers.solverslib.command.SubsystemBase;
 
 import org.firstinspires.ftc.teamcode.src.UniversalTools.RobotHardware;
 
+import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Deque;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -19,6 +21,8 @@ import java.util.Map;
  */
 public class Limelight2DCenterSubsystem extends SubsystemBase {
 
+    private final Deque<Double> historyMeasurements = new ArrayDeque<>();
+    private final int historySize = 3;
     private final RobotHardware robot;
 
     private double rawTx = 0.0;
@@ -26,12 +30,12 @@ public class Limelight2DCenterSubsystem extends SubsystemBase {
     private boolean isCenterValid = false;
 
     // Physical width of a single AprilTag (e.g., 4.0 inches)
-    private double physicalTagWidthInches = 4.0;
+    private double physicalTagWidthInches = 3.25;
 
     // Limelight 3A horizontal Field of View in degrees
-    private static final double LIMELIGHT_3A_HORIZONTAL_FOV_DEGREES = 62.8;
+    private static final double LIMELIGHT_3A_HORIZONTAL_FOV_DEGREES = 54.5;
     // Camera frame width in pixels (standard Limelight stream resolution)
-    private static final double CAMERA_FRAME_WIDTH_PIXELS = 1280.0;
+    private static final double CAMERA_FRAME_WIDTH_PIXELS = 640;
 
     private final List<Integer> tagDetected = new ArrayList<>();
     private int maxTagCount = 4;

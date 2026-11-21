@@ -27,7 +27,6 @@ public class LimelightCenterSubsystem extends SubsystemBase {
 
     private final List<Integer> tagDetected = new ArrayList<>();
     private int maxTagCount = 4;
-
     // Map of Tag ID -> Horizontal X Offset (in inches) from the center of the 4 AprilTags.
     // Negative values = Left of center, Positive values = Right of center.
     private final Map<Integer, Double> tagXOffsetsInches = new HashMap<>();
