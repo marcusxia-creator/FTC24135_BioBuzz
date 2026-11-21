@@ -77,7 +77,7 @@ public class BasicTeleOp extends CommandOpMode {
 
         telemetry.addData("Intake Target Power", "%.1f", intake.getIntakeMotorPower());
         telemetry.addData("Intake Active Power", "%.2f", robot.intakeMotor.getPower());
-        telemetry.addData("Intake velocity", robot.intakeMotor.getVelocity());
+        telemetry.addData("Intake velocity", intake.getSampledIntakeTicksPerSecond());
         telemetry.addLine("--- SHOOTER TELEMETRY ---");
         telemetry.addData("Target RPM", "%.1f", targetShooterRPM);
         telemetry.addData("Target TPS", "%.1f", targetShooterTPS);
@@ -85,7 +85,7 @@ public class BasicTeleOp extends CommandOpMode {
         telemetry.addData("Shooter Ready", shooter.isFlywheelReady());
         telemetry.addData("Transfer Running", transfer.isTransferRunning());
         telemetry.addData("Right Flywheel RPM", actualShooterRPM);
-        telemetry.addData("Right Flywheel TPS", robot.rightShooterMotor.getVelocity());
+        telemetry.addData("Right Flywheel TPS", actualShooterTicksPerSecond);
         telemetry.addData("Shooter power", robot.rightShooterMotor.getPower());
         telemetry.addData("Shooter Encoder Position", shooter.getShooterEncoderPosition());
         telemetry.update();

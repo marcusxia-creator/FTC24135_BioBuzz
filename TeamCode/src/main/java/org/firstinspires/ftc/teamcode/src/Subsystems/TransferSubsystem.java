@@ -12,11 +12,17 @@ public class TransferSubsystem extends SubsystemBase {
     private final RobotHardware robot;
     private double transferTargetRPM = transferMaxRPM;
     private boolean transferRunning;
+    private double sampledTransferTicksPerSecond;
     private final PIDFController transferPIDF =
             new PIDFController(transferKp, transferKi, transferKd, transferKf);
 
     public TransferSubsystem(RobotHardware robot) {
         this.robot = robot;
+    }
+
+    @Override
+    public void periodic() {
+        sampledTransferTicksPerSecond = robot.transferMotor.getVelocity();
     }
 
     public void runTransfer() {
@@ -40,7 +46,7 @@ public class TransferSubsystem extends SubsystemBase {
 
     public void intakeTransfer() {
         transferRunning = true;
-        robot.transferMotor.setPower(0.5);
+        robot.transferMotor.setPower(transferIntakePower);
     }
 
     public void stopTransfer() {
@@ -59,12 +65,26 @@ public class TransferSubsystem extends SubsystemBase {
     }
 
     public double getTransferRPM() {
-        double motorRPM = robot.transferMotor.getVelocity() * 60.0 / transferTicksPerRev;
+        double motorRPM = sampledTransferTicksPerSecond * 60.0 / transferTicksPerRev;
         return Math.abs(motorRPM * transferGearRatio);
+    }
+
+    public double getSampledTransferTicksPerSecond() {
+        return sampledTransferTicksPerSecond;
     }
 
     public boolean isTransferRunning() {
         return transferRunning;
+    }
+
+    /**
+     * Returns true when transfer is running and transfer RPM drops below threshold.
+     */
+    public boolean isTransferFull() {
+        if (!transferRunning) {
+            return false;
+        }
+        return getTransferRPM() < transferFullRPMThreshold;
     }
 
     private void updatePids() {

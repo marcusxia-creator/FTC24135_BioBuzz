@@ -1,6 +1,5 @@
 package org.firstinspires.ftc.teamcode.src.Subsystems;
 
-import com.qualcomm.robotcore.util.ElapsedTime;
 import com.seattlesolvers.solverslib.command.SubsystemBase;
 
 import org.firstinspires.ftc.teamcode.lib.CommandBase.Action;
@@ -10,8 +9,9 @@ import static org.firstinspires.ftc.teamcode.src.UniversalTools.RobotActionConfi
 public class IntakeSubsystem extends SubsystemBase {
     private final RobotHardware robot;
     private boolean rollersRunning = false;
-    private final ElapsedTime intakeLowVelocityTimer = new ElapsedTime();
-    private static final double INTAKE_FULL_DETECTION_SECONDS = 0.3;
+    private double sampledIntakeTicksPerSecond;
+    private double appliedIntakePower = Double.NaN;
+
     public IntakeSubsystem(RobotHardware robot) {
         this.robot = robot;
     }
@@ -24,55 +24,52 @@ public class IntakeSubsystem extends SubsystemBase {
     }
 
     public void runRollersPollen() {
-        intakeLowVelocityTimer.reset();
         rollersRunning = true;
         robot.leftFlowerRampServo.setPosition(flowerRampUpPos);
         robot.rightFlowerRampServo.setPosition(flowerRampUpPos);
         robot.pollenLimitingServo.setPosition(limiterDownPos);
-        robot.intakeMotor.setPower(intakePower);
+        applyIntakePower(intakePower);
     }
 
     public void runRollersNectar() {
-        intakeLowVelocityTimer.reset();
         rollersRunning = true;
         robot.leftFlowerRampServo.setPosition(flowerRampUpPos);
         robot.rightFlowerRampServo.setPosition(flowerRampUpPos);
         robot.pollenLimitingServo.setPosition(limiterUpPos);
-        robot.intakeMotor.setPower(intakePower);
+        applyIntakePower(intakePower);
     }
 
     public void runRollersFlower() {
-        intakeLowVelocityTimer.reset();
         rollersRunning = true;
         robot.leftFlowerRampServo.setPosition(flowerRampDownPos);
         robot.rightFlowerRampServo.setPosition(flowerRampDownPos);
         robot.pollenLimitingServo.setPosition(limiterDownPos);
-        robot.intakeMotor.setPower(intakePower);
+        applyIntakePower(intakePower);
     }
 
     public void increasePower() {
         intakePower = Math.min(1.0, Math.round((intakePower + 0.1) * 10.0) / 10.0);
         if (rollersRunning) {
-            robot.intakeMotor.setPower(intakePower);
+            applyIntakePower(intakePower);
         }
     }
 
     public void decreasePower() {
         intakePower = Math.max(0.0, Math.round((intakePower - 0.1) * 10.0) / 10.0);
         if (rollersRunning) {
-            robot.intakeMotor.setPower(intakePower);
+            applyIntakePower(intakePower);
         }
     }
 
     /**
-     * Opens intake gates and runs rollers in reverse at -0.3 power to eject game pieces cleanly.
+     * Opens intake gates and runs rollers in reverse at -1.0 power to eject game pieces cleanly.
      */
     public void reverseIntake() {
         rollersRunning = false;
         robot.leftFlowerRampServo.setPosition(flowerRampUpPos);
         robot.rightFlowerRampServo.setPosition(flowerRampUpPos);
         robot.pollenLimitingServo.setPosition(limiterUpPos);
-        robot.intakeMotor.setPower(-1);
+        applyIntakePower(-1.0);
     }
 
     public double getIntakeMotorPower() {
@@ -81,34 +78,47 @@ public class IntakeSubsystem extends SubsystemBase {
 
     public void stop() {
         rollersRunning = false;
-        robot.intakeMotor.setPower(intakeIdleSpeed);
+        applyIntakePower(intakeIdleSpeed);
         robot.leftFlowerRampServo.setPosition(flowerRampUpPos);
         robot.rightFlowerRampServo.setPosition(flowerRampUpPos);
     }
 
+    public boolean isRollersRunning() {
+        return rollersRunning;
+    }
+
+    public double getIntakeRPM() {
+        double motorRPM = sampledIntakeTicksPerSecond * 60.0 / intakeTicksPerRev;
+        return Math.abs(motorRPM * intakeGearRatio);
+    }
+
     /**
-     * Returns true when intake encoder velocity stays below the configured threshold
-     * for at least 0.3 seconds while the rollers are running.
+     * Returns true when rollers are running and intake RPM drops below threshold.
      */
     public boolean isIntakeFull() {
         if (!rollersRunning) {
-            intakeLowVelocityTimer.reset();
             return false;
         }
-        if (Math.abs(robot.intakeMotor.getVelocity()) < intakeFullVelocityThreshold) {
-            return intakeLowVelocityTimer.seconds() >= INTAKE_FULL_DETECTION_SECONDS;
-        }
-        intakeLowVelocityTimer.reset();
-        return false;
+        return getIntakeRPM() < intakeFullRPMThreshold;
     }
-    ///if under 75 then bad
-    /// for transfer stopping
 
     @Override
     public void periodic() {
-        if (rollersRunning) {
-            robot.intakeMotor.setPower(intakePower);
+        sampledIntakeTicksPerSecond = robot.intakeMotor.getVelocity();
+        if (rollersRunning && appliedIntakePower != intakePower) {
+            applyIntakePower(intakePower);
         }
+    }
+
+    private void applyIntakePower(double power) {
+        if (Double.isNaN(appliedIntakePower) || appliedIntakePower != power) {
+            robot.intakeMotor.setPower(power);
+            appliedIntakePower = power;
+        }
+    }
+
+    public double getSampledIntakeTicksPerSecond() {
+        return sampledIntakeTicksPerSecond;
     }
 
     public class flowerIntakeAction implements Action {

@@ -17,13 +17,26 @@ public class  ShooterSubsystem extends SubsystemBase {
     private RobotHardware robot;
     private final TransferSubsystem transferSubsystem;
 
+    private double rightMotor_ticksPerSecond;
     private double rightMotor_rpmMeasured;
+    private double sampledVoltage = REF_VOLTAGE;
 
     private final PIDFController rightShooterPIDF = new PIDFController(rightShooterKp, rightShooterKi, rightShooterKd, rightShooterKf);
 
     public ShooterSubsystem(RobotHardware robot, TransferSubsystem transferSubsystem) {
         this.robot = robot;
         this.transferSubsystem = transferSubsystem;
+    }
+
+    @Override
+    public void periodic() {
+        sampleShooterSpeed();
+        sampledVoltage = robot.voltageSensor.getVoltage();
+    }
+
+    private void sampleShooterSpeed() {
+        rightMotor_ticksPerSecond = robot.rightShooterMotor.getVelocity();
+        rightMotor_rpmMeasured = Math.abs(ticksPerSecondToRPM(rightMotor_ticksPerSecond));
     }
 
     public static double rpmToTicksPerSecond(double flywheelRPM) {
@@ -44,12 +57,7 @@ public class  ShooterSubsystem extends SubsystemBase {
         robot.pollenLimitingServo.setPosition(limiterUpPos);
         shooterOn = true;
 
-        double right_currentTickPerSecond = robot.rightShooterMotor.getVelocity();
-
-        rightMotor_rpmMeasured = Math.abs(ticksPerSecondToRPM(right_currentTickPerSecond));
-
-        double voltage = robot.voltageSensor.getVoltage();
-        double maxRPMDynamic = maxVelocityRPM * voltage / REF_VOLTAGE;
+        double maxRPMDynamic = maxVelocityRPM * sampledVoltage / REF_VOLTAGE;
 
         double rightTargetNorm = shooterTargetVelocityRPM / maxRPMDynamic;
         double rightCurrentNorm = (double) rightMotor_rpmMeasured / maxRPMDynamic;
@@ -107,11 +115,11 @@ public class  ShooterSubsystem extends SubsystemBase {
         return getRightShooterCurrentRPM();
     }
     public double getShooterTicksPerSecond() {
-        return robot.rightShooterMotor.getVelocity();
+        return rightMotor_ticksPerSecond;
     }
 
     public double getRightShooterCurrentRPM() {
-        return Math.abs(ticksPerSecondToRPM(getShooterTicksPerSecond()));
+        return rightMotor_rpmMeasured;
     }
 
     public double getTargetRPM() {
@@ -122,7 +130,6 @@ public class  ShooterSubsystem extends SubsystemBase {
     public boolean isFlywheelReady() {
         double targetRPM = shooterTargetVelocityRPM;
         return shooterOn
-                && targetRPM > 0.0
                 && rightMotor_rpmMeasured >= targetRPM * shooterReadyMinimumTargetFraction;
     }
 
@@ -139,6 +146,10 @@ public class  ShooterSubsystem extends SubsystemBase {
 
     public double getTargetTicksPerSecond() {
         return rpmToTicksPerSecond(shooterTargetVelocityRPM);
+    }
+
+    public double getShooterVelocity() {
+        return rightMotor_ticksPerSecond;
     }
     public void stop() {
         shooterOn = false;
