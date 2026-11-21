@@ -38,7 +38,8 @@ public class TransferSubsystem extends SubsystemBase {
         runTransfer();
     }
 
-    public void intakeTransfer (){
+    public void intakeTransfer() {
+        transferRunning = true;
         robot.transferMotor.setPower(0.5);
     }
 

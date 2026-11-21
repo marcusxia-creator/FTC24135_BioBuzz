@@ -7,6 +7,7 @@ import com.seattlesolvers.solverslib.command.button.Trigger;
 import com.seattlesolvers.solverslib.gamepad.GamepadEx;
 import com.seattlesolvers.solverslib.gamepad.GamepadKeys;
 
+import org.firstinspires.ftc.teamcode.src.Commands.IntakeCommand;
 import org.firstinspires.ftc.teamcode.lib.GamepadDriver.GamepadDriver;
 import org.firstinspires.ftc.teamcode.src.Commands.ShooterCommand;
 
@@ -20,8 +21,8 @@ public class ControlSubsystem extends GamepadDriver {
             ShooterSubsystem shooter,
             TransferSubsystem transfer) {
 
-        bindIntakeControls(gamepad1, intake);
-        bindIntakeControls(gamepad2, intake);
+        bindIntakeControls(gamepad1, intake, transfer);
+        bindIntakeControls(gamepad2, intake, transfer);
 
         // X spools the flywheel and automatically feeds once it reaches velocity.
         new GamepadButton(gamepad1, GamepadKeys.Button.X)
@@ -45,18 +46,21 @@ public class ControlSubsystem extends GamepadDriver {
                 }, shooter, intake));
     }
 
-    private void bindIntakeControls(GamepadEx gamepad, IntakeSubsystem intake) {
-        // D-pad Right selects pollen by default; bumper combos select nectar or flower.
+    private void bindIntakeControls(
+            GamepadEx gamepad,
+            IntakeSubsystem intake,
+            TransferSubsystem transfer) {
+        // Intake runs until stopped and reserves transfer while it feeds inward.
         new GamepadButton(gamepad, GamepadKeys.Button.DPAD_RIGHT)
-                .whenPressed(new InstantCommand(() -> {
+                .whenPressed(new IntakeCommand(intake, transfer, () -> {
                     if (gamepad.getButton(GamepadKeys.Button.RIGHT_BUMPER)) {
-                        intake.runRollersNectar();
-                    } else if (gamepad.getButton(GamepadKeys.Button.LEFT_BUMPER)) {
-                        intake.runRollersFlower();
-                    } else {
-                        intake.runRollersPollen();
+                        return IntakeCommand.IntakeMode.NECTAR;
                     }
-                }, intake));
+                    if (gamepad.getButton(GamepadKeys.Button.LEFT_BUMPER)) {
+                        return IntakeCommand.IntakeMode.FLOWER;
+                    }
+                    return IntakeCommand.IntakeMode.POLLEN;
+                }));
 
         // Explicit chord triggers support either press order. D-pad Left alone always stops.
         Trigger left = new GamepadButton(gamepad, GamepadKeys.Button.DPAD_LEFT);

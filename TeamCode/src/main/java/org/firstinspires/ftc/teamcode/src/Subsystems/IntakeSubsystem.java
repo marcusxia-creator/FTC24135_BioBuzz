@@ -10,7 +10,8 @@ import static org.firstinspires.ftc.teamcode.src.UniversalTools.RobotActionConfi
 public class IntakeSubsystem extends SubsystemBase {
     private final RobotHardware robot;
     private boolean rollersRunning = false;
-    private ElapsedTime jamTimer = new ElapsedTime();
+    private final ElapsedTime intakeLowVelocityTimer = new ElapsedTime();
+    private static final double INTAKE_FULL_DETECTION_SECONDS = 0.3;
     public IntakeSubsystem(RobotHardware robot) {
         this.robot = robot;
     }
@@ -23,6 +24,7 @@ public class IntakeSubsystem extends SubsystemBase {
     }
 
     public void runRollersPollen() {
+        intakeLowVelocityTimer.reset();
         rollersRunning = true;
         robot.leftFlowerRampServo.setPosition(flowerRampUpPos);
         robot.rightFlowerRampServo.setPosition(flowerRampUpPos);
@@ -31,6 +33,7 @@ public class IntakeSubsystem extends SubsystemBase {
     }
 
     public void runRollersNectar() {
+        intakeLowVelocityTimer.reset();
         rollersRunning = true;
         robot.leftFlowerRampServo.setPosition(flowerRampUpPos);
         robot.rightFlowerRampServo.setPosition(flowerRampUpPos);
@@ -39,6 +42,7 @@ public class IntakeSubsystem extends SubsystemBase {
     }
 
     public void runRollersFlower() {
+        intakeLowVelocityTimer.reset();
         rollersRunning = true;
         robot.leftFlowerRampServo.setPosition(flowerRampDownPos);
         robot.rightFlowerRampServo.setPosition(flowerRampDownPos);
@@ -82,14 +86,21 @@ public class IntakeSubsystem extends SubsystemBase {
         robot.rightFlowerRampServo.setPosition(flowerRampUpPos);
     }
 
-    /*
-    public boolean isIntakeJammed () {
-
-        if (robot.intakeMotor.getPower() <= )
-        return isIntakeJammed();
-    }
-
+    /**
+     * Returns true when intake encoder velocity stays below the configured threshold
+     * for at least 0.3 seconds while the rollers are running.
      */
+    public boolean isIntakeFull() {
+        if (!rollersRunning) {
+            intakeLowVelocityTimer.reset();
+            return false;
+        }
+        if (Math.abs(robot.intakeMotor.getVelocity()) < intakeFullVelocityThreshold) {
+            return intakeLowVelocityTimer.seconds() >= INTAKE_FULL_DETECTION_SECONDS;
+        }
+        intakeLowVelocityTimer.reset();
+        return false;
+    }
 
 
     @Override

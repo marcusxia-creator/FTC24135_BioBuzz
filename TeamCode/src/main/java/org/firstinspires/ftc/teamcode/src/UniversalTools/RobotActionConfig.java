@@ -20,6 +20,8 @@ public class RobotActionConfig {
     public static double intakeKp                   = 0.001;
     public static double intakeKi                   = 0.0;
     public static double intakeKd                   = 0.0;
+    // Intake encoder velocity threshold in ticks per second for full/jammed detection.
+    public static double intakeFullVelocityThreshold = 100.0;
 
     // Transfer subsystem
     public static double transferGearRatio          = 1.0;
