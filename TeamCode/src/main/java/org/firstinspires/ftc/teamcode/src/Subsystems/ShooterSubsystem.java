@@ -19,8 +19,6 @@ public class  ShooterSubsystem extends SubsystemBase {
 
     private double rightMotor_rpmMeasured;
 
-    private final ElapsedTime flywheelReadyClock = new ElapsedTime();
-
     private final PIDFController rightShooterPIDF = new PIDFController(rightShooterKp, rightShooterKi, rightShooterKd, rightShooterKf);
 
     public ShooterSubsystem(RobotHardware robot, TransferSubsystem transferSubsystem) {
@@ -43,6 +41,7 @@ public class  ShooterSubsystem extends SubsystemBase {
     }
 
     public void runFlywheel() {
+        robot.pollenLimitingServo.setPosition(limiterUpPos);
         shooterOn = true;
 
         double right_currentTickPerSecond = robot.rightShooterMotor.getVelocity();
@@ -58,12 +57,10 @@ public class  ShooterSubsystem extends SubsystemBase {
         rightTargetNorm = clamp01(rightTargetNorm);
         rightCurrentNorm = clamp01(rightCurrentNorm);
 
-        rightShooterPIDF.setPIDF(rightShooterKp, rightShooterKi, rightShooterKd, rightShooterKf);
+        updatePids();
 
         double rightOutput = rightShooterPIDF.calculate(rightCurrentNorm, rightTargetNorm);
         robot.rightShooterMotor.setPower(Range.clip(rightOutput, 0.0, 1.0));
-
-        updatePids();
     }
 
     public void shootFlywheel() {
@@ -121,24 +118,12 @@ public class  ShooterSubsystem extends SubsystemBase {
         return shooterTargetVelocityRPM;
     }
 
-    /**
-     * Reports ready after the flywheel stays above the minimum target speed
-     * for the configured stability window.
-     */
+    /** Reports ready as soon as the latest measured flywheel speed reaches its target threshold. */
     public boolean isFlywheelReady() {
-        double currentRPM = getRightShooterCurrentRPM();
-        double minimumReadyRPM = shooterTargetVelocityRPM * shooterReadyMinimumTargetFraction;
-
-        if (currentRPM < minimumReadyRPM) {
-            flywheelReadyClock.reset();
-            return false;
-        }
-
-        return flywheelReadyClock.seconds() >= shooterReadyStabilityWindowSeconds;
-    }
-
-    public void resetFlywheelReadiness() {
-        flywheelReadyClock.reset();
+        double targetRPM = shooterTargetVelocityRPM;
+        return shooterOn
+                && targetRPM > 0.0
+                && rightMotor_rpmMeasured >= targetRPM * shooterReadyMinimumTargetFraction;
     }
 
     public int getShooterEncoderPosition() {

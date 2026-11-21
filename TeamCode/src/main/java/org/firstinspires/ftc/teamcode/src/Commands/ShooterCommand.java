@@ -17,7 +17,6 @@ public class ShooterCommand extends CommandBase {
 
     @Override
     public void initialize() {
-        shooterSubsystem.resetFlywheelReadiness();
         shooterSubsystem.closePollenGate();
     }
 
@@ -26,11 +25,11 @@ public class ShooterCommand extends CommandBase {
         // Regulate the flywheel while keeping the limiter engaged during initial spool-up.
         shooterSubsystem.runFlywheel();
         boolean flywheelReady = shooterSubsystem.isFlywheelReady();
-        if (flywheelReady) {
-            transferSubsystem.runTransfer();
-        } else {
+        if (!flywheelReady) {
             transferSubsystem.stopTransfer();
+            return;
         }
+        transferSubsystem.runTransfer();
     }
 
     @Override

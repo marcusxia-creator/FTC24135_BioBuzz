@@ -28,7 +28,7 @@ public class TransferSubsystem extends SubsystemBase {
 
         double targetNorm = transferTargetRPM / transferMaxRPM;
         double currentNorm = getTransferRPM() / transferMaxRPM;
-        transferPIDF.setPIDF(transferKp, transferKi, transferKd, transferKf);
+        updatePids();
         double output = transferPIDF.calculate(currentNorm, targetNorm);
         robot.transferMotor.setPower(Range.clip(output, 0.0, 1.0));
     }
@@ -65,5 +65,12 @@ public class TransferSubsystem extends SubsystemBase {
 
     public boolean isTransferRunning() {
         return transferRunning;
+    }
+
+    private void updatePids() {
+        if (transferPIDF.getP() != transferKp) transferPIDF.setP(transferKp);
+        if (transferPIDF.getI() != transferKi) transferPIDF.setI(transferKi);
+        if (transferPIDF.getD() != transferKd) transferPIDF.setD(transferKd);
+        if (transferPIDF.getF() != transferKf) transferPIDF.setF(transferKf);
     }
 }

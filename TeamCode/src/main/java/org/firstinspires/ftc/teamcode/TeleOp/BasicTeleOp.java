@@ -45,6 +45,7 @@ public class BasicTeleOp extends CommandOpMode {
         gamepad2Ex = new GamepadEx(gamepad2);
 
         telemetry=new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
+        telemetry.setMsTransmissionInterval(100);
 
         // Right stick X/Y moves and left stick X rotates; either driver can take over each axis.
         robotDrive.setDefaultCommand(new RobotDriveCommand(
@@ -81,6 +82,8 @@ public class BasicTeleOp extends CommandOpMode {
         telemetry.addData("Target RPM", "%.1f", targetShooterRPM);
         telemetry.addData("Target TPS", "%.1f", targetShooterTPS);
         telemetry.addData("Shooter On", shooter.isShooterOn());
+        telemetry.addData("Shooter Ready", shooter.isFlywheelReady());
+        telemetry.addData("Transfer Running", transfer.isTransferRunning());
         telemetry.addData("Right Flywheel RPM", actualShooterRPM);
         telemetry.addData("Right Flywheel TPS", robot.rightShooterMotor.getVelocity());
         telemetry.addData("Shooter power", robot.rightShooterMotor.getPower());
