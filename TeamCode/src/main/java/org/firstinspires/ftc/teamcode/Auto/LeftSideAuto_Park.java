@@ -64,7 +64,7 @@ public class LeftSideAuto_Park extends ScheduledOpMode {
 
         intake=new IntakeSubsystem(robot);
         transfer=new TransferSubsystem(robot);
-        shooter=new ShooterSubsystem(robot, transfer);
+        shooter=new ShooterSubsystem(robot);
 
         //All just inits, like in teleop
 

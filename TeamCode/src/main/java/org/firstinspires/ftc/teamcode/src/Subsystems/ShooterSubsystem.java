@@ -1,6 +1,5 @@
 package org.firstinspires.ftc.teamcode.src.Subsystems;
 
-import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 import com.seattlesolvers.solverslib.command.SubsystemBase;
 import com.seattlesolvers.solverslib.controller.PIDFController;
@@ -11,11 +10,8 @@ import org.firstinspires.ftc.teamcode.src.UniversalTools.RobotHardware;
 import static org.firstinspires.ftc.teamcode.src.UniversalTools.RobotActionConfig.*;
 
 public class  ShooterSubsystem extends SubsystemBase {
-    private ElapsedTime shootingTime = new ElapsedTime();
-    private boolean isShooting = false;
     private boolean shooterOn = false;
     private RobotHardware robot;
-    private final TransferSubsystem transferSubsystem;
 
     private double rightMotor_ticksPerSecond;
     private double rightMotor_rpmMeasured;
@@ -23,9 +19,8 @@ public class  ShooterSubsystem extends SubsystemBase {
 
     private final PIDFController rightShooterPIDF = new PIDFController(rightShooterKp, rightShooterKi, rightShooterKd, rightShooterKf);
 
-    public ShooterSubsystem(RobotHardware robot, TransferSubsystem transferSubsystem) {
+    public ShooterSubsystem(RobotHardware robot) {
         this.robot = robot;
-        this.transferSubsystem = transferSubsystem;
     }
 
     @Override
@@ -54,7 +49,6 @@ public class  ShooterSubsystem extends SubsystemBase {
     }
 
     public void runFlywheel() {
-        robot.pollenLimitingServo.setPosition(limiterUpPos);
         shooterOn = true;
 
         double maxRPMDynamic = maxVelocityRPM * sampledVoltage / REF_VOLTAGE;
@@ -72,20 +66,7 @@ public class  ShooterSubsystem extends SubsystemBase {
     }
 
     public void shootFlywheel() {
-        if (!isShooting) {
-            isShooting = true;
-            shootingTime.reset();
-            robot.pollenLimitingServo.setPosition(limiterDownPos);
-        }
-        transferSubsystem.runTransfer();
-
-        if (shootingTime.seconds() >= 0) {
-            robot.pollenLimitingServo.setPosition(limiterUpPos);
-        } else {
-            robot.pollenLimitingServo.setPosition(limiterDownPos);
-        }
-
-        updatePids();
+        openPollenGate();
     }
 
     public void openPollenGate() {
@@ -130,6 +111,7 @@ public class  ShooterSubsystem extends SubsystemBase {
     public boolean isFlywheelReady() {
         double targetRPM = shooterTargetVelocityRPM;
         return shooterOn
+                && targetRPM > 0.0
                 && rightMotor_rpmMeasured >= targetRPM * shooterReadyMinimumTargetFraction;
     }
 
@@ -153,11 +135,8 @@ public class  ShooterSubsystem extends SubsystemBase {
     }
     public void stop() {
         shooterOn = false;
-        isShooting = false;
-        shootingTime.reset();
         rightShooterPIDF.reset();
         robot.rightShooterMotor.setPower(0);
-        transferSubsystem.stopTransfer();
         closePollenGate();
     }
 

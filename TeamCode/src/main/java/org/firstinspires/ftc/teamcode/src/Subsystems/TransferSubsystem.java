@@ -4,6 +4,7 @@ import com.qualcomm.robotcore.util.Range;
 import com.seattlesolvers.solverslib.command.SubsystemBase;
 import com.seattlesolvers.solverslib.controller.PIDFController;
 
+import org.firstinspires.ftc.teamcode.lib.CommandBase.Action;
 import org.firstinspires.ftc.teamcode.src.UniversalTools.RobotHardware;
 
 import static org.firstinspires.ftc.teamcode.src.UniversalTools.RobotActionConfig.*;
@@ -23,6 +24,7 @@ public class TransferSubsystem extends SubsystemBase {
     @Override
     public void periodic() {
         sampledTransferTicksPerSecond = robot.transferMotor.getVelocity();
+
     }
 
     public void runTransfer() {
@@ -77,14 +79,11 @@ public class TransferSubsystem extends SubsystemBase {
         return transferRunning;
     }
 
-    /**
-     * Returns true when transfer is running and transfer RPM drops below threshold.
-     */
-    public boolean isTransferFull() {
-        if (!transferRunning) {
-            return false;
-        }
-        return getTransferRPM() < transferFullRPMThreshold;
+    public boolean isTransferReady() {
+        double targetTransferRPM = transferTargetRPM;
+        return transferRunning
+                && targetTransferRPM > 0.0
+                && getTransferRPM() >= targetTransferRPM * shooterReadyMinimumTargetFraction;
     }
 
     private void updatePids() {
@@ -92,5 +91,22 @@ public class TransferSubsystem extends SubsystemBase {
         if (transferPIDF.getI() != transferKi) transferPIDF.setI(transferKi);
         if (transferPIDF.getD() != transferKd) transferPIDF.setD(transferKd);
         if (transferPIDF.getF() != transferKf) transferPIDF.setF(transferKf);
+    }
+
+    public class ShootTransferAction implements Action {
+        @Override
+        public void loop() {
+            runTransfer();
+        }
+
+        @Override
+        public void shutdown() {
+            stopTransfer();
+        }
+
+        @Override
+        public boolean finished() {
+            return false;
+        }
     }
 }

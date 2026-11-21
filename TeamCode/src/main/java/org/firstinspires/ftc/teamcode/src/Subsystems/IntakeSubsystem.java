@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.src.Subsystems;
 
+import com.qualcomm.robotcore.util.ElapsedTime;
 import com.seattlesolvers.solverslib.command.SubsystemBase;
 
 import org.firstinspires.ftc.teamcode.lib.CommandBase.Action;
@@ -7,24 +8,33 @@ import org.firstinspires.ftc.teamcode.src.UniversalTools.RobotHardware;
 import static org.firstinspires.ftc.teamcode.src.UniversalTools.RobotActionConfig.*;
 
 public class IntakeSubsystem extends SubsystemBase {
+    private static final double INTAKE_STARTUP_GRACE_SECONDS = 0.5;
     private final RobotHardware robot;
     private boolean rollersRunning = false;
     private double sampledIntakeTicksPerSecond;
     private double appliedIntakePower = Double.NaN;
+    private final ElapsedTime intakeRunTimer = new ElapsedTime();
 
     public IntakeSubsystem(RobotHardware robot) {
         this.robot = robot;
     }
 
-    /** Set the intake servos to their safe starting positions when the OpMode starts. */
     public void setInitialServoPositions() {
         robot.leftFlowerRampServo.setPosition(flowerRampUpPos);
         robot.rightFlowerRampServo.setPosition(flowerRampUpPos);
         robot.pollenLimitingServo.setPosition(limiterDownPos);
     }
 
+    public void runShooterIntake (){
+        startRollers();
+        robot.leftFlowerRampServo.setPosition(flowerRampUpPos);
+        robot.rightFlowerRampServo.setPosition(flowerRampUpPos);
+        robot.pollenLimitingServo.setPosition(limiterDownPos);
+        applyIntakePower(intakePower);
+    }
+
     public void runRollersPollen() {
-        rollersRunning = true;
+        startRollers();
         robot.leftFlowerRampServo.setPosition(flowerRampUpPos);
         robot.rightFlowerRampServo.setPosition(flowerRampUpPos);
         robot.pollenLimitingServo.setPosition(limiterDownPos);
@@ -32,7 +42,7 @@ public class IntakeSubsystem extends SubsystemBase {
     }
 
     public void runRollersNectar() {
-        rollersRunning = true;
+        startRollers();
         robot.leftFlowerRampServo.setPosition(flowerRampUpPos);
         robot.rightFlowerRampServo.setPosition(flowerRampUpPos);
         robot.pollenLimitingServo.setPosition(limiterUpPos);
@@ -40,7 +50,7 @@ public class IntakeSubsystem extends SubsystemBase {
     }
 
     public void runRollersFlower() {
-        rollersRunning = true;
+        startRollers();
         robot.leftFlowerRampServo.setPosition(flowerRampDownPos);
         robot.rightFlowerRampServo.setPosition(flowerRampDownPos);
         robot.pollenLimitingServo.setPosition(limiterDownPos);
@@ -99,7 +109,13 @@ public class IntakeSubsystem extends SubsystemBase {
         if (!rollersRunning) {
             return false;
         }
-        return getIntakeRPM() < intakeFullRPMThreshold;
+        return intakeRunTimer.seconds() >= INTAKE_STARTUP_GRACE_SECONDS
+                && getIntakeRPM() < intakeFullRPMThreshold;
+    }
+
+    private void startRollers() {
+        if (!rollersRunning) intakeRunTimer.reset();
+        rollersRunning = true;
     }
 
     @Override

@@ -35,7 +35,6 @@ public class RobotActionConfig {
     public static double transferKd                 = 0.010;
     public static double transferKf                 = 0.96;
     // Transfer RPM threshold for full/jammed detection.
-    public static double transferFullRPMThreshold   = 300.0;
 
     // Shooter subsystem
     public static double shooterSpoolUpTimeSeconds = 2.0;

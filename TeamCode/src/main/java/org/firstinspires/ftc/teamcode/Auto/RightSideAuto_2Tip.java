@@ -64,7 +64,7 @@ public class RightSideAuto_2Tip extends ScheduledOpMode {
 
         intake=new IntakeSubsystem(robot);
         transfer=new TransferSubsystem(robot);
-        shooter=new ShooterSubsystem(robot, transfer);
+        shooter=new ShooterSubsystem(robot);
 
         //All just inits, like in teleop
 
@@ -91,7 +91,7 @@ public class RightSideAuto_2Tip extends ScheduledOpMode {
                 ),
                 //This actionParallel simultaneously runs the shooter while holding the robot still for the defined shootTime. The FIRST termination type means that this action ends when the shooting delay ends
                 new ActionParallel(FIRST,
-                        new Delay(shootTime),shooter.new ShootAction(),
+                        new Delay(shootTime),shooter.new ShootAction(),transfer.new ShootTransferAction(),
                         waddler.new MotionAction(new holdPos(new String[]{}))),//Holds the robot still
 
                 //Drive towards the wall in an arc area to intake
@@ -107,7 +107,7 @@ public class RightSideAuto_2Tip extends ScheduledOpMode {
 
                 //Hold still and shoot
                 new ActionParallel(FIRST,
-                        new Delay(shootTime),shooter.new ShootAction(),
+                        new Delay(shootTime),shooter.new ShootAction(),transfer.new ShootTransferAction(),
                         waddler.new MotionAction(new holdPos(new String[]{}))),//Holds the robot still
 
                 //Move and intake from the first flower
@@ -136,7 +136,7 @@ public class RightSideAuto_2Tip extends ScheduledOpMode {
                         waddler.new MotionAction(new FixedArc(new Vector(rightHive.getX().add(arcRadius),rightHive.getY()),new PositiveAngle(90,deg), ArcDirection.CLOCKWISE,new Scalar(0,metersPerSecond),rightHive.getHeading(), new maxSpeedMP(new Scalar(1,metersPerSecond)), new linearHP(), new String[]{}))),
                 //As before, this actionParallel simultaneously runs the shooter while holding the robot still for the shooting duration
                 new ActionParallel(FIRST,
-                        new Delay(shootTime),shooter.new ShootAction(),
+                        new Delay(shootTime),shooter.new ShootAction(),transfer.new ShootTransferAction(),
                         waddler.new MotionAction(new holdPos(new String[]{}))),
                 //Move and intake from the second flower
                 //As before, this action moves toward the flower in a straight line while running the intake to lower the ramp
@@ -157,7 +157,7 @@ public class RightSideAuto_2Tip extends ScheduledOpMode {
                         waddler.new MotionAction(new Line(new PathingPoint(rightHive), new maxSpeedMP(), new linearHP(), new String[]{})),
                         intake.new flowerIntakeAction()),
                 new ActionParallel(FIRST,
-                        new Delay(shootTime),shooter.new ShootAction(),
+                        new Delay(shootTime),shooter.new ShootAction(),transfer.new ShootTransferAction(),
                         waddler.new MotionAction(new holdPos(new String[]{}))),
 
                 //Move to park

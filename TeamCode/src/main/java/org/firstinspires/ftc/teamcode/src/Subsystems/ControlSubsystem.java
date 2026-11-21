@@ -1,6 +1,5 @@
 package org.firstinspires.ftc.teamcode.src.Subsystems;
 
-import com.qualcomm.robotcore.hardware.Gamepad;
 import com.seattlesolvers.solverslib.command.InstantCommand;
 import com.seattlesolvers.solverslib.command.button.GamepadButton;
 import com.seattlesolvers.solverslib.command.button.Trigger;
@@ -21,36 +20,42 @@ public class ControlSubsystem extends GamepadDriver {
             ShooterSubsystem shooter,
             TransferSubsystem transfer) {
 
-        bindIntakeControls(gamepad1, intake, transfer);
-        bindIntakeControls(gamepad2, intake, transfer);
+        configureGamepad(gamepad1, intake, shooter, transfer, false);
+        configureGamepad(gamepad2, intake, shooter, transfer, true);
+    }
 
-        // X spools the flywheel and automatically feeds once it reaches velocity.
-        new GamepadButton(gamepad1, GamepadKeys.Button.X)
-                .whenPressed(new ShooterCommand(shooter, transfer));
-        new GamepadButton(gamepad2, GamepadKeys.Button.X)
-                .whenPressed(new ShooterCommand(shooter, transfer));
+    private void configureGamepad(
+            GamepadEx gamepad,
+            IntakeSubsystem intake,
+            ShooterSubsystem shooter,
+            TransferSubsystem transfer,
+            boolean controlsShooterSpeed) {
+        bindIntakeControls(gamepad, intake, transfer);
+        bindShooterControls(gamepad, intake, shooter, transfer);
+        bindIntakeSpeedControls(gamepad, intake);
+        if (controlsShooterSpeed) bindShooterSpeedControls(gamepad, shooter);
+    }
 
-        bindShooterSpeedControls(gamepad2, shooter);
-        bindIntakeSpeedControls(gamepad1, intake);
-        bindIntakeSpeedControls(gamepad2, intake);
-
-        new GamepadButton(gamepad1, GamepadKeys.Button.B)
+    private void bindShooterControls(
+            GamepadEx gamepad,
+            IntakeSubsystem intake,
+            ShooterSubsystem shooter,
+            TransferSubsystem transfer) {
+        new GamepadButton(gamepad, GamepadKeys.Button.X)
+                .whenPressed(new ShooterCommand(shooter, intake, transfer));
+        new GamepadButton(gamepad, GamepadKeys.Button.B)
                 .whenPressed(new InstantCommand(() -> {
                     shooter.stop();
                     intake.stop();
-                }, shooter, intake));
-        new GamepadButton(gamepad2, GamepadKeys.Button.B)
-                .whenPressed(new InstantCommand(() -> {
-                    shooter.stop();
-                    intake.stop();
-                }, shooter, intake));
+                    transfer.stopTransfer();
+                }, shooter, intake, transfer));
     }
 
     private void bindIntakeControls(
             GamepadEx gamepad,
             IntakeSubsystem intake,
             TransferSubsystem transfer) {
-        // Intake runs until stopped and reserves transfer while it feeds inward.
+        // Intake and transfer share one command during intake mode.
         new GamepadButton(gamepad, GamepadKeys.Button.DPAD_RIGHT)
                 .whenPressed(new IntakeCommand(intake, transfer, () -> {
                     if (gamepad.getButton(GamepadKeys.Button.RIGHT_BUMPER)) {
@@ -66,9 +71,15 @@ public class ControlSubsystem extends GamepadDriver {
         Trigger left = new GamepadButton(gamepad, GamepadKeys.Button.DPAD_LEFT);
         Trigger rightBumper = new GamepadButton(gamepad, GamepadKeys.Button.RIGHT_BUMPER);
         left.and(rightBumper.negate())
-                .whenActive(new InstantCommand(intake::stop, intake));
+                .whenActive(new InstantCommand(() -> {
+                    intake.stop();
+                    transfer.stopTransfer();
+                }, intake, transfer));
         left.and(rightBumper)
-                .whenActive(new InstantCommand(intake::reverseIntake, intake));
+                .whenActive(new InstantCommand(() -> {
+                    intake.reverseIntake();
+                    transfer.stopTransfer();
+                }, intake, transfer));
     }
 
 

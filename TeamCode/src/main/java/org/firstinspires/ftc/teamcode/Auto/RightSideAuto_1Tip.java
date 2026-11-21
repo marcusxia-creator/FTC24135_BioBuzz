@@ -70,7 +70,7 @@ public class RightSideAuto_1Tip extends ScheduledOpMode {
 
         intake=new IntakeSubsystem(robot);
         transfer=new TransferSubsystem(robot);
-        shooter=new ShooterSubsystem(robot, transfer);
+        shooter=new ShooterSubsystem(robot);
 
         //All just inits, like in teleop
 
@@ -99,6 +99,7 @@ public class RightSideAuto_1Tip extends ScheduledOpMode {
                 new ActionParallel(FIRST,
                         new Delay(shootTime),
                         shooter.new ShootAction(),
+                        transfer.new ShootTransferAction(),
                         waddler.new MotionAction(new holdPos(new String[]{}))),//Holds the robot still
 
                 //Move and intake from the first flower
@@ -126,6 +127,7 @@ public class RightSideAuto_1Tip extends ScheduledOpMode {
                 new ActionParallel(FIRST,
                         new Delay(shootTime),
                         shooter.new ShootAction(),
+                        transfer.new ShootTransferAction(),
                         waddler.new MotionAction(new holdPos(new String[]{}))),
                 //Move to park
                 waddler.new MotionAction(new Line(new PathingPoint(park_midPoint,new Scalar(1,metersPerSecond)), new maxSpeedMP(), new linearHP(), new String[]{})),

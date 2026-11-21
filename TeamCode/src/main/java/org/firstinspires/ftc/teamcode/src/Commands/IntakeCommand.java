@@ -42,19 +42,13 @@ public class IntakeCommand extends CommandBase {
                 intakeSubsystem.runRollersPollen();
                 break;
         }
-    }
-
-    @Override
-    public void execute() {
-        if (!intakeSubsystem.isIntakeFull()) {
-            transferSubsystem.intakeTransfer();
-        }
+        transferSubsystem.intakeTransfer();
     }
 
     @Override
     public void end(boolean interrupted) {
-        transferSubsystem.stopTransfer();
         intakeSubsystem.stop();
+        transferSubsystem.stopTransfer();
     }
 
     @Override

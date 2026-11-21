@@ -38,7 +38,7 @@ public class BasicTeleOp extends CommandOpMode {
         robotDrive = new RobotDriveSubsystem(robot);
         intake = new IntakeSubsystem(robot);
         transfer = new TransferSubsystem(robot);
-        shooter = new ShooterSubsystem(robot, transfer);
+        shooter = new ShooterSubsystem(robot);
         controls = new ControlSubsystem();
 
         gamepad1Ex = new GamepadEx(gamepad1);
@@ -78,12 +78,15 @@ public class BasicTeleOp extends CommandOpMode {
         telemetry.addData("Intake Target Power", "%.1f", intake.getIntakeMotorPower());
         telemetry.addData("Intake Active Power", "%.2f", robot.intakeMotor.getPower());
         telemetry.addData("Intake velocity", intake.getSampledIntakeTicksPerSecond());
+        telemetry.addData("Intake RPM", "%.1f", intake.getIntakeRPM());
+        telemetry.addData("Intake Full", intake.isIntakeFull());
         telemetry.addLine("--- SHOOTER TELEMETRY ---");
         telemetry.addData("Target RPM", "%.1f", targetShooterRPM);
         telemetry.addData("Target TPS", "%.1f", targetShooterTPS);
         telemetry.addData("Shooter On", shooter.isShooterOn());
         telemetry.addData("Shooter Ready", shooter.isFlywheelReady());
         telemetry.addData("Transfer Running", transfer.isTransferRunning());
+        telemetry.addData("Transfer At Speed", transfer.isTransferReady());
         telemetry.addData("Right Flywheel RPM", actualShooterRPM);
         telemetry.addData("Right Flywheel TPS", actualShooterTicksPerSecond);
         telemetry.addData("Shooter power", robot.rightShooterMotor.getPower());
