@@ -21,8 +21,6 @@ import java.util.Map;
  */
 public class Limelight2DCenterSubsystem extends SubsystemBase {
 
-    private final Deque<Double> historyMeasurements = new ArrayDeque<>();
-    private final int historySize = 3;
     private final RobotHardware robot;
 
     private double rawTx = 0.0;
@@ -37,6 +35,14 @@ public class Limelight2DCenterSubsystem extends SubsystemBase {
     // Camera frame width in pixels (standard Limelight stream resolution)
     private static final double CAMERA_FRAME_WIDTH_PIXELS = 640;
 
+    ///singleTag
+    private double distanceToCenterInches = 0.0;
+
+    private double cameraHeightInches = 12.0; ///NEED CHANGE
+    private double targetHeightInches = 65.6; ///NEED CHANGE
+    private double cameraPitchDegrees = 0.0; ///NEED CHANGE
+
+    ///isTipped
     private final List<Integer> tagDetected = new ArrayList<>();
     private int maxTagCount = 4;
 
@@ -46,6 +52,11 @@ public class Limelight2DCenterSubsystem extends SubsystemBase {
 
     public Limelight2DCenterSubsystem(RobotHardware robot) {
         this.robot = robot;
+    }
+
+    public void setCameraMountingParameters(double cameraHeightInches, double cameraPitchDegrees) {
+        this.cameraHeightInches = cameraHeightInches;
+        this.cameraPitchDegrees = cameraPitchDegrees;
     }
 
     /**
@@ -106,9 +117,10 @@ public class Limelight2DCenterSubsystem extends SubsystemBase {
                 if (xOffsetObj != null) {
                     double xOffset = xOffsetObj;
                     double tagTx = fr.getTargetXDegrees();
+                    double tagTy = fr.getTargetYDegrees();
                     double cornerWidthPx = getCornerWidthPixels(fr.getTargetCorners());
 
-                    validTags.add(new ValidTagInfo(tagID, xOffset, tagTx, cornerWidthPx));
+                    validTags.add(new ValidTagInfo(tagID, xOffset, tagTx, tagTy, cornerWidthPx));
                 }
             }
 
@@ -144,13 +156,26 @@ public class Limelight2DCenterSubsystem extends SubsystemBase {
                 }
 
             } else if (validTags.size() == 1) {
-                // =========================================================================
-                // PURE 2D METHOD B (Only 1 Tag Visible): 2D Corner Pixel Scale Factor
-                // Uses visible 2D tag width in pixels to compute local angular scale (deg/inch)
-                // =========================================================================
+
                 ValidTagInfo tag = validTags.get(0);
 
-                if (tag.cornerWidthPx > 1.0 && physicalTagWidthInches > 0) {
+                double angleRad = Math.toRadians(cameraPitchDegrees + tag.ty);
+                double tanAngle = Math.tan(angleRad);
+
+                if (-0.1 > tanAngle || tanAngle > 0.1) { ///If tanAngle not equal to zero, i.e. abs(tanAngle) < 1e-4
+                    double distanceInches = (targetHeightInches - cameraHeightInches) / tanAngle;
+                    distanceToCenterInches = Math.abs(distanceInches);
+
+                    double angularOffsetDegrees = Math.toDegrees(Math.atan2(tag.xOffset, distanceToCenterInches));
+                    txToCenter = tag.tx - angularOffsetDegrees;
+                    isCenterValid = true;
+                }
+
+                else if (tag.cornerWidthPx > 1.0 && physicalTagWidthInches > 0) { ///If tagAngle is approaching 0, fall back to deg/in approx. to prevent division by 0
+                    // =========================================================================
+                    // PURE 2D METHOD B (Only 1 Tag Visible): 2D Corner Pixel Scale Factor
+                    // =========================================================================
+
                     // Angular width of tag in camera degrees
                     double degreesPerPixel = LIMELIGHT_3A_HORIZONTAL_FOV_DEGREES / CAMERA_FRAME_WIDTH_PIXELS;
                     double tagAngularWidthDegrees = tag.cornerWidthPx * degreesPerPixel;
@@ -160,6 +185,7 @@ public class Limelight2DCenterSubsystem extends SubsystemBase {
 
                     // Shift tag's tx to center: centerTx = tagTx - (xOffset * degreesPerInch)
                     txToCenter = tag.tx - (tag.xOffset * degreesPerInch);
+                    distanceToCenterInches = 0.0;
                     isCenterValid = true;
                 } else {
                     txToCenter = tag.tx;
@@ -186,7 +212,6 @@ public class Limelight2DCenterSubsystem extends SubsystemBase {
     private double getCornerWidthPixels(List<List<Double>> corners) {
         if (corners == null || corners.size() < 4) return 0.0;
         try {
-            // Corner 0: top-left, Corner 1: top-right, Corner 2: bottom-right, Corner 3: bottom-left
             double topWidth = Math.hypot(corners.get(1).get(0) - corners.get(0).get(0), corners.get(1).get(1) - corners.get(0).get(1));
             double botWidth = Math.hypot(corners.get(2).get(0) - corners.get(3).get(0), corners.get(2).get(1) - corners.get(3).get(1));
             return (topWidth + botWidth) / 2.0;
@@ -199,12 +224,14 @@ public class Limelight2DCenterSubsystem extends SubsystemBase {
         final int id;
         final double xOffset;
         final double tx;
+        final double ty;
         final double cornerWidthPx;
 
-        ValidTagInfo(int id, double xOffset, double tx, double cornerWidthPx) {
+        ValidTagInfo(int id, double xOffset, double tx, double ty, double cornerWidthPx) {
             this.id = id;
             this.xOffset = xOffset;
             this.tx = tx;
+            this.ty = ty;
             this.cornerWidthPx = cornerWidthPx;
         }
     }
@@ -232,6 +259,11 @@ public class Limelight2DCenterSubsystem extends SubsystemBase {
         return tagDetected;
     }
 
+    public double getDistanceToCenterInches() {
+        return distanceToCenterInches;
+    }
+
+    ///For tipping detection
     public boolean isTipped(double percentYield) {
         if (percentYield > 100) percentYield = 100;
         if (percentYield <= 0) percentYield = 25;
