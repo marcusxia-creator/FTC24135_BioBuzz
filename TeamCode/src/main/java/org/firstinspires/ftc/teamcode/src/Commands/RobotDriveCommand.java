@@ -12,14 +12,17 @@ public class RobotDriveCommand extends CommandBase {
     private final DoubleSupplier strafe;
     private final DoubleSupplier turn;
 
-    public RobotDriveCommand(RobotDriveSubsystem robotDrive, DoubleSupplier forward, DoubleSupplier strafe, DoubleSupplier turn) {
+    public RobotDriveCommand(RobotDriveSubsystem robotDrive,
+                             DoubleSupplier forward,
+                             DoubleSupplier strafe,
+                             DoubleSupplier turn) {
         this.robotDrive = robotDrive;
         this.forward = forward;
         this.strafe = strafe;
         this.turn = turn;
-
         addRequirements(robotDrive);
     }
+
     @Override
     public void execute() {
         robotDrive.mecanumDrive(
@@ -27,6 +30,5 @@ public class RobotDriveCommand extends CommandBase {
                 strafe.getAsDouble(),
                 turn.getAsDouble());
     }
-
 }
 

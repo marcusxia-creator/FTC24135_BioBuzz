@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.src.UniversalTools;
 import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.hardware.gobilda.GoBildaPinpointDriver;
 
+import org.firstinspires.ftc.teamcode.src.Subsystems.LimelightSubsystem;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
@@ -20,8 +21,11 @@ public final class ShotTargeting {
     public static double aimPowerPerRadian = 0.8;
     public static double maxTurnPower = 0.4;
     public static double aimToleranceDegrees = 2.0;
+    public static double limelightAlignedTxDegrees = 0.0;
+    public static boolean positiveXIsAudienceSide = true;
 
     private final GoBildaPinpointDriver pinpoint;
+    private final LimelightSubsystem limelight;
     private Alliance selectedAlliance;
     private Cell selectedCell = Cell.LEFT;
     private boolean fieldPoseReady;
@@ -31,10 +35,17 @@ public final class ShotTargeting {
     private double targetY;
     private double distance = Double.NaN;
     private double headingError = Double.NaN;
+    private String aimSource = "None";
+    private double aimErrorDegrees = Double.NaN;
     private String status = "Waiting for start";
 
     public ShotTargeting(GoBildaPinpointDriver pinpoint) {
+        this(pinpoint, null);
+    }
+
+    public ShotTargeting(GoBildaPinpointDriver pinpoint, LimelightSubsystem limelight) {
         this.pinpoint = pinpoint;
+        this.limelight = limelight;
     }
 
     public void initializeFieldPose() {
@@ -72,6 +83,8 @@ public final class ShotTargeting {
         valid = false;
         distance = Double.NaN;
         headingError = Double.NaN;
+        aimSource = "None";
+        aimErrorDegrees = Double.NaN;
         if (fieldPoseReady) {
             status = "Idle";
         }
@@ -110,7 +123,7 @@ public final class ShotTargeting {
                 headingError = Math.atan2(Math.sin(error), Math.cos(error));
             }
             valid = true;
-            status = "Tracking";
+            status = "Pinpoint Tracking";
         } catch (RuntimeException failure) {
             status = "Pinpoint read failed";
         }
@@ -118,17 +131,35 @@ public final class ShotTargeting {
     }
 
     public double getAimTurn() {
-        if (!update() || !Double.isFinite(headingError)
-                || !(aimPowerPerRadian > 0.0) || !Double.isFinite(aimPowerPerRadian)
+        if (!(aimPowerPerRadian > 0.0) || !Double.isFinite(aimPowerPerRadian)
                 || !(maxTurnPower > 0.0 && maxTurnPower <= 1.0)
                 || !(aimToleranceDegrees >= 0.0 && aimToleranceDegrees < 180.0)) {
             return Double.NaN;
         }
-        if (Math.abs(headingError) <= Math.toRadians(aimToleranceDegrees)) {
+
+        update();
+        // Drive power and Limelight tx are clockwise-positive. Pinpoint is counterclockwise-positive.
+        aimErrorDegrees = -Math.toDegrees(headingError);
+        aimSource = Double.isFinite(aimErrorDegrees) ? "Pinpoint" : "None";
+        if (limelight != null && selectedAlliance != null) {
+            boolean audienceSide = (targetX > 0.0) == positiveXIsAudienceSide;
+            int firstTagId = selectedAlliance == Alliance.RED
+                    ? (audienceSide ? 34 : 30)
+                    : (audienceSide ? 38 : 42);
+            double visionError = limelight.getAimTxDegrees(firstTagId) - limelightAlignedTxDegrees;
+            if (Double.isFinite(visionError)) {
+                aimErrorDegrees = visionError;
+                aimSource = "Limelight";
+            }
+        }
+
+        if (!Double.isFinite(aimErrorDegrees)) {
+            return Double.NaN;
+        }
+        if (Math.abs(aimErrorDegrees) <= aimToleranceDegrees) {
             return 0.0;
         }
-        // Pinpoint heading increases counterclockwise; the drive mixer turns clockwise.
-        double turn = -headingError * aimPowerPerRadian;
+        double turn = Math.toRadians(aimErrorDegrees) * aimPowerPerRadian;
         return Math.max(-maxTurnPower, Math.min(maxTurnPower, turn));
     }
 
@@ -148,5 +179,7 @@ public final class ShotTargeting {
     public double getTargetY() { return targetY; }
     public double getDistance() { return distance; }
     public double getHeadingErrorDegrees() { return Math.toDegrees(headingError); }
+    public double getAimErrorDegrees() { return aimErrorDegrees; }
+    public String getAimSource() { return aimSource; }
     public String getStatus() { return status; }
 }

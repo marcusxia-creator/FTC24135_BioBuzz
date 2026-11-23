@@ -44,7 +44,7 @@ public class ShooterCommand extends CommandBase {
             shooterSubsystem.openPollenGate();
             }
         else {
-            shooterSubsystem.closePollenGate();
+            //shooterSubsystem.closePollenGate();
         }
     }
 

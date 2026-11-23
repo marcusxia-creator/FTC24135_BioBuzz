@@ -11,6 +11,7 @@ import com.seattlesolvers.solverslib.gamepad.GamepadEx;
 import org.firstinspires.ftc.teamcode.src.Commands.RobotDriveCommand;
 import org.firstinspires.ftc.teamcode.src.Subsystems.ControlSubsystem;
 import org.firstinspires.ftc.teamcode.src.Subsystems.IntakeSubsystem;
+import org.firstinspires.ftc.teamcode.src.Subsystems.LimelightSubsystem;
 import org.firstinspires.ftc.teamcode.src.Subsystems.RobotDriveSubsystem;
 import org.firstinspires.ftc.teamcode.src.Subsystems.ShooterSubsystem;
 import org.firstinspires.ftc.teamcode.src.Subsystems.TransferSubsystem;
@@ -30,6 +31,7 @@ public class BasicTeleOp extends CommandOpMode {
     private GamepadEx gamepad1Ex;
     private GamepadEx gamepad2Ex;
     private ShotTargeting targeting;
+    private LimelightSubsystem limelight;
     private DistanceShooterRPM shooterRPM;
     private boolean autoAimActive;
 
@@ -53,7 +55,9 @@ public class BasicTeleOp extends CommandOpMode {
         transfer = new TransferSubsystem(robot);
         shooter = new ShooterSubsystem(robot);
         controls = new ControlSubsystem();
-        targeting = new ShotTargeting(robot.odo);
+        limelight = new LimelightSubsystem(robot);
+        limelight.init();
+        targeting = new ShotTargeting(robot.odo, limelight);
         shooterRPM = new DistanceShooterRPM(targeting);
 
         gamepad1Ex = new GamepadEx(gamepad1);
@@ -89,8 +93,8 @@ public class BasicTeleOp extends CommandOpMode {
         driveTimer.reset();
         drive = joystick.update(
             -selectAxis(gamepad1.right_stick_y, gamepad2.right_stick_y),
-            -selectAxis(gamepad1.right_stick_x, gamepad2.right_stick_x),
-            -selectAxis(gamepad1.left_stick_x, gamepad2.left_stick_x),
+            selectAxis(gamepad1.right_stick_x, gamepad2.right_stick_x),
+            selectAxis(gamepad1.left_stick_x, gamepad2.left_stick_x),
             dt);
         super.run();
 
@@ -106,6 +110,11 @@ public class BasicTeleOp extends CommandOpMode {
         telemetry.addData("Selected cell", targeting.getSelectedCell());
         telemetry.addData("Pinpoint targeting", targeting.getStatus());
         telemetry.addData("Chassis rotation", autoAimActive ? "Auto aim" : "Driver");
+        telemetry.addData("Aim source", targeting.getAimSource());
+        if (autoAimActive) {
+            telemetry.addData("Aim error (deg)", "%.1f", targeting.getAimErrorDegrees());
+        }
+        telemetry.addData("Limelight tags", limelight.getTagDetected());
         if (Double.isFinite(targeting.getDistance())) {
             telemetry.addData("Target (in)", "(%.0f, %.0f)", targeting.getTargetX(), targeting.getTargetY());
             telemetry.addData("Target distance (in)", "%.1f", targeting.getDistance());
@@ -128,6 +137,9 @@ public class BasicTeleOp extends CommandOpMode {
     @Override
     public void reset() {
         joystick.reset();
+        if (limelight != null) {
+            limelight.stop();
+        }
         super.reset();
     }
 
@@ -137,7 +149,7 @@ public class BasicTeleOp extends CommandOpMode {
     }
 
     private double selectTurn() {
-        double autoTurn = gamepad1Ex.getLeft_trigger()  > 0.5 ? targeting.getAimTurn() : Double.NaN;
+        double autoTurn = gamepad1.left_trigger > 0.5 ? targeting.getAimTurn() : Double.NaN;
         boolean aiming = Double.isFinite(autoTurn);
         if (aiming != autoAimActive || (aiming && autoTurn == 0.0)) {
             robotDrive.clearTurnSmoothing();
@@ -146,7 +158,7 @@ public class BasicTeleOp extends CommandOpMode {
         if (aiming) {
             return autoTurn;
         }
-        return -drive.turn ;
+        return drive.turn ;
     }
 
     private static double loopFrequencyHz(double elapsedSeconds) {

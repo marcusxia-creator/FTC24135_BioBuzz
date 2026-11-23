@@ -4,6 +4,7 @@ import static com.qualcomm.hardware.gobilda.GoBildaPinpointDriver.EncoderDirecti
 import static org.firstinspires.ftc.teamcode.lib.IceWaddler2.src.Math.Measurement.Units.Unit.*;
 
 import com.qualcomm.hardware.gobilda.GoBildaPinpointDriver;
+import com.qualcomm.hardware.limelightvision.Limelight3A;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotor.*;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
@@ -25,6 +26,7 @@ public class RobotHardware {
     public DcMotorEx backRightMotor;
 
     public GoBildaPinpointDriver odo;
+    public Limelight3A limelight;
 
     public VoltageSensor voltageSensor;
 
@@ -86,6 +88,7 @@ public class RobotHardware {
 
         driveTrain=new DriveTrain(this);
         initializePinpoint(requirePinpoint);
+        limelight = hardwareMap.tryGet(Limelight3A.class, "limelight");
 
         ///Intake
         intakeMotor = hardwareMap.get(DcMotorEx.class, "Intake_Motor");
