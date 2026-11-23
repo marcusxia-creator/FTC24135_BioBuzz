@@ -5,6 +5,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.Gamepad;
 import com.seattlesolvers.solverslib.command.CommandOpMode;
 import com.seattlesolvers.solverslib.gamepad.GamepadEx;
 
@@ -31,6 +32,7 @@ public class BasicTeleOp extends CommandOpMode {
     private GamepadEx gamepad1Ex;
     private GamepadEx gamepad2Ex;
     private ShotTargeting targeting;
+    private ShotTargeting.Cell displayedCell;
     private LimelightSubsystem limelight;
     private DistanceShooterRPM shooterRPM;
     private boolean autoAimActive;
@@ -62,6 +64,8 @@ public class BasicTeleOp extends CommandOpMode {
 
         gamepad1Ex = new GamepadEx(gamepad1);
         gamepad2Ex = new GamepadEx(gamepad2);
+        displayedCell = null;
+        updateCellLeds();
 
         telemetry=new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
 
@@ -97,6 +101,7 @@ public class BasicTeleOp extends CommandOpMode {
             selectAxis(gamepad1.left_stick_x, gamepad2.left_stick_x),
             dt);
         super.run();
+        updateCellLeds();
 
         telemetry.addData("Loop Frequency (Hz)", "%.1f", loopFrequencyHz(dt));
         telemetry.addLine("--------------------");
@@ -132,6 +137,21 @@ public class BasicTeleOp extends CommandOpMode {
         telemetry.addData("Transfer Target RPM", "%.0f", transfer.getFeederTargetRPM());
         telemetry.addData("Transfer Actual RPM", "%.0f", transfer.getTransferSpeedRPM());
         telemetry.update();
+    }
+
+    private void updateCellLeds() {
+        ShotTargeting.Cell selectedCell = targeting.getSelectedCell();
+        if (selectedCell == displayedCell) {
+            return;
+        }
+
+        boolean left = selectedCell == ShotTargeting.Cell.LEFT;
+        double red = left ? 0.0 : 1.0;
+        double green = left ? 0.0 : 0.45;
+        double blue = left ? 1.0 : 0.0;
+        gamepad1.setLedColor(red, green, blue, Gamepad.LED_DURATION_CONTINUOUS);
+        gamepad2.setLedColor(red, green, blue, Gamepad.LED_DURATION_CONTINUOUS);
+        displayedCell = selectedCell;
     }
 
     @Override

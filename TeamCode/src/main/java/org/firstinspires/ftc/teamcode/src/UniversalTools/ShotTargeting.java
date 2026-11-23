@@ -71,7 +71,7 @@ public final class ShotTargeting {
             pinpoint.setPosition(new Pose2D(DistanceUnit.INCH, startXInches, startYInches,
                     AngleUnit.DEGREES, startHeadingDegrees));
             fieldPoseReady = true;
-            targetY = selectedAlliance == Alliance.RED ? -36.0 : 36.0;
+            targetY = selectedAlliance == Alliance.RED ? -12.75 : 12.75;
             status = "Ready";
         } catch (RuntimeException failure) {
             status = "Pinpoint starting pose failed";
@@ -113,7 +113,7 @@ public final class ShotTargeting {
             }
 
             if (x != 0.0) {
-                targetX = Math.copySign(36.0, x);
+                targetX = Math.copySign(13.0, x);
             }
             double dx = targetX - x;
             double dy = targetY - y;
@@ -169,7 +169,7 @@ public final class ShotTargeting {
 
     public void toggleCell() {
         selectedCell = selectedCell == Cell.LEFT ? Cell.RIGHT : Cell.LEFT;
-        targetX = selectedCell == Cell.LEFT ? -36.0 : 36.0;
+        targetX = selectedCell == Cell.LEFT ? -13.0 : 13.0;
         beginLoop();
     }
 
