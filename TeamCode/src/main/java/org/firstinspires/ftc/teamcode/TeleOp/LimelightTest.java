@@ -50,7 +50,7 @@ public class LimelightTest extends OpMode {
         telemetry.addData("isCenterValid", limelight.isCenterValid());
         telemetry.addData("txToCenter", limelight.getTxToCenter());
         telemetry.addData("rawTx", limelight.getRawTx());
-        ///telemetry.addData("distanceInches", limelight.getDistanceToCenterInches());
+        telemetry.addData("distanceInches", limelight.getDistanceToCenterInches());
         telemetry.addData("tagsDetected", limelight.getTagDetected());
         telemetry.update();
     }

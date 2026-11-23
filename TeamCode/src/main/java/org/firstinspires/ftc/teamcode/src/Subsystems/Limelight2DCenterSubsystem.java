@@ -14,6 +14,14 @@ import java.util.List;
 import java.util.Map;
 
 /**
+TODO:
+ 1. Add a Limelight Config
+ 2. Integrate To Drive and other Subsystems
+ 3. Run Limelight on a separate Thread
+ 4. (Optional) Add data processing
+ 5. Change the processing sequence/Pipeline, i.e. removing redudent processes and improving current ones
+
+/**
  * Subsystem for calculating robot heading (tx) relative to the geometric center
  * of a 4-AprilTag cluster using Pure 2D Image Geometry.
  *
@@ -128,7 +136,6 @@ public class Limelight2DCenterSubsystem extends SubsystemBase {
                 // =========================================================================
                 // PURE 2D METHOD A (2+ Tags Visible): Pairwise Linear Interpolation
                 // Formula for pair (i, j): centerTx = (X_j * tx_i - X_i * tx_j) / (X_j - X_i)
-                // Zero 3D pose, zero distance calculation needed!
                 // =========================================================================
                 double sumCenterTx = 0.0;
                 int pairCount = 0;
