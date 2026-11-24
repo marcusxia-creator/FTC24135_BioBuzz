@@ -177,8 +177,13 @@ public class Limelight2DCenterSubsystem extends SubsystemBase {
                     txToCenter = tag.tx - angularOffsetDegrees;
                     isCenterValid = true;
                 }
+                else {
+                    txToCenter = 0;///tag.tx;
+                    isCenterValid = true;
+                }
 
-                else if (tag.cornerWidthPx > 1.0 && physicalTagWidthInches > 0) { ///If tagAngle is approaching 0, fall back to deg/in approx. to prevent division by 0
+                /**
+                else if (tag.cornerWidthPx > 1.0 && physicalTagWidthInches > 0) { ///If tagAngle is approaching 0, do something to prevent division by 0
                     // =========================================================================
                     // PURE 2D METHOD B (Only 1 Tag Visible): 2D Corner Pixel Scale Factor
                     // =========================================================================
@@ -194,10 +199,8 @@ public class Limelight2DCenterSubsystem extends SubsystemBase {
                     txToCenter = tag.tx - (tag.xOffset * degreesPerInch);
                     distanceToCenterInches = 0.0;
                     isCenterValid = true;
-                } else {
-                    txToCenter = tag.tx;
-                    isCenterValid = true;
                 }
+                */
 
             } else if (!fiducialResults.isEmpty()) {
                 // Fallback to raw tx if no tags match configured offsets
