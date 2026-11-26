@@ -26,6 +26,7 @@ public class ShooterCommand extends CommandBase {
     @Override
     public void initialize() {
         stopFeeding();
+        shooterSubsystem.openPollenGate();
     }
 
     @Override
@@ -40,12 +41,14 @@ public class ShooterCommand extends CommandBase {
         transferSubsystem.setTransferSpeedRPM(RobotActionConfig.transferTargetRPM);
         transferSubsystem.runTransferAtTargetSpeed();
 
+        /**
         if(transferSubsystem.isTransferAtTargetSpeedRPM()){
-            shooterSubsystem.openPollenGate();
+            ;
             }
         else {
             //shooterSubsystem.closePollenGate();
         }
+        */
     }
 
     @Override
@@ -62,7 +65,6 @@ public class ShooterCommand extends CommandBase {
     private void stopFeeding() {
         intakeSubsystem.stopFeederIntake();
         transferSubsystem.stopTransfer();
-        //shooterSubsystem.closePollenGate();
     }
 
     @Override

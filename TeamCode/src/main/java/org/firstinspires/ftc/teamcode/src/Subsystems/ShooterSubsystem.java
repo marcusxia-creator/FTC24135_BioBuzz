@@ -126,6 +126,7 @@ public class ShooterSubsystem extends SubsystemBase {
         double availableFeederRPM = maxFeederRpm * voltage / REF_VOLTAGE;
         return //targetMotorRPM > 0.0 && Double.isFinite(targetMotorRPM)
                 //&& Double.isFinite(rightMotor_rpmMeasured)
+                //Math.abs(rightMotor_rpmMeasured - targetMotorRPM) <= shooterToleranceRPM;
                 Math.abs(rightMotor_rpmMeasured - targetMotorRPM) <= shooterToleranceRPM;
                 //&& robot.rightShooterMotor.getPower() > 0.0
                 //&& Double.isFinite(availableFeederRPM) && availableFeederRPM > 0.0;

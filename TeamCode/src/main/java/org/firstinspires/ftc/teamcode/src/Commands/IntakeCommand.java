@@ -8,7 +8,7 @@ import org.firstinspires.ftc.teamcode.src.Subsystems.TransferSubsystem;
 import org.firstinspires.ftc.teamcode.src.UniversalTools.RobotActionConfig;
 
 public class IntakeCommand extends CommandBase {
-    private static final double MIN_SPEED_FRACTION = 0.20;
+    private static final double MIN_SPEED_FRACTION = 0.9;
     private static final double SPIN_UP_SECONDS = 0.50;
     private static final double LOW_SPEED_SECONDS = 0.25;
 

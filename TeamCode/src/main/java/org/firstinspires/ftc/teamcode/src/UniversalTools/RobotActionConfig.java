@@ -10,7 +10,7 @@ import com.acmerobotics.dashboard.config.Config;
 public class RobotActionConfig {
 
     public static double flowerRampDownPos          = 0.44;
-    public static double flowerRampUpPos            = 1.0;
+    public static double flowerRampUpPos            = 0.5;
     public static double gateDownPos                = 0.145;
     public static double gateUpPos                  = 0.21;
     public static double pollenDownPos              = 0.57;
@@ -22,7 +22,7 @@ public class RobotActionConfig {
     public static double IntakeTransferTargetRPM    = 100.0;
     public static double transferToleranceRPM       = 150.0;
     public static double shooterTargetRPM            = 3430.0;
-    public static double shooterToleranceRPM         = 100.0;
+    public static double shooterToleranceRPM         = 100;
 
     public static double maxShooterRpm              = 5200.0;
     public static double maxFeederRpm               = 1150*0.8;
