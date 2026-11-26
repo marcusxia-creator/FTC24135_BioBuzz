@@ -46,17 +46,20 @@ public class RobotDriveSubsystem extends SubsystemBase {
                 redAllianceCell1
         };
     }
-    public void mecanumDrive (double forward, double strafe, double turn){
+    public void mecanumDrive (double forward, double strafe, double turn) {
         lastForward += driveLerp * (forward - lastForward);
         lastStrafe += driveLerp * (strafe - lastStrafe);
         lastTurn += driveLerp * (turn - lastTurn);
+    }
 
     @Override
     public void periodic() {
         robot.odo.update();
     }
 
-    public void mecanumDrive (double forward, double strafe, double turn, boolean ps){
+    public void mecanumDrive (double forward, double strafe, double turn, boolean ps) {
+
+        ///original 0.15, action config 0.35
         double lerp =0.15;
 
         if (Math.abs(forward) < STICK_DEADBAND) forward = 0.0;
