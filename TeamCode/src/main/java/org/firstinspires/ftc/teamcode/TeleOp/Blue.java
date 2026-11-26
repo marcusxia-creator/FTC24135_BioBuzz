@@ -18,8 +18,8 @@ import org.firstinspires.ftc.teamcode.src.Subsystems.TransferSubsystem;
 import org.firstinspires.ftc.teamcode.src.UniversalTools.RobotHardware;
 
 @Config
-@TeleOp(name = "Basic TeleOp", group = "TeleOp")
-public class BasicTeleOp extends CommandOpMode {
+@TeleOp(name = "BLUE 🐧🔵", group = "TeleOp")
+public class Blue extends CommandOpMode {
     private RobotDriveSubsystem robotDrive;
     private IntakeSubsystem intake;
     private ShooterSubsystem shooter;
