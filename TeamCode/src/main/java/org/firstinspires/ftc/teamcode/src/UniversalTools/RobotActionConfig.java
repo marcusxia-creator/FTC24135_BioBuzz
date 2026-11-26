@@ -13,11 +13,11 @@ import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
 public class RobotActionConfig {
 
     // Intake subsystem
-    public static double flowerRampDownPos          = 0.04;
-    public static double flowerRampUpPos            = 0.67;
+    public static double flowerRampDownPos          = 0.16; //0.04
+    public static double flowerRampUpPos            = 0.76; //0.67
     public static double gateDownPos                = 0.145;
     public static double gateUpPos                  = 0.21;
-    public static double limiterDownPos             = 0.58;
+    public static double limiterDownPos             = 0.56; //0.58
     public static double limiterUpPos               = 0.72;
     public static double intakeIdleSpeed            = 0.0;
     public static double intakePower                = 0.7;
