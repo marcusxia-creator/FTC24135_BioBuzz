@@ -47,9 +47,9 @@ public class Limelight2DCenterSubsystem extends SubsystemBase {
     ///singleTag
     private double distanceToCenterInches = 0.0;
 
-    private double cameraHeightInches = 12.0; ///NEED CHANGE
-    private double targetHeightInches = 65.6; ///NEED CHANGE
-    private double cameraPitchDegrees = 0.0; ///NEED CHANGE
+    private double cameraHeightInches = 11.5; ///NEED CHANGE
+    private double targetHeightInches = 50.0; ///NEED CHANGE
+    private double cameraPitchDegrees = 36.0; ///NEED CHANGE
 
     ///isTipped
     private final List<Integer> tagDetected = new ArrayList<>();

@@ -4,6 +4,7 @@ import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.util.ElapsedTime;
 import com.seattlesolvers.solverslib.command.CommandOpMode;
 import com.seattlesolvers.solverslib.gamepad.GamepadEx;
 import com.seattlesolvers.solverslib.gamepad.GamepadKeys;
@@ -29,6 +30,8 @@ public class BasicTeleOp extends CommandOpMode {
     private RobotHardware robot;
 
     public static double actualShooterRPM;
+
+    private final ElapsedTime driveTimer = new ElapsedTime();
 
 
     @Override
@@ -66,15 +69,22 @@ public class BasicTeleOp extends CommandOpMode {
     @Override
     public void preRun() {
         intake.setInitialServoPositions();
+        //shooter.closePollenGate();
+        driveTimer.reset();
     }
 
     @Override
     public void run() {
+
+        double dt = driveTimer.seconds();
+        driveTimer.reset();
+
         super.run();
         double targetShooterRPM = shooter.getTargetRPM();
-        double targetShooterTPS = ShooterSubsystem.rpmToTicksPerSecond(targetShooterRPM);
+        double currentShooterRPM = shooter.getCurrentShooterRPM();
         double actualShooterTicksPerSecond = shooter.getShooterTicksPerSecond();
         actualShooterRPM = Math.abs(ShooterSubsystem.ticksPerSecondToRPM(actualShooterTicksPerSecond));
+        telemetry.addData("Loop Frequency Hz", "%.1f", loopFrequencyHz(dt));
         telemetry.addData("Run time timer type shi", getRuntime());
 
         telemetry.addData("Intake Target Power", "%.1f", intake.getIntakeMotorPower());
@@ -83,8 +93,8 @@ public class BasicTeleOp extends CommandOpMode {
         telemetry.addData("Intake RPM", "%.1f", intake.getIntakeRPM());
         telemetry.addData("Intake Full", intake.isIntakeFull());
         telemetry.addLine("--- SHOOTER TELEMETRY ---");
-        telemetry.addData("Target RPM", "%.1f", targetShooterRPM);
-        telemetry.addData("Target TPS", "%.1f", targetShooterTPS);
+        telemetry.addData("Shooter Target RPM", "%.1f", targetShooterRPM);
+        telemetry.addData("Shooter Current RPM", "%.1f", currentShooterRPM);
         telemetry.addData("Shooter On", shooter.isShooterOn());
         telemetry.addData("Shooter Ready", shooter.isFlywheelReady());
         telemetry.addData("Transfer Running", transfer.isTransferRunning());
@@ -94,5 +104,9 @@ public class BasicTeleOp extends CommandOpMode {
         telemetry.addData("Shooter power", robot.rightShooterMotor.getPower());
         telemetry.addData("Shooter Encoder Position", shooter.getShooterEncoderPosition());
         telemetry.update();
+    }
+
+    private static double loopFrequencyHz(double dt) {
+        return dt > 0.0 ? 1.0 / dt : 0.0;
     }
 }

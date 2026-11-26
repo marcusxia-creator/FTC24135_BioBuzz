@@ -113,7 +113,6 @@ public class RobotHardware {
         limelightAdjServo = hardwareMap.get(Servo.class, "Limelight_Servo");
 
         leftFlowerRampServo.setDirection(Servo.Direction.REVERSE);
-        gateServo.setDirection(Servo.Direction.REVERSE);
         limelightAdjServo.setDirection(Servo.Direction.REVERSE);
 
         limelight = hardwareMap.get(Limelight3A.class, "limelight");

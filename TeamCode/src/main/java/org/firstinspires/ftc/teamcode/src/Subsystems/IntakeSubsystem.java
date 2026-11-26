@@ -11,9 +11,12 @@ public class IntakeSubsystem extends SubsystemBase {
     private static final double INTAKE_STARTUP_GRACE_SECONDS = 0.5;
     private final RobotHardware robot;
     private boolean rollersRunning = false;
+    private boolean collectingForward;
     private double sampledIntakeTicksPerSecond;
     private double appliedIntakePower = Double.NaN;
     private final ElapsedTime intakeRunTimer = new ElapsedTime();
+
+    private final double FEEDER_TICK_PER_REV = 145.1;
 
     public IntakeSubsystem(RobotHardware robot) {
         this.robot = robot;
@@ -22,52 +25,47 @@ public class IntakeSubsystem extends SubsystemBase {
     public void setInitialServoPositions() {
         robot.leftFlowerRampServo.setPosition(flowerRampUpPos);
         robot.rightFlowerRampServo.setPosition(flowerRampUpPos);
-        robot.pollenLimitingServo.setPosition(limiterDownPos);
     }
 
-    public void runShooterIntake (){
+    public void runShooterIntake () {
         startRollers();
         robot.leftFlowerRampServo.setPosition(flowerRampUpPos);
         robot.rightFlowerRampServo.setPosition(flowerRampUpPos);
-        robot.pollenLimitingServo.setPosition(limiterDownPos);
-        applyIntakePower(intakePower);
+        startForwardIntake(intakePower);
     }
 
     public void runRollersPollen() {
         startRollers();
         robot.leftFlowerRampServo.setPosition(flowerRampUpPos);
         robot.rightFlowerRampServo.setPosition(flowerRampUpPos);
-        robot.pollenLimitingServo.setPosition(limiterDownPos);
-        applyIntakePower(intakePower);
+        startForwardIntake(intakePower);
     }
 
     public void runRollersNectar() {
         startRollers();
         robot.leftFlowerRampServo.setPosition(flowerRampUpPos);
         robot.rightFlowerRampServo.setPosition(flowerRampUpPos);
-        robot.pollenLimitingServo.setPosition(limiterUpPos);
-        applyIntakePower(intakePower);
+        startForwardIntake(intakePower);
     }
 
     public void runRollersFlower() {
         startRollers();
         robot.leftFlowerRampServo.setPosition(flowerRampDownPos);
         robot.rightFlowerRampServo.setPosition(flowerRampDownPos);
-        robot.pollenLimitingServo.setPosition(limiterDownPos);
-        applyIntakePower(intakePower);
+        startForwardIntake(intakePower);
     }
 
     public void increasePower() {
         intakePower = Math.min(1.0, Math.round((intakePower + 0.1) * 10.0) / 10.0);
         if (rollersRunning) {
-            applyIntakePower(intakePower);
+            startForwardIntake(intakePower);
         }
     }
 
     public void decreasePower() {
         intakePower = Math.max(0.0, Math.round((intakePower - 0.1) * 10.0) / 10.0);
         if (rollersRunning) {
-            applyIntakePower(intakePower);
+            startForwardIntake(intakePower);
         }
     }
 
@@ -78,8 +76,7 @@ public class IntakeSubsystem extends SubsystemBase {
         rollersRunning = false;
         robot.leftFlowerRampServo.setPosition(flowerRampUpPos);
         robot.rightFlowerRampServo.setPosition(flowerRampUpPos);
-        robot.pollenLimitingServo.setPosition(limiterUpPos);
-        applyIntakePower(-1.0);
+        startForwardIntake(-1.0);
     }
 
     public double getIntakeMotorPower() {
@@ -88,7 +85,7 @@ public class IntakeSubsystem extends SubsystemBase {
 
     public void stop() {
         rollersRunning = false;
-        applyIntakePower(intakeIdleSpeed);
+        startForwardIntake(intakeIdleSpeed);
         robot.leftFlowerRampServo.setPosition(flowerRampUpPos);
         robot.rightFlowerRampServo.setPosition(flowerRampUpPos);
     }
@@ -121,12 +118,26 @@ public class IntakeSubsystem extends SubsystemBase {
     @Override
     public void periodic() {
         sampledIntakeTicksPerSecond = robot.intakeMotor.getVelocity();
+
+        /**
         if (rollersRunning && appliedIntakePower != intakePower) {
             applyIntakePower(intakePower);
         }
+         */
     }
 
-    private void applyIntakePower(double power) {
+    private void setFeederRPM(double targetRPM) {
+        collectingForward = false;
+
+        int intakeTicksPerSecond = (int) (targetRPM * FEEDER_TICK_PER_REV / 60.0);
+        robot.intakeMotor.setVelocity(intakeTicksPerSecond);
+    }
+    public void runFeederIntakeAtTargetRPM() {
+        setFeederRPM(intakeTransferRPM);
+    }
+
+    private void startForwardIntake(double power) {
+        collectingForward = true;
         if (Double.isNaN(appliedIntakePower) || appliedIntakePower != power) {
             robot.intakeMotor.setPower(power);
             appliedIntakePower = power;

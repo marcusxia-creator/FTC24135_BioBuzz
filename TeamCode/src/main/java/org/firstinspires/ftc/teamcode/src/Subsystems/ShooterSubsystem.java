@@ -14,8 +14,8 @@ public class  ShooterSubsystem extends SubsystemBase {
     private RobotHardware robot;
 
     private double rightMotor_ticksPerSecond;
-    private double rightMotor_rpmMeasured;
-    private double sampledVoltage = REF_VOLTAGE;
+    private double rightMotor_rpmMeasured = Double.NaN;
+    private double sampledVoltage = Double.NaN;
 
     private final PIDFController rightShooterPIDF = new PIDFController(rightShooterKp, rightShooterKi, rightShooterKd, rightShooterKf);
 
@@ -59,7 +59,7 @@ public class  ShooterSubsystem extends SubsystemBase {
         rightTargetNorm = clamp01(rightTargetNorm);
         rightCurrentNorm = clamp01(rightCurrentNorm);
 
-        updatePids();
+        ///updatePids();
 
         double rightOutput = rightShooterPIDF.calculate(rightCurrentNorm, rightTargetNorm);
         robot.rightShooterMotor.setPower(Range.clip(rightOutput, 0.0, 1.0));
@@ -95,6 +95,10 @@ public class  ShooterSubsystem extends SubsystemBase {
     public double getShooterRPM() {
         return getRightShooterCurrentRPM();
     }
+
+    public void getVoltage() {
+        sampledVoltage = robot.voltageSensor.getVoltage();
+    }
     public double getShooterTicksPerSecond() {
         return rightMotor_ticksPerSecond;
     }
@@ -110,7 +114,7 @@ public class  ShooterSubsystem extends SubsystemBase {
     /** Reports ready as soon as the latest measured flywheel speed reaches its target threshold. */
     public boolean isFlywheelReady() {
         double targetRPM = shooterTargetVelocityRPM;
-        return shooterOn
+        return  shooterOn
                 && targetRPM > 0.0
                 && rightMotor_rpmMeasured >= targetRPM * shooterReadyMinimumTargetFraction;
     }
@@ -128,6 +132,10 @@ public class  ShooterSubsystem extends SubsystemBase {
 
     public double getTargetTicksPerSecond() {
         return rpmToTicksPerSecond(shooterTargetVelocityRPM);
+    }
+
+    public double getCurrentShooterRPM() {
+        return rightMotor_rpmMeasured;
     }
 
     public double getShooterVelocity() {

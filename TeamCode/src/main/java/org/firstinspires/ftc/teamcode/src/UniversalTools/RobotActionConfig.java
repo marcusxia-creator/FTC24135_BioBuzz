@@ -13,8 +13,8 @@ import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
 public class RobotActionConfig {
 
     // Intake subsystem
-    public static double flowerRampDownPos          = 0.44;
-    public static double flowerRampUpPos            = 0.5;
+    public static double flowerRampDownPos          = 0.04;
+    public static double flowerRampUpPos            = 0.67;
     public static double gateDownPos                = 0.145;
     public static double gateUpPos                  = 0.21;
     public static double limiterDownPos             = 0.58;
@@ -28,24 +28,27 @@ public class RobotActionConfig {
     public static double intakeTicksPerRev          = 28.0;
     // Intake RPM threshold for full/jammed detection.
     public static double intakeFullRPMThreshold     = 300.0;
+    public static double intakeTransferRPM          = 600.0;
+    public static double intakeTargetRPM            = 600.0;
 
     // Transfer subsystem
     public static double transferGearRatio          = 1.0;
     public static double transferTicksPerRev        = 28.0;
-    public static double transferMaxRPM             = 500.0;
+    public static double transferMaxRPM             = 1150 * 0.85; ///This is placeholder, value need to be determined
     public static double transferIntakePower        = 0.5;
     public static double transferKp                 = 0.13;
     public static double transferKi                 = 0.000033;
     public static double transferKd                 = 0.010;
     public static double transferKf                 = 0.96;
+    public static double transferTargetRPM          = 500.0;
     // Transfer RPM threshold for full/jammed detection.
 
     // Shooter subsystem
     public static double shooterSpoolUpTimeSeconds = 2.0;
     public static double shooterLimiterRetractTimeSeconds = 1.75;
-    public static double shooterReadyMinimumTargetFraction = 0.95;
+    public static double shooterReadyMinimumTargetFraction = 0.975;
     public static double shooterReadyStabilityWindowSeconds = 0.30;
-    public static double shooterGearRatio            = 30.0 / 40.0;
+    public static double shooterGearRatio            = 1; //30 to 40
     public static double shooterTicksPerRev          = 28.0;
     public static double rightShooterKp              = 0.13;
     public static double rightShooterKi              = 0.000033;

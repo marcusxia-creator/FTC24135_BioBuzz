@@ -5,18 +5,20 @@ import com.seattlesolvers.solverslib.command.SubsystemBase;
 import com.seattlesolvers.solverslib.controller.PIDFController;
 
 import org.firstinspires.ftc.teamcode.lib.CommandBase.Action;
+import org.firstinspires.ftc.teamcode.src.UniversalTools.RobotActionConfig;
 import org.firstinspires.ftc.teamcode.src.UniversalTools.RobotHardware;
 
 import static org.firstinspires.ftc.teamcode.src.UniversalTools.RobotActionConfig.*;
 
 public class TransferSubsystem extends SubsystemBase {
     private final RobotHardware robot;
-    private double transferTargetRPM = transferMaxRPM;
+    private double transferTargetRPM = Double.NaN;
     private boolean transferRunning;
     private double sampledTransferTicksPerSecond;
     private final PIDFController transferPIDF =
             new PIDFController(transferKp, transferKi, transferKd, transferKf);
 
+    private final double TICK_PER_REV = 145.1;
     public TransferSubsystem(RobotHardware robot) {
         this.robot = robot;
     }
@@ -41,14 +43,10 @@ public class TransferSubsystem extends SubsystemBase {
         robot.transferMotor.setPower(Range.clip(output, 0.0, 1.0));
     }
 
-    public void runTransfer(double targetRPM) {
-        setTransferTargetRPM(targetRPM);
-        runTransfer();
-    }
-
     public void intakeTransfer() {
         transferRunning = true;
-        robot.transferMotor.setPower(transferIntakePower);
+        double targetVelocityTickPerSecond = (transferTargetRPM * TICK_PER_REV) / 60.0;
+        robot.transferMotor.setVelocity(targetVelocityTickPerSecond);
     }
 
     public void stopTransfer() {

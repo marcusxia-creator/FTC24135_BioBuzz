@@ -1,10 +1,12 @@
 package org.firstinspires.ftc.teamcode.src.Commands;
 
 import com.seattlesolvers.solverslib.command.CommandBase;
+import com.seattlesolvers.solverslib.command.Robot;
 
 import org.firstinspires.ftc.teamcode.src.Subsystems.IntakeSubsystem;
 import org.firstinspires.ftc.teamcode.src.Subsystems.ShooterSubsystem;
 import org.firstinspires.ftc.teamcode.src.Subsystems.TransferSubsystem;
+import org.firstinspires.ftc.teamcode.src.UniversalTools.RobotActionConfig;
 
 public class ShooterCommand extends CommandBase {
     private final ShooterSubsystem shooterSubsystem;
@@ -23,7 +25,7 @@ public class ShooterCommand extends CommandBase {
 
     @Override
     public void initialize() {
-        shooterSubsystem.closePollenGate();
+        shooterSubsystem.openPollenGate();
         intakeSubsystem.stop();
         transferSubsystem.stopTransfer();
     }
@@ -35,15 +37,11 @@ public class ShooterCommand extends CommandBase {
         if (!shooterSubsystem.isFlywheelReady()) {
             intakeSubsystem.stop();
             transferSubsystem.stopTransfer();
-            shooterSubsystem.closePollenGate();
             return;
         }
         intakeSubsystem.runShooterIntake();
+        transferSubsystem.setTransferTargetRPM(RobotActionConfig.transferTargetRPM);
         transferSubsystem.runTransfer();
-        if (transferSubsystem.isTransferReady()) {
-            shooterSubsystem.openPollenGate();
-        }
-        else shooterSubsystem.closePollenGate();
     }
 
     @Override
@@ -51,6 +49,7 @@ public class ShooterCommand extends CommandBase {
         intakeSubsystem.stop();
         transferSubsystem.stopTransfer();
         shooterSubsystem.closePollenGate();
+        shooterSubsystem.stop();
     }
 
     @Override
