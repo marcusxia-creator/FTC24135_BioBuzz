@@ -1,47 +1,55 @@
 package org.firstinspires.ftc.teamcode.src.Commands;
 
-import com.qualcomm.robotcore.util.ElapsedTime;
 import com.seattlesolvers.solverslib.command.CommandBase;
 
-import org.firstinspires.ftc.teamcode.src.Subsystems.ShooterSubsystem;
 import org.firstinspires.ftc.teamcode.src.Subsystems.IntakeSubsystem;
-
-import static org.firstinspires.ftc.teamcode.src.UniversalTools.RobotActionConfig.intakeShootingPower;
+import org.firstinspires.ftc.teamcode.src.Subsystems.ShooterSubsystem;
+import org.firstinspires.ftc.teamcode.src.Subsystems.TransferSubsystem;
 
 public class ShooterCommand extends CommandBase {
     private final ShooterSubsystem shooterSubsystem;
     private final IntakeSubsystem intakeSubsystem;
-    private final ElapsedTime timer = new ElapsedTime();
+    private final TransferSubsystem transferSubsystem;
 
-    public ShooterCommand(ShooterSubsystem shooterSubsystem, IntakeSubsystem intakeSubsystem) {
+    public ShooterCommand(
+            ShooterSubsystem shooterSubsystem,
+            IntakeSubsystem intakeSubsystem,
+            TransferSubsystem transferSubsystem) {
         this.shooterSubsystem = shooterSubsystem;
         this.intakeSubsystem = intakeSubsystem;
-        addRequirements(shooterSubsystem, intakeSubsystem);
+        this.transferSubsystem = transferSubsystem;
+        addRequirements(shooterSubsystem, intakeSubsystem, transferSubsystem);
     }
 
     @Override
     public void initialize() {
-        timer.reset();
         shooterSubsystem.closePollenGate();
+        intakeSubsystem.stop();
+        transferSubsystem.stopTransfer();
     }
 
     @Override
     public void execute() {
-        // Keep the flywheel regulated while feeding balls into it.
+        // Regulate the flywheel while keeping the limiter engaged during initial spool-up.
         shooterSubsystem.runFlywheel();
-        shooterSubsystem.setFeederPower(0.8);
-
-        // After 0.75 seconds, automatically lift pollen gate while keeping intake running
-        if (timer.seconds() > 0.6) {
-            shooterSubsystem.openPollenGate();
-        } else {
+        if (!shooterSubsystem.isFlywheelReady()) {
+            intakeSubsystem.stop();
+            transferSubsystem.stopTransfer();
             shooterSubsystem.closePollenGate();
+            return;
         }
+        intakeSubsystem.runShooterIntake();
+        transferSubsystem.runTransfer();
+        if (transferSubsystem.isTransferReady()) {
+            shooterSubsystem.openPollenGate();
+        }
+        else shooterSubsystem.closePollenGate();
     }
 
     @Override
     public void end(boolean interrupted) {
-        shooterSubsystem.setFeederPower(0);
+        intakeSubsystem.stop();
+        transferSubsystem.stopTransfer();
         shooterSubsystem.closePollenGate();
     }
 

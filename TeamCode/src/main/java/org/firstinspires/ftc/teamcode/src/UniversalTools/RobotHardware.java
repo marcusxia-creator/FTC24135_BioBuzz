@@ -30,10 +30,8 @@ public class RobotHardware {
     public VoltageSensor voltageSensor;
 
     public DcMotorEx intakeMotor;
-    public DcMotorEx leftShooterMotor;
+    public DcMotorEx transferMotor;
     public DcMotorEx rightShooterMotor;
-
-    public Servo gateServo;
     public Servo leftFlowerRampServo;
     public Servo rightFlowerRampServo;
     public Servo limelightAdjServo;
@@ -96,20 +94,19 @@ public class RobotHardware {
 
         ///Intake
         intakeMotor = hardwareMap.get(DcMotorEx.class, "Intake_Motor");
+        intakeMotor.setZeroPowerBehavior(ZeroPowerBehavior.FLOAT);
+        intakeMotor.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
 
-        intakeMotor.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
+        transferMotor = hardwareMap.get(DcMotorEx.class, "Transfer_Motor");
+        transferMotor.setZeroPowerBehavior(ZeroPowerBehavior.BRAKE);
+        transferMotor.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
 
         ///Shooter
-        leftShooterMotor = hardwareMap.get(DcMotorEx.class, "Left_Shooter_Motor");
         rightShooterMotor = hardwareMap.get(DcMotorEx.class, "Right_Shooter_Motor");
 
-        leftShooterMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        rightShooterMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-
-        leftShooterMotor.setDirection(DcMotorSimple.Direction.REVERSE);
+        rightShooterMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
         ///Servos
-        gateServo = hardwareMap.get(Servo.class, "Gate_Servo");
         pollenLimitingServo = hardwareMap.get(Servo.class, "Limit_Servo");
         leftFlowerRampServo = hardwareMap.get(Servo.class, "Left_Flower_Servo");
         rightFlowerRampServo = hardwareMap.get(Servo.class, "Right_Flower_Servo");

@@ -1,12 +1,12 @@
 package org.firstinspires.ftc.teamcode.src.Subsystems;
 
 import com.seattlesolvers.solverslib.command.InstantCommand;
-import com.seattlesolvers.solverslib.command.RunCommand;
 import com.seattlesolvers.solverslib.command.button.GamepadButton;
 import com.seattlesolvers.solverslib.command.button.Trigger;
 import com.seattlesolvers.solverslib.gamepad.GamepadEx;
 import com.seattlesolvers.solverslib.gamepad.GamepadKeys;
 
+import org.firstinspires.ftc.teamcode.src.Commands.IntakeCommand;
 import org.firstinspires.ftc.teamcode.lib.GamepadDriver.GamepadDriver;
 import org.firstinspires.ftc.teamcode.src.Commands.ShooterCommand;
 
@@ -17,59 +17,69 @@ public class ControlSubsystem extends GamepadDriver {
             GamepadEx gamepad1,
             GamepadEx gamepad2,
             IntakeSubsystem intake,
-            ShooterSubsystem shooter) {
+            ShooterSubsystem shooter,
+            TransferSubsystem transfer) {
 
-        bindIntakeControls(gamepad1, intake);
-        bindIntakeControls(gamepad2, intake);
-
-        // X continuously updates flywheel velocity control until another shooter command interrupts it.
-        new GamepadButton(gamepad1, GamepadKeys.Button.X)
-                .whenPressed(new RunCommand(shooter::runFlywheel, shooter));
-        new GamepadButton(gamepad2, GamepadKeys.Button.X)
-                .whenPressed(new RunCommand(shooter::runFlywheel, shooter));
-
-        // Y feeds continuously. ShooterCommand ends the feeder safely when interrupted by B or another action.
-        new GamepadButton(gamepad1, GamepadKeys.Button.Y)
-                .whenPressed(new ShooterCommand(shooter, intake));
-        new GamepadButton(gamepad2, GamepadKeys.Button.Y)
-                .whenPressed(new ShooterCommand(shooter, intake));
-
-        bindShooterSpeedControls(gamepad2, shooter);
-        bindIntakeSpeedControls(gamepad1, intake);
-        bindIntakeSpeedControls(gamepad2, intake);
-
-        new GamepadButton(gamepad1, GamepadKeys.Button.B)
-                .whenPressed(new InstantCommand(() -> {
-                    shooter.stop();
-                    intake.stop();
-                }, shooter, intake));
-        new GamepadButton(gamepad2, GamepadKeys.Button.B)
-                .whenPressed(new InstantCommand(() -> {
-                    shooter.stop();
-                    intake.stop();
-                }, shooter, intake));
+        configureGamepad(gamepad1, intake, shooter, transfer, false);
+        configureGamepad(gamepad2, intake, shooter, transfer, true);
     }
 
-    private void bindIntakeControls(GamepadEx gamepad, IntakeSubsystem intake) {
-        // D-pad Right selects pollen by default; bumper combos select nectar or flower.
-        new GamepadButton(gamepad, GamepadKeys.Button.DPAD_RIGHT)
+    private void configureGamepad(
+            GamepadEx gamepad,
+            IntakeSubsystem intake,
+            ShooterSubsystem shooter,
+            TransferSubsystem transfer,
+            boolean controlsShooterSpeed) {
+        bindIntakeControls(gamepad, intake, transfer);
+        bindShooterControls(gamepad, intake, shooter, transfer);
+        bindIntakeSpeedControls(gamepad, intake);
+        if (controlsShooterSpeed) bindShooterSpeedControls(gamepad, shooter);
+    }
+
+    private void bindShooterControls(
+            GamepadEx gamepad,
+            IntakeSubsystem intake,
+            ShooterSubsystem shooter,
+            TransferSubsystem transfer) {
+        new GamepadButton(gamepad, GamepadKeys.Button.X)
+                .whenPressed(new ShooterCommand(shooter, intake, transfer));
+        new GamepadButton(gamepad, GamepadKeys.Button.B)
                 .whenPressed(new InstantCommand(() -> {
+                    shooter.stop();
+                    intake.stop();
+                    transfer.stopTransfer();
+                }, shooter, intake, transfer));
+    }
+
+    private void bindIntakeControls(
+            GamepadEx gamepad,
+            IntakeSubsystem intake,
+            TransferSubsystem transfer) {
+        // Intake and transfer share one command during intake mode.
+        new GamepadButton(gamepad, GamepadKeys.Button.DPAD_RIGHT)
+                .whenPressed(new IntakeCommand(intake, transfer, () -> {
                     if (gamepad.getButton(GamepadKeys.Button.RIGHT_BUMPER)) {
-                        intake.runRollersNectar();
-                    } else if (gamepad.getButton(GamepadKeys.Button.LEFT_BUMPER)) {
-                        intake.runRollersFlower();
-                    } else {
-                        intake.runRollersPollen();
+                        return IntakeCommand.IntakeMode.NECTAR;
                     }
-                }, intake));
+                    if (gamepad.getButton(GamepadKeys.Button.LEFT_BUMPER)) {
+                        return IntakeCommand.IntakeMode.FLOWER;
+                    }
+                    return IntakeCommand.IntakeMode.POLLEN;
+                }));
 
         // Explicit chord triggers support either press order. D-pad Left alone always stops.
         Trigger left = new GamepadButton(gamepad, GamepadKeys.Button.DPAD_LEFT);
         Trigger rightBumper = new GamepadButton(gamepad, GamepadKeys.Button.RIGHT_BUMPER);
         left.and(rightBumper.negate())
-                .whenActive(new InstantCommand(intake::stop, intake));
+                .whenActive(new InstantCommand(() -> {
+                    intake.stop();
+                    transfer.stopTransfer();
+                }, intake, transfer));
         left.and(rightBumper)
-                .whenActive(new InstantCommand(intake::reverseIntake, intake));
+                .whenActive(new InstantCommand(() -> {
+                    intake.reverseIntake();
+                    transfer.stopTransfer();
+                }, intake, transfer));
     }
 
 

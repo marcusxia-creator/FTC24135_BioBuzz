@@ -14,7 +14,7 @@ import com.seattlesolvers.solverslib.gamepad.GamepadKeys;
 import org.firstinspires.ftc.teamcode.src.UniversalTools.RobotHardware;
 
 @Config
-@TeleOp (name = "Test Dual PID Motors", group = "Test")
+@TeleOp (name = "Test Right Shooter and Intake PID", group = "Test")
 public class Test_TeleOp extends OpMode {
     private RobotHardware robotHardware;
     private GamepadEx gamepad1Ex;
@@ -22,15 +22,12 @@ public class Test_TeleOp extends OpMode {
     private final double DEBOUNCE_THRESHOLD = 0.15;
     private FtcDashboard dashboard;
 
-    public static double leftShooterKp = 0.001, leftShooterKi = 0, leftShooterKd = 0;
     public static double rightShooterKp = 0.001, rightShooterKi = 0, rightShooterKd = 0;
     public static double intakeKp = 0.001, intakeKi = 0, intakeKd = 0;
 
-    private PIDController leftShooterPID = new PIDController(leftShooterKp, leftShooterKi, leftShooterKd);
     private PIDController rightShooterPID = new PIDController(rightShooterKp, rightShooterKi, rightShooterKd);
     private PIDController intakePID = new PIDController(intakeKp, intakeKi, intakeKd);
 
-    public static double leftShooterTargetVelocity = 0.0;
     public static double rightShooterTargetVelocity = 0.0;
     public static double intakeTargetVelocity = 0.0;
 
@@ -46,31 +43,28 @@ public class Test_TeleOp extends OpMode {
 
     @Override
     public void loop(){
-        leftShooterPID.setPID(leftShooterKp, leftShooterKi, leftShooterKd);
         rightShooterPID.setPID(rightShooterKp, rightShooterKi, rightShooterKd);
         intakePID.setPID(intakeKp, intakeKi, intakeKd);
 
         // --- Shooter Controls ---
         if (gamepad1Ex.getButton(GamepadKeys.Button.X) && debounceTimer.seconds() >= DEBOUNCE_THRESHOLD) {
             debounceTimer.reset();
-            leftShooterTargetVelocity = 2000.0;
             rightShooterTargetVelocity = 2000.0;
         }
 
         if (gamepad1Ex.getButton(GamepadKeys.Button.Y) && debounceTimer.seconds() >= DEBOUNCE_THRESHOLD) {
             debounceTimer.reset();
-            leftShooterTargetVelocity = 0.0;
             rightShooterTargetVelocity = 0.0;
         }
 
         if (gamepad1Ex.getButton(GamepadKeys.Button.DPAD_UP) && debounceTimer.seconds() >= DEBOUNCE_THRESHOLD) {
             debounceTimer.reset();
-            leftShooterTargetVelocity += 100.0;
+            rightShooterTargetVelocity += 100.0;
         }
 
         if (gamepad1Ex.getButton(GamepadKeys.Button.DPAD_DOWN) && debounceTimer.seconds() >= DEBOUNCE_THRESHOLD) {
             debounceTimer.reset();
-            leftShooterTargetVelocity -= 100.0;
+            rightShooterTargetVelocity -= 100.0;
         }
 
         if (gamepad1Ex.getButton(GamepadKeys.Button.DPAD_RIGHT) && debounceTimer.seconds() >= DEBOUNCE_THRESHOLD) {
@@ -94,14 +88,6 @@ public class Test_TeleOp extends OpMode {
         }
 
         // ==================== MOTOR PID CALCULATIONS ====================
-
-        if (robotHardware.leftShooterMotor != null) {
-            double leftShooterCurrentVelocity = robotHardware.leftShooterMotor.getVelocity();
-            double leftShooterPidOutput = leftShooterPID.calculate(leftShooterCurrentVelocity, leftShooterTargetVelocity);
-            robotHardware.leftShooterMotor.setPower(Range.clip(leftShooterPidOutput, 0, 1));
-            telemetry.addData("Left Shooter Current", leftShooterCurrentVelocity);
-            telemetry.addData("Left Shooter Power", "%.2f", robotHardware.leftShooterMotor.getPower());
-        }
 
         if (robotHardware.rightShooterMotor != null) {
             double rightShooterCurrentVelocity = robotHardware.rightShooterMotor.getVelocity();

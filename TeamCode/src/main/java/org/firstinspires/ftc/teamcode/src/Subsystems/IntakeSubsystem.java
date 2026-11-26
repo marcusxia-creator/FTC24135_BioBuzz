@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.src.Subsystems;
 
+import com.qualcomm.robotcore.util.ElapsedTime;
 import com.seattlesolvers.solverslib.command.SubsystemBase;
 
 import org.firstinspires.ftc.teamcode.lib.CommandBase.Action;
@@ -7,69 +8,78 @@ import org.firstinspires.ftc.teamcode.src.UniversalTools.RobotHardware;
 import static org.firstinspires.ftc.teamcode.src.UniversalTools.RobotActionConfig.*;
 
 public class IntakeSubsystem extends SubsystemBase {
-    public static double intakeKp = 0.001, intakeKi = 0, intakeKd = 0;
+    private static final double INTAKE_STARTUP_GRACE_SECONDS = 0.5;
     private final RobotHardware robot;
-    private double intakePower = 0.7;
+    private boolean rollersRunning = false;
+    private double sampledIntakeTicksPerSecond;
+    private double appliedIntakePower = Double.NaN;
+    private final ElapsedTime intakeRunTimer = new ElapsedTime();
 
     public IntakeSubsystem(RobotHardware robot) {
         this.robot = robot;
     }
 
-    /** Set the intake servos to their safe starting positions when the OpMode starts. */
     public void setInitialServoPositions() {
         robot.leftFlowerRampServo.setPosition(flowerRampUpPos);
         robot.rightFlowerRampServo.setPosition(flowerRampUpPos);
-        robot.gateServo.setPosition(gateUpPos);
-        robot.pollenLimitingServo.setPosition(pollenDownPos);
+        robot.pollenLimitingServo.setPosition(limiterDownPos);
+    }
+
+    public void runShooterIntake (){
+        startRollers();
+        robot.leftFlowerRampServo.setPosition(flowerRampUpPos);
+        robot.rightFlowerRampServo.setPosition(flowerRampUpPos);
+        robot.pollenLimitingServo.setPosition(limiterDownPos);
+        applyIntakePower(intakePower);
     }
 
     public void runRollersPollen() {
+        startRollers();
         robot.leftFlowerRampServo.setPosition(flowerRampUpPos);
         robot.rightFlowerRampServo.setPosition(flowerRampUpPos);
-        robot.gateServo.setPosition(gateUpPos);
-        robot.pollenLimitingServo.setPosition(pollenDownPos);
-        robot.intakeMotor.setPower(intakePower);
+        robot.pollenLimitingServo.setPosition(limiterDownPos);
+        applyIntakePower(intakePower);
     }
 
     public void runRollersNectar() {
+        startRollers();
         robot.leftFlowerRampServo.setPosition(flowerRampUpPos);
         robot.rightFlowerRampServo.setPosition(flowerRampUpPos);
-        robot.gateServo.setPosition(gateDownPos);
-        robot.pollenLimitingServo.setPosition(pollenUpPos);
-        robot.intakeMotor.setPower(intakePower);
+        robot.pollenLimitingServo.setPosition(limiterUpPos);
+        applyIntakePower(intakePower);
     }
 
     public void runRollersFlower() {
+        startRollers();
         robot.leftFlowerRampServo.setPosition(flowerRampDownPos);
         robot.rightFlowerRampServo.setPosition(flowerRampDownPos);
-        robot.gateServo.setPosition(gateUpPos);
-        robot.pollenLimitingServo.setPosition(pollenDownPos);
-        robot.intakeMotor.setPower(intakePower);
+        robot.pollenLimitingServo.setPosition(limiterDownPos);
+        applyIntakePower(intakePower);
     }
 
     public void increasePower() {
         intakePower = Math.min(1.0, Math.round((intakePower + 0.1) * 10.0) / 10.0);
-        if (Math.abs(robot.intakeMotor.getPower()) > 0.05) {
-            robot.intakeMotor.setPower(intakePower);
+        if (rollersRunning) {
+            applyIntakePower(intakePower);
         }
     }
 
     public void decreasePower() {
         intakePower = Math.max(0.0, Math.round((intakePower - 0.1) * 10.0) / 10.0);
-        if (Math.abs(robot.intakeMotor.getPower()) > 0.05) {
-            robot.intakeMotor.setPower(intakePower);
+        if (rollersRunning) {
+            applyIntakePower(intakePower);
         }
     }
 
     /**
-     * Opens intake gates and runs rollers in reverse at -0.3 power to eject game pieces cleanly.
+     * Opens intake gates and runs rollers in reverse at -1.0 power to eject game pieces cleanly.
      */
     public void reverseIntake() {
+        rollersRunning = false;
         robot.leftFlowerRampServo.setPosition(flowerRampUpPos);
         robot.rightFlowerRampServo.setPosition(flowerRampUpPos);
-        robot.gateServo.setPosition(gateDownPos);
-        robot.pollenLimitingServo.setPosition(pollenUpPos);
-        robot.intakeMotor.setPower(-1);
+        robot.pollenLimitingServo.setPosition(limiterUpPos);
+        applyIntakePower(-1.0);
     }
 
     public double getIntakeMotorPower() {
@@ -77,9 +87,54 @@ public class IntakeSubsystem extends SubsystemBase {
     }
 
     public void stop() {
-        robot.intakeMotor.setPower(intakeIdleSpeed);
+        rollersRunning = false;
+        applyIntakePower(intakeIdleSpeed);
         robot.leftFlowerRampServo.setPosition(flowerRampUpPos);
         robot.rightFlowerRampServo.setPosition(flowerRampUpPos);
+    }
+
+    public boolean isRollersRunning() {
+        return rollersRunning;
+    }
+
+    public double getIntakeRPM() {
+        double motorRPM = sampledIntakeTicksPerSecond * 60.0 / intakeTicksPerRev;
+        return Math.abs(motorRPM * intakeGearRatio);
+    }
+
+    /**
+     * Returns true when rollers are running and intake RPM drops below threshold.
+     */
+    public boolean isIntakeFull() {
+        if (!rollersRunning) {
+            return false;
+        }
+        return intakeRunTimer.seconds() >= INTAKE_STARTUP_GRACE_SECONDS
+                && getIntakeRPM() < intakeFullRPMThreshold;
+    }
+
+    private void startRollers() {
+        if (!rollersRunning) intakeRunTimer.reset();
+        rollersRunning = true;
+    }
+
+    @Override
+    public void periodic() {
+        sampledIntakeTicksPerSecond = robot.intakeMotor.getVelocity();
+        if (rollersRunning && appliedIntakePower != intakePower) {
+            applyIntakePower(intakePower);
+        }
+    }
+
+    private void applyIntakePower(double power) {
+        if (Double.isNaN(appliedIntakePower) || appliedIntakePower != power) {
+            robot.intakeMotor.setPower(power);
+            appliedIntakePower = power;
+        }
+    }
+
+    public double getSampledIntakeTicksPerSecond() {
+        return sampledIntakeTicksPerSecond;
     }
 
     public class flowerIntakeAction implements Action {

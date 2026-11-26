@@ -13,6 +13,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
 import org.firstinspires.ftc.robotcore.external.navigation.UnnormalizedAngleUnit;
 import org.firstinspires.ftc.teamcode.src.UniversalTools.RobotHardware;
+import static org.firstinspires.ftc.teamcode.src.UniversalTools.RobotActionConfig.driveLerp;
 
 @Config
 public class RobotDriveSubsystem extends SubsystemBase {
@@ -45,6 +46,10 @@ public class RobotDriveSubsystem extends SubsystemBase {
                 redAllianceCell1
         };
     }
+    public void mecanumDrive (double forward, double strafe, double turn){
+        lastForward += driveLerp * (forward - lastForward);
+        lastStrafe += driveLerp * (strafe - lastStrafe);
+        lastTurn += driveLerp * (turn - lastTurn);
 
     @Override
     public void periodic() {
