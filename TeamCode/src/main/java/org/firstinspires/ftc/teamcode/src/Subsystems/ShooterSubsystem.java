@@ -106,18 +106,19 @@ public class ShooterSubsystem extends SubsystemBase {
         rightTargetNorm = clamp01(rightTargetNorm);
         rightCurrentNorm = clamp01(rightCurrentNorm);
 
-        robot.gateServo.setPosition(gateUpPos);
+        //robot.gateServo.setPosition(gateUpPos);// Depreciated
 
         rightShooterPIDF.setPIDF(rightShooterKp, rightShooterKi, rightShooterKd, rightShooterKf);
 
         double rightOutput = rightShooterPIDF.calculate(rightCurrentNorm, rightTargetNorm);
+
         if (!Double.isFinite(rightOutput)) {
             rightShooterPIDF.reset();
             robot.rightShooterMotor.setPower(0.0);
             return false;
         }
         robot.rightShooterMotor.setPower(Range.clip(rightOutput, 0.0, 1.0));
-        updatePids();
+        //updatePids();
         return true;
     }
 

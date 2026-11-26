@@ -9,11 +9,11 @@ import com.acmerobotics.dashboard.config.Config;
 @Config
 public class RobotActionConfig {
 
-    public static double flowerRampDownPos          = 0.44;
-    public static double flowerRampUpPos            = 0.5;
+    public static double flowerRampDownPos          = 0.16;
+    public static double flowerRampUpPos            = 0.76;
     public static double gateDownPos                = 0.145;
     public static double gateUpPos                  = 0.21;
-    public static double pollenDownPos              = 0.57;
+    public static double pollenDownPos              = 0.56;
     public static double pollenUpPos                = 0.72;
     public static double intakeTargetRPM            = 500.0;
     public static double intakeIdleSpeed            = 0.0;
