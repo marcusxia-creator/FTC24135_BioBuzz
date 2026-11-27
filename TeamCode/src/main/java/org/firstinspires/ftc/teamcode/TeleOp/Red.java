@@ -33,6 +33,7 @@ public class Red extends CommandOpMode {
 
     private final ElapsedTime driveTimer = new ElapsedTime();
 
+    private final boolean isRedAlliance = true;
 
     @Override
     public void initialize() {
@@ -60,7 +61,7 @@ public class Red extends CommandOpMode {
                         ? gamepad1Ex.getRightX() : gamepad2Ex.getRightX(),
                 () -> Math.abs(gamepad1Ex.getLeftX()) > 0.05
                         ? gamepad1Ex.getLeftX() : gamepad2Ex.getLeftX(),
-                () -> gamepad1Ex.getButton(GamepadKeys.Button.PS)
+                () -> gamepad1Ex.getButton(GamepadKeys.Button.PS) || gamepad2Ex.getButton(GamepadKeys.Button.PS)
         ));
 
         controls.configureControls(gamepad1Ex, gamepad2Ex, intake, shooter, transfer);
