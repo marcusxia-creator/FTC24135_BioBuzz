@@ -1,10 +1,13 @@
 package org.firstinspires.ftc.teamcode.src.Subsystems;
 import static org.firstinspires.ftc.teamcode.src.UniversalTools.RobotActionConfig.blueAllianceCell1;
 import static org.firstinspires.ftc.teamcode.src.UniversalTools.RobotActionConfig.blueAllianceCell2;
+import static org.firstinspires.ftc.teamcode.src.UniversalTools.RobotActionConfig.blueAllianceRobotResetPose;
 import static org.firstinspires.ftc.teamcode.src.UniversalTools.RobotActionConfig.redAllianceCell1;
 import static org.firstinspires.ftc.teamcode.src.UniversalTools.RobotActionConfig.redAllianceCell2;
+import static org.firstinspires.ftc.teamcode.src.UniversalTools.RobotActionConfig.redAllianceRobotResetPose;
 
 import com.acmerobotics.dashboard.config.Config;
+import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 import com.seattlesolvers.solverslib.command.SubsystemBase;
 
@@ -36,14 +39,31 @@ public class RobotDriveSubsystem extends SubsystemBase {
     private double BLPower = 0;
     private double BRPower = 0;
 
-    public RobotDriveSubsystem (RobotHardware robot) {
+    private Pose2D robotResetPose;
+    private boolean isFieldCentric;
+
+    private ElapsedTime debounceTimer = new ElapsedTime();
+    private double DEBOUNCE_THRESHOLD = 0.25;
+
+    public RobotDriveSubsystem (RobotHardware robot, boolean isRedAlliance) {
         this.robot = robot;
-        this.cells = new Pose2D[] {
-                blueAllianceCell1,
-                blueAllianceCell2,
-                redAllianceCell2,
-                redAllianceCell1
-        };
+
+        if (isRedAlliance) {
+            this.cells = new Pose2D[] {
+                    redAllianceCell1,
+                    redAllianceCell2
+            };
+            this.robotResetPose = redAllianceRobotResetPose;
+        }
+        else {
+            this.cells = new Pose2D[] {
+                    blueAllianceCell1,
+                    blueAllianceCell2
+            };
+            this.robotResetPose = blueAllianceRobotResetPose;
+        }
+
+        this.selectedCell = 0;
     }
 
     @Override
@@ -51,11 +71,34 @@ public class RobotDriveSubsystem extends SubsystemBase {
         robot.odo.update();
     }
 
-    public void mecanumDrive (double forward, double strafe, double turn, boolean ps){
+    public void mecanumDrive (double forward, double strafe, double turn, boolean ps, boolean start, boolean back){
+
+        if (start) { ///How do add debounce timer?
+            robot.odo.setPosition(robotResetPose);
+        }
+
         double lerp =0.15;
 
         if (Math.abs(forward) < STICK_DEADBAND) forward = 0.0;
         if (Math.abs(strafe) < STICK_DEADBAND) strafe = 0.0;
+
+        ///Field Centric
+        if (back && debounceTimer.seconds() >= DEBOUNCE_THRESHOLD) {
+            debounceTimer.reset();
+            isFieldCentric = !isFieldCentric;
+        }
+
+        if (isFieldCentric) {
+            double botHeadingRad = -robot.odo.getHeading(AngleUnit.RADIANS);
+            double cos = Math.cos(botHeadingRad);
+            double sin = Math.sin(botHeadingRad);
+
+            double rotX = strafe * cos - forward * sin;
+            double rotY = strafe * sin + forward * cos;
+
+            forward = rotY;
+            strafe = rotX;
+        }
 
         selectedCell = chooseCell(
                 robot.odo.getPosX(DistanceUnit.INCH),

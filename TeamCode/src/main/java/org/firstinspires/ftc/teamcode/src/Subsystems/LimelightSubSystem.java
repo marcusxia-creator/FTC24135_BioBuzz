@@ -21,12 +21,20 @@ public class LimelightSubSystem extends SubsystemBase {
         this.robot = robot;
     }
 
-    public void init(int setPipeline) {
-        robot.limelight.pipelineSwitch(setPipeline);
-        robot.limelight.start();
+    private enum Alliance {
+        RED,
+        BLUE
     }
 
-    public void init() {
+    private Alliance alliance;
+
+    public void init(Alliance alliance) {
+        if (alliance == Alliance.RED) {
+            robot.limelight.pipelineSwitch(2);
+        }
+        if (alliance == Alliance.BLUE) {
+            robot.limelight.pipelineSwitch(3);
+        }
         robot.limelight.start();
     }
 

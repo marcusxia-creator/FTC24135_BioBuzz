@@ -13,13 +13,17 @@ public class RobotDriveCommand extends CommandBase {
     private final DoubleSupplier strafe;
     private final DoubleSupplier turn;
     private final BooleanSupplier ps;
+    private final BooleanSupplier start;
+    private final BooleanSupplier back;
 
-    public RobotDriveCommand(RobotDriveSubsystem robotDrive, DoubleSupplier forward, DoubleSupplier strafe, DoubleSupplier turn, BooleanSupplier ps) {
+    public RobotDriveCommand(RobotDriveSubsystem robotDrive, DoubleSupplier forward, DoubleSupplier strafe, DoubleSupplier turn, BooleanSupplier ps, BooleanSupplier start, BooleanSupplier back) {
         this.robotDrive = robotDrive;
         this.forward = forward;
         this.strafe = strafe;
         this.turn = turn;
         this.ps = ps;
+        this.start = start;
+        this.back = back;
 
         addRequirements(robotDrive);
     }
@@ -29,7 +33,10 @@ public class RobotDriveCommand extends CommandBase {
                 forward.getAsDouble(),
                 strafe.getAsDouble(),
                 turn.getAsDouble(),
-                ps.getAsBoolean());
+                ps.getAsBoolean(),
+                start.getAsBoolean(),
+                back.getAsBoolean()
+        );
     }
 
 }
