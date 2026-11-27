@@ -18,7 +18,7 @@ public class RobotActionConfig {
     public static double intakeTargetRPM            = 500.0;
     public static double intakeIdleSpeed            = 0.0;
     public static double intakeTransferRPM          = 600;
-    public static double transferTargetRPM          = 400.0;
+    public static double transferTargetRPM          = 500.0;
     public static double IntakeTransferTargetRPM    = 100.0;
     public static double transferToleranceRPM       = 150.0;
 

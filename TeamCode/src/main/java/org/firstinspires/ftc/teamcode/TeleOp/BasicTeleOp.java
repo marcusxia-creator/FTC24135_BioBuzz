@@ -44,8 +44,8 @@ public class BasicTeleOp extends CommandOpMode {
     // Starter settings: deadzone, exponent, acceleration, deceleration.
     // Translation: 0 -> full power in 0.5 s; full -> zero in 0.25 s.
     private final JoystickDriveProcessor joystick = new JoystickDriveProcessor(
-            new JoystickDriveProcessor.JoystickResponseConfig(0.05, 2.0, 2.0, 4.0),
-            new JoystickDriveProcessor.JoystickResponseConfig(0.05, 2.0, 1.5, 3.0));
+            new JoystickDriveProcessor.JoystickResponseConfig(0.05, 2.0, 4.0, 8.0),
+            new JoystickDriveProcessor.JoystickResponseConfig(0.05, 1.0, 3.0, 8.0));
 
     @Override
     public void initialize() {
@@ -136,6 +136,8 @@ public class BasicTeleOp extends CommandOpMode {
         telemetry.addData("Intake Actual RPM", "%.0f", intake.getFeederCurrentRPM());
         telemetry.addData("Transfer Target RPM", "%.0f", transfer.getFeederTargetRPM());
         telemetry.addData("Transfer Actual RPM", "%.0f", transfer.getTransferSpeedRPM());
+        telemetry.addData("Transfer Enabled", transfer.isRunning());
+        telemetry.addData("Transfer Motor Power", "%.3f", transfer.getTransferPower());
         telemetry.update();
     }
 

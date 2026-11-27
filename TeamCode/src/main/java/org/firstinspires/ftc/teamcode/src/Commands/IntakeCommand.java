@@ -8,6 +8,7 @@ import org.firstinspires.ftc.teamcode.src.Subsystems.TransferSubsystem;
 import org.firstinspires.ftc.teamcode.src.UniversalTools.RobotActionConfig;
 
 public class IntakeCommand extends CommandBase {
+    private static final double TRANSFER_INTAKE_POWER_CUTOFF = 0.93;
     private static final double MIN_SPEED_FRACTION = 0.9;
     private static final double SPIN_UP_SECONDS = 0.50;
     private static final double LOW_SPEED_SECONDS = 0.25;
@@ -17,6 +18,7 @@ public class IntakeCommand extends CommandBase {
     private final Runnable startRollers;
     private final ElapsedTime runTime = new ElapsedTime();
     private double lowSpeedSince;
+    private boolean intakeReachedTransferPowerCutoff;
 
     public IntakeCommand(IntakeSubsystem intakeSubsystem, TransferSubsystem transferSubsystem,
                          Runnable startRollers) {
@@ -29,12 +31,22 @@ public class IntakeCommand extends CommandBase {
     @Override
     public void initialize() {
         startRollers.run();
+        intakeReachedTransferPowerCutoff = intakeSubsystem.getIntakeMotorPower() >= TRANSFER_INTAKE_POWER_CUTOFF;
         lowSpeedSince = Double.NaN;
         runTime.reset();
     }
     
     @Override 
     public void execute() {
+        double intakePower = intakeSubsystem.getIntakeMotorPower();
+        // The default intake power is below the cutoff. Apply it after a downward crossing.
+        if (intakePower >= TRANSFER_INTAKE_POWER_CUTOFF) {
+            intakeReachedTransferPowerCutoff = true;
+        } else if (intakeReachedTransferPowerCutoff) {
+            transferSubsystem.stopTransfer();
+            return;
+        }
+
         transferSubsystem.setTransferSpeedRPM(RobotActionConfig.IntakeTransferTargetRPM);
         transferSubsystem.runTransferAtTargetSpeed();
     }

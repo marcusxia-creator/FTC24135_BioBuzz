@@ -20,6 +20,8 @@ public class TransferSubsystem extends SubsystemBase {
     public static double transferKi = 0.0;
     public static double transferKd = 0.0;
     public static double transferKf = 1.0;
+    public static double transferStartupPower = 0.22;
+    private static final double STOPPED_SPEED_RPM = 10.0;
     private static final double NOMINAL_MAX_RPM = 1150.0*0.9;
 
     private final RobotHardware robot;
@@ -27,7 +29,7 @@ public class TransferSubsystem extends SubsystemBase {
             new PIDFController(transferKp, transferKi, transferKd, 0.0);
     private boolean running;
 
-    private double transferSpeedTargetRPM = transferTargetRPM;
+    private double transferSpeedTargetRPM = Double.NaN;
     private double transferSpeedRPM = Double.NaN;
 
     public TransferSubsystem(RobotHardware robot) {
@@ -94,7 +96,14 @@ public class TransferSubsystem extends SubsystemBase {
             return;
         }
         double direction = Math.signum(normalizedTarget);
-        robot.transferMotor.setPower(direction * Range.clip(direction * power, 0.0, 1.0));
+        double powerInTargetDirection = direction * power;
+        // Give low RPM targets enough power to break static friction from a stop.
+        if (Math.abs(transferSpeedRPM) < STOPPED_SPEED_RPM
+                && Math.abs(transferSpeedRPM) < Math.abs(transferSpeedTargetRPM)
+                && powerInTargetDirection > 0.0 && Double.isFinite(transferStartupPower)) {
+            powerInTargetDirection = Math.max(powerInTargetDirection, transferStartupPower);
+        }
+        robot.transferMotor.setPower(direction * Range.clip(powerInTargetDirection, 0.0, 1.0));
     }
 
     public boolean stopTransfer() {
@@ -107,6 +116,14 @@ public class TransferSubsystem extends SubsystemBase {
     ///Getter
     public double getTransferSpeedRPM() {
        return transferSpeedRPM;
+    }
+
+    public double getTransferPower() {
+        return robot.transferMotor.getPower();
+    }
+
+    public boolean isRunning() {
+        return running;
     }
 
     public double getFeederTargetRPM() {

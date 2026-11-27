@@ -112,8 +112,8 @@ public class ShooterSubsystem extends SubsystemBase {
 
     ///check if shooter is ready
     public boolean isRightFlywheelReady(double targetMotorRPM) {
-        return Math.abs(rightMotor_rpmMeasured - targetMotorRPM) <= shooterToleranceRPM
-                && Math.abs(rightShooterRpmPerSecond) <= rightShooterMaxRpmPerSecond;
+        return Math.abs(rightMotor_rpmMeasured - targetMotorRPM) <= shooterToleranceRPM;
+                //&& Math.abs(rightShooterRpmPerSecond) <= rightShooterMaxRpmPerSecond;
     }
 
     /// for Auto Action System
