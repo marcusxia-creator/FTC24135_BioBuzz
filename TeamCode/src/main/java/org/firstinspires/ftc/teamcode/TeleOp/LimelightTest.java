@@ -33,7 +33,7 @@ public class LimelightTest extends OpMode {
         limelight.setTagXOffset(40,  2.75); // 4 inches right of center
         limelight.setTagXOffset(41, 6.5); // 12 inches right of center
 
-        limelight.init();
+        limelight.init(false);
     }
 
     @Override

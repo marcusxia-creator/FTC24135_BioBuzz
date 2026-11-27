@@ -98,8 +98,14 @@ public class Limelight2DCenterSubsystem extends SubsystemBase {
         this.maxTagCount = maxTagCount;
     }
 
-    public void init(int setPipeline) {
-        robot.limelight.pipelineSwitch(setPipeline);
+    public void init(boolean isRedAlliance) {
+        if (isRedAlliance) {
+            robot.limelight.pipelineSwitch(0);
+        }
+        else {
+            robot.limelight.pipelineSwitch(1);
+        }
+
         robot.limelight.start();
     }
 
