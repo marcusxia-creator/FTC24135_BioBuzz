@@ -18,6 +18,8 @@ import org.firstinspires.ftc.teamcode.lib.IceWaddler2.src.Hardware.IWLocalizer;
 import org.firstinspires.ftc.teamcode.lib.IceWaddler2.src.Hardware.PrebuiltHardware.goBildaOdoComputer;
 import org.firstinspires.ftc.teamcode.lib.IceWaddler2.src.Math.Measurement.Scalar;
 import org.firstinspires.ftc.teamcode.src.Subsystems.DriveTrain;
+import org.firstinspires.ftc.teamcode.src.Subsystems.VoltageSubsystem;
+import org.firstinspires.ftc.teamcode.src.Subsystems.TransferSubsystem;
 
 public class RobotHardware {
     public DcMotorEx frontLeftMotor;
@@ -29,9 +31,11 @@ public class RobotHardware {
     public Limelight3A limelight;
 
     public VoltageSensor voltageSensor;
+    public VoltageSubsystem voltageSubsystem;
 
     public DcMotorEx intakeMotor;
     public DcMotorEx transferMotor;
+    public TransferSubsystem transferSubsystem;
     public DcMotorEx leftShooterMotor;
     public DcMotorEx rightShooterMotor;
 
@@ -84,7 +88,8 @@ public class RobotHardware {
         frontRightMotor.setDirection(DcMotorSimple.Direction.REVERSE);
         backRightMotor.setDirection(DcMotorSimple.Direction.REVERSE);
 
-        voltageSensor=hardwareMap.get(VoltageSensor.class,"Control Hub");
+        voltageSensor = hardwareMap.get(VoltageSensor.class, "Control Hub");
+        voltageSubsystem = new VoltageSubsystem(voltageSensor);
 
         driveTrain=new DriveTrain(this);
         initializePinpoint(requirePinpoint);
@@ -97,7 +102,8 @@ public class RobotHardware {
 
         //Transfer
         transferMotor = hardwareMap.get(DcMotorEx.class, "Transfer_Motor");
-        transferMotor.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
+        transferMotor.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
+        transferSubsystem = new TransferSubsystem(this);
 
         ///Shooter
         leftShooterMotor = hardwareMap.get(DcMotorEx.class, "Left_Shooter_Motor");

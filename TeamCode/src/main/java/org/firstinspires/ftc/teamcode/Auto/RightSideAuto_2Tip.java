@@ -54,6 +54,14 @@ public class RightSideAuto_2Tip extends ScheduledOpMode {
     public static Scalar wallIntakeSpeed=new Scalar(1,metersPerSecond);
 
     @Override
+    public void loop() {
+        robot.voltageSubsystem.periodic();
+        shooter.sampleRightShooterSpeed();
+        super.loop();
+        robot.transferSubsystem.periodic();
+    }
+
+    @Override
     public void init() {
         robot=new RobotHardware(hardwareMap);
         robot.init();

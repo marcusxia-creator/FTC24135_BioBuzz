@@ -21,7 +21,9 @@ public class RobotActionConfig {
     public static double transferTargetRPM          = 400.0;
     public static double IntakeTransferTargetRPM    = 100.0;
     public static double transferToleranceRPM       = 150.0;
-    public static double shooterTargetRPM            = 3430.0;
+
+    public static double rightShooterMaxRpmPerSecond = 500.0;
+    public static double rightShooterTargetRPM       = 3430.0;
     public static double shooterToleranceRPM         = 100;
 
     public static double maxShooterRpm              = 5200.0;

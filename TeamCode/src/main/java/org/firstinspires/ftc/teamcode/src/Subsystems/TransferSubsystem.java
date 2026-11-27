@@ -1,14 +1,14 @@
 package org.firstinspires.ftc.teamcode.src.Subsystems;
 
 import com.seattlesolvers.solverslib.command.SubsystemBase;
-import com.seattlesolvers.solverslib.command.CommandBase;
+import com.seattlesolvers.solverslib.controller.PIDFController;
+import com.acmerobotics.dashboard.config.Config;
+import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.teamcode.src.UniversalTools.RobotHardware;
-import org.firstinspires.ftc.teamcode.src.Subsystems.ShooterSubsystem;
-import org.firstinspires.ftc.teamcode.src.Subsystems.IntakeSubsystem;
-import org.firstinspires.ftc.teamcode.src.UniversalTools.DistanceShooterRPM;
 import static org.firstinspires.ftc.teamcode.src.UniversalTools.RobotActionConfig.*;
 
+@Config
 public class TransferSubsystem extends SubsystemBase {
     private static final double TRANSFER_RPM_TOLERANCE = transferToleranceRPM;
     // Gear Ratio: Motor Gear Teeth / Flywheel Gear Teeth (e.g. 30T motor gear driving 40T flywheel gear)
@@ -16,11 +16,19 @@ public class TransferSubsystem extends SubsystemBase {
 
     public static double FEEDER_TICK_PER_REV = 145.1; // 1150RPM gearbox 5.2:1; gear ratio 1:1 drive
 
-    private RobotHardware robot;
+    public static double transferKp = 0.5;
+    public static double transferKi = 0.0;
+    public static double transferKd = 0.0;
+    public static double transferKf = 1.0;
+    private static final double NOMINAL_MAX_RPM = 1150.0*0.9;
+
+    private final RobotHardware robot;
+    private final PIDFController transferPid =
+            new PIDFController(transferKp, transferKi, transferKd, 0.0);
+    private boolean running;
 
     private double transferSpeedTargetRPM = transferTargetRPM;
     private double transferSpeedRPM = Double.NaN;
-    private double currentVelocityTicksPerSeconds;
 
     public TransferSubsystem(RobotHardware robot) {
         this.robot = robot;
@@ -29,7 +37,9 @@ public class TransferSubsystem extends SubsystemBase {
     public void periodic() {
 
         sampleTransferVelocity();
-        //setTransferSpeedRPM(transferTargetRPM);
+        if (running) {
+            updateTransferPower();
+        }
     }
 
     ///conversion 
@@ -48,18 +58,52 @@ public class TransferSubsystem extends SubsystemBase {
     }
     //setter
     public void setTransferSpeedRPM(double rpm) {
+        if (Double.compare(transferSpeedTargetRPM, rpm) != 0) {
+            transferPid.reset();
+        }
         transferSpeedTargetRPM = rpm;
+        if (!Double.isFinite(rpm) || rpm == 0.0) {
+            stopTransfer();
+        }
     }
 
-    public void runTransferAtTargetSpeed() {  
-        double targetVelocityTicksPerSeconds  = rpmToTicksPerSecond(transferSpeedTargetRPM, GEAR_RATIO, FEEDER_TICK_PER_REV);
-        robot.transferMotor.setVelocity(targetVelocityTicksPerSeconds);
+    public void runTransferAtTargetSpeed() {
+        if (Double.isFinite(transferSpeedTargetRPM) && transferSpeedTargetRPM != 0.0) {
+            running = true;
+        } else {
+            stopTransfer();
+        }
     }
+
+    private void updateTransferPower() {
+        if (!Double.isFinite(transferSpeedRPM)) {
+            transferPid.reset();
+            robot.transferMotor.setPower(0.0);
+            return;
+        }
+
+        double normalizedTarget = transferSpeedTargetRPM / NOMINAL_MAX_RPM;
+        double normalizedMeasured = transferSpeedRPM / NOMINAL_MAX_RPM;
+        transferPid.setPIDF(transferKp, transferKi, transferKd, 0.0);
+        double power = transferPid.calculate(normalizedMeasured, normalizedTarget)
+                + transferKf * normalizedTarget;
+
+        if (!Double.isFinite(power)) {
+            transferPid.reset();
+            robot.transferMotor.setPower(0.0);
+            return;
+        }
+        double direction = Math.signum(normalizedTarget);
+        robot.transferMotor.setPower(direction * Range.clip(direction * power, 0.0, 1.0));
+    }
+
     public boolean stopTransfer() {
+        running = false;
+        transferPid.reset();
         robot.transferMotor.setPower(0.0);
         return true;
     }
-    
+
     ///Getter
     public double getTransferSpeedRPM() {
        return transferSpeedRPM;
@@ -72,7 +116,7 @@ public class TransferSubsystem extends SubsystemBase {
 
     public boolean isTransferAtTargetSpeedRPM() {
         double currentRPM = getTransferSpeedRPM();
-        return transferSpeedTargetRPM > 0.0
+        return running && transferSpeedTargetRPM > 0.0
                 && Double.isFinite(currentRPM)
                 && currentRPM > 0.0
                 && Math.abs(currentRPM - transferSpeedTargetRPM) <= TRANSFER_RPM_TOLERANCE;
@@ -80,7 +124,7 @@ public class TransferSubsystem extends SubsystemBase {
 
 
     public void increaseRPM() {
-        transferTargetRPM = Math.min(1150,transferSpeedTargetRPM + 25.0);
+        transferTargetRPM = Math.min(NOMINAL_MAX_RPM,transferSpeedTargetRPM + 25.0);
         //setTransferSpeedRPM(transferSpeedTargetRPM);
         //runTransferAtTargetSpeed();
     }

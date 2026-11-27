@@ -58,6 +58,14 @@ public class LeftSideAuto_Park extends ScheduledOpMode {
     public static Scalar intakeTime=new Scalar(2,s);//Amount of time to consistently intake all four pollen from flower
 
     @Override
+    public void loop() {
+        robot.voltageSubsystem.periodic();
+        shooter.sampleRightShooterSpeed();
+        super.loop();
+        robot.transferSubsystem.periodic();
+    }
+
+    @Override
     public void init() {
         robot=new RobotHardware(hardwareMap);
         robot.init();

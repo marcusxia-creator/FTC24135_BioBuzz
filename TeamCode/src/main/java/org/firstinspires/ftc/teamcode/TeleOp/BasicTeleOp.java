@@ -54,7 +54,7 @@ public class BasicTeleOp extends CommandOpMode {
 
         robotDrive = new RobotDriveSubsystem(robot);
         intake = new IntakeSubsystem(robot);
-        transfer = new TransferSubsystem(robot);
+        transfer = robot.transferSubsystem;
         shooter = new ShooterSubsystem(robot);
         controls = new ControlSubsystem();
         limelight = new LimelightSubsystem(robot);

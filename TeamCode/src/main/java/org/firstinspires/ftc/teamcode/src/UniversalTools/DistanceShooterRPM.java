@@ -5,7 +5,7 @@ import static org.firstinspires.ftc.teamcode.src.UniversalTools.RobotActionConfi
 
 @Config
 public final class DistanceShooterRPM {
-    public static double manualRPM = shooterTargetRPM;
+    public static double manualRPM = rightShooterTargetRPM;
     public static double nearDistanceInches = 0.0;
     public static double nearRPM = 0.0;
     public static double farDistanceInches = 0.0;

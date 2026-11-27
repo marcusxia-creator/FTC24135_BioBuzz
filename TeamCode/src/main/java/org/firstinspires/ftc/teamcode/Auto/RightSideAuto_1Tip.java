@@ -63,6 +63,14 @@ public class RightSideAuto_1Tip extends ScheduledOpMode {
     public static Scalar spoolTIme=new Scalar(2,s);
 
     @Override
+    public void loop() {
+        robot.voltageSubsystem.periodic();
+        shooter.sampleRightShooterSpeed();
+        super.loop();
+        robot.transferSubsystem.periodic();
+    }
+
+    @Override
     public void init() {
         robot=new RobotHardware(hardwareMap);
         robot.init();
