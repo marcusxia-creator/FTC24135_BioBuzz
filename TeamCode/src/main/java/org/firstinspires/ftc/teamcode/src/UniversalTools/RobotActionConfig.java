@@ -22,13 +22,14 @@ public class RobotActionConfig {
     public static double IntakeTransferTargetRPM    = 100.0;
     public static double transferToleranceRPM       = 150.0;
 
-    public static double rightShooterMaxRpmPerSecond = 500.0;
     public static double rightShooterTargetRPM       = 3430.0;
     public static double shooterToleranceRPM         = 100;
+    public static double READY_HOLD_SECONDS         = 1.0;
 
     public static double maxShooterRpm              = 5200.0;
     public static double maxFeederRpm               = 1150*0.8;
-    public static double REF_VOLTAGE                = 13.1;
+    public static double REF_VOLTAGE                = 13.0;
+
 
         ///Pose Values
     public static Pose2D redAllianceCell1 = new Pose2D(DistanceUnit.INCH, 13, -12.75, AngleUnit.DEGREES, 0);

@@ -31,7 +31,7 @@ public final class ShotTargeting {
     private boolean fieldPoseReady;
     private boolean sampled;
     private boolean valid;
-    private double targetX = -36.0;
+    private double targetX = -12.0;
     private double targetY;
     private double distance = Double.NaN;
     private double headingError = Double.NaN;

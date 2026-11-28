@@ -8,39 +8,46 @@ import com.seattlesolvers.solverslib.controller.PIDFController;
 
 import org.firstinspires.ftc.teamcode.lib.CommandBase.Action;
 import org.firstinspires.ftc.teamcode.src.UniversalTools.RobotHardware;
+import org.firstinspires.ftc.teamcode.src.UniversalTools.RobotActionConfig;
+
 import static org.firstinspires.ftc.teamcode.src.UniversalTools.RobotActionConfig.*;
 
 @Config
 public class ShooterSubsystem extends SubsystemBase {
     // Gear Ratio: Motor Gear Teeth / Flywheel Gear Teeth (e.g. 30T motor gear driving 40T flywheel gear)
     public static double GEAR_RATIO = 30.0 / 40.0;
-
     public static double TICKS_PER_REV = 28.0;
     public static double FEEDER_TICK_PER_REV = 145.1;
 
     private final RobotHardware robot;
     private final VoltageSubsystem voltageSubsystem;
 
+    private boolean rightShooterEnabled;
+    private long readyStartTimeNs;
+    private double readinessTargetRPM;
+
     public static double leftShooterKp = 0.01, leftShooterKi = 0.0, leftShooterKd = 0.0, leftShooterKf = 1.0;
     public static double rightShooterKp = 0.13, rightShooterKi = 0.000033, rightShooterKd = 0.010, rightShooterKf = 1.0;
 
-    private double leftMotor_rpmMeasured;
-    private double rightMotor_rpmMeasured = Double.NaN;
-    private double rightShooterRpmPerSecond = Double.NaN;
-    private long lastRightShooterSampleNanos;
-    
-    private double leftMotor_CurrentTickPerSecond;
-    private double rightMotor_CurrentTickPerSecond;
-    
     private final PIDFController leftShooterPIDF = new PIDFController(leftShooterKp, leftShooterKi, leftShooterKd, leftShooterKf);
     private final PIDFController rightShooterPIDF = new PIDFController(rightShooterKp, rightShooterKi, rightShooterKd, 0.0);
-    
+
+
+    private double leftMotor_CurrentTickPerSecond;
+    private double rightMotor_CurrentTickPerSecond;
+
+    private double leftMotor_rpmMeasured;
+    private double rightMotor_rpmMeasured = Double.NaN;
+
+    private double leftShooterTargetRPM;
+    private double rightShooterTargetRPM = RobotActionConfig.rightShooterTargetRPM;
+
     private double intakeMotor_CurrentTickPerSecond;
     private double intakeRPMMeasured = 0.0;
     private double intakeMotorTargetRRM = 0.0;
 
     private boolean rightShooterReady;
-    
+
     ///Constructor
     public ShooterSubsystem(RobotHardware robot) {
         this.robot = robot;
@@ -57,12 +64,45 @@ public class ShooterSubsystem extends SubsystemBase {
         return (motorRPM * TICKS_PER_REV) / 60.0;
     }
      */
+        //start shooter
+    public void startShooter(double rpm) {
 
-    @Override 
+        if (!Double.isFinite(rpm) || rpm <= 0.0) {
+            stopShooter();
+            return;
+        }
+
+        if (!rightShooterEnabled) {
+            rightShooterPIDF.reset();
+            resetShooterReadiness();
+        }
+
+        rightShooterEnabled = true;
+
+        setShooterRPM(rpm);
+        openPollenGate();
+
+    }
+
+
+    public void stopShooter() {
+        rightShooterEnabled = false;
+        rightShooterPIDF.reset();
+        resetShooterReadiness();
+        robot.rightShooterMotor.setPower(0.0);
+    }
+
+    @Override
     public void periodic() {
         sampleRightShooterSpeed();
-    }   
+        long now = System.nanoTime();
 
+        if (rightShooterEnabled && updateRightFlywheelPower()) {
+            updateShooterReadiness(now);
+        } else {
+            resetShooterReadiness();
+        }
+    }
 
     public static double rpmToTicksPerSecond(double RPM, double GEAR_RATIO, double TICKS_PER_REV) {
         double motorRPM = RPM / GEAR_RATIO;
@@ -78,13 +118,9 @@ public class ShooterSubsystem extends SubsystemBase {
         return motorRPM * gearRatio;
     }
 
-    //Run 
-    public void spoolRightFlyWheel() {
-        spoolRightFlyWheel(rightShooterTargetRPM);
-    }
 
-    public boolean spoolRightFlyWheel(double targetRPM) {
-        rightShooterTargetRPM = targetRPM;
+    private boolean updateRightFlywheelPower() {
+        double targetRPM = rightShooterTargetRPM;
         if (!Double.isFinite(targetRPM) || targetRPM <= 0.0
                 || !Double.isFinite(maxShooterRpm) || maxShooterRpm <= 0.0
                 || !Double.isFinite(rightMotor_rpmMeasured)) {
@@ -106,31 +142,40 @@ public class ShooterSubsystem extends SubsystemBase {
             return false;
         }
         robot.rightShooterMotor.setPower(Range.clip(power, 0.0, 1.0));
-        //updatePids();
         return true;
     }
 
-    ///check if shooter is ready
-    public boolean isRightFlywheelReady(double targetMotorRPM) {
-        return Math.abs(rightMotor_rpmMeasured - targetMotorRPM) <= shooterToleranceRPM;
-                //&& Math.abs(rightShooterRpmPerSecond) <= rightShooterMaxRpmPerSecond;
+    private void updateShooterReadiness(long now) {
+        boolean rpmInTolerance = Math.abs(rightMotor_rpmMeasured - rightShooterTargetRPM)
+                <= shooterToleranceRPM;
+        if (!rightShooterEnabled || !(rightShooterTargetRPM > 0.0) || !rpmInTolerance) {
+            resetShooterReadiness();
+            return;
+        }
+        if (readyStartTimeNs == 0L
+                || Math.abs(rightShooterTargetRPM - readinessTargetRPM) > shooterToleranceRPM) {
+            readyStartTimeNs = now;
+            readinessTargetRPM = rightShooterTargetRPM;
+        }
+        rightShooterReady = (now - readyStartTimeNs) * 1e-9 >= READY_HOLD_SECONDS;
     }
 
-    /// for Auto Action System
+    public boolean isRightFlywheelReady(double targetRPM) {
+        return rightShooterReady
+                && rightShooterEnabled
+                && targetRPM > 0.0
+                && Math.abs(targetRPM - readinessTargetRPM) <= shooterToleranceRPM
+                && Math.abs(rightMotor_rpmMeasured - targetRPM) <= shooterToleranceRPM;
+    }
+
     public void shootRightFlywheel() {
-        if (spoolRightFlyWheel(rightShooterTargetRPM) && isRightFlywheelReady(rightShooterTargetRPM)) {
-            openPollenGate();
+        startShooter(rightShooterTargetRPM);
+        periodic();
+        if (isRightFlywheelReady(rightShooterTargetRPM)) {
             setFeederRPM(intakeTransferRPM);
         } else {
             setFeederRPM(0.0);
-            closePollenGate();
         }
-    }
-
-    public void setRightShooterPower(double power) {
-        sampleRightShooterSpeed();
-        upSeparatorGate();
-        robot.rightShooterMotor.setPower(Double.isFinite(power) ? Range.clip(power, 0.0, 1.0) : 0.0);
     }
 
     public boolean setFeederRPM(double targetRPM) {
@@ -174,19 +219,16 @@ public class ShooterSubsystem extends SubsystemBase {
         rightShooterTargetRPM = rpm;
         return rpm;
     }
-    
+
+    private void resetShooterReadiness() {
+        readyStartTimeNs = 0L;
+        rightShooterReady = false;
+    }
+
     /// Getter
     public void sampleRightShooterSpeed() {
         rightMotor_CurrentTickPerSecond = Math.abs(robot.rightShooterMotor.getVelocity());
-        double rpm = ticksPerSecondToRPM(rightMotor_CurrentTickPerSecond, TICKS_PER_REV, 1.0);
-        long now = System.nanoTime();
-        double elapsedSeconds = (now - lastRightShooterSampleNanos) * 1e-9;
-        rightShooterRpmPerSecond = elapsedSeconds > 0.0 && Double.isFinite(rpm)
-                && Double.isFinite(rightMotor_rpmMeasured)
-                ? (rpm - rightMotor_rpmMeasured) / elapsedSeconds
-                : Double.NaN;
-        rightMotor_rpmMeasured = rpm;
-        lastRightShooterSampleNanos = now;
+        rightMotor_rpmMeasured = ticksPerSecondToRPM(rightMotor_CurrentTickPerSecond, TICKS_PER_REV, 1.0);
     }
     // Power
     public double getLeftShooterMotorPower() {
@@ -239,10 +281,7 @@ public class ShooterSubsystem extends SubsystemBase {
     }
 
     public void stop() {
-        //leftShooterPIDF.reset();
-        rightShooterPIDF.reset();
-        //robot.leftShooterMotor.setPower(0);
-        robot.rightShooterMotor.setPower(0);
+        stopShooter();
         robot.intakeMotor.setPower(0);
         robot.transferSubsystem.stopTransfer();
         closePollenGate();
@@ -251,7 +290,9 @@ public class ShooterSubsystem extends SubsystemBase {
     public class spoolFlywheelAction implements Action {
         @Override
         public void loop() {
-            spoolRightFlyWheel();//Constantly run flywheel pid continuously without shooting
+            startShooter(rightShooterTargetRPM);
+            // Legacy autonomous actions run outside the SolversLib scheduler.
+            periodic();
         }
 
         @Override

@@ -32,36 +32,23 @@ public class ShooterCommand extends CommandBase {
     @Override
     public void execute() {
         double targetRPM = rpmSelector.selectRPM();
-        if (!shooterSubsystem.spoolRightFlyWheel(targetRPM) ||
-                !shooterSubsystem.isRightFlywheelReady(targetRPM)){
-                    stopFeeding();
-                    return;
-                }
+        shooterSubsystem.startShooter(targetRPM);
+        if (!shooterSubsystem.isRightFlywheelReady(targetRPM)) {
+            stopFeeding();
+            return;
+        }
         intakeSubsystem.runFeederIntakeAtTargetRPM();
         transferSubsystem.setTransferSpeedRPM(RobotActionConfig.transferTargetRPM);
         transferSubsystem.runTransferAtTargetSpeed();
-
-        /**
-        if(transferSubsystem.isTransferAtTargetSpeedRPM()){
-            ;
-            }
-        else {
-            //shooterSubsystem.closePollenGate();
-        }
-        */
     }
 
     @Override
     public void end(boolean interrupted) {
-        stopShotting();
+        stopFeeding();
+        shooterSubsystem.stopShooter();
+        shooterSubsystem.closePollenGate();
     }
 
-    private void stopShotting(){
-        shooterSubsystem.closePollenGate();
-        intakeSubsystem.stopFeederIntake();
-        transferSubsystem.stopTransfer();
-        shooterSubsystem.stop();
-    }
     private void stopFeeding() {
         intakeSubsystem.stopFeederIntake();
         transferSubsystem.stopTransfer();

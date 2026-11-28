@@ -22,7 +22,7 @@ import org.firstinspires.ftc.teamcode.src.UniversalTools.ShotTargeting;
 import org.firstinspires.ftc.teamcode.TeleOp.UniversalTools.JoystickDriveProcessor;
 
 
-@TeleOp(name = "BioBuzz_Marcus", group = "TeleOp")
+@TeleOp(name = "BioBuzz_Marcus_1.3", group = "TeleOp")
 public class BasicTeleOp extends CommandOpMode {
     private RobotDriveSubsystem robotDrive;
     private IntakeSubsystem intake;
