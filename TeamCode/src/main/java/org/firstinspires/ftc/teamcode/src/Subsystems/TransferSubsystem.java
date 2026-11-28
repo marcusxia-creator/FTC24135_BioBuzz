@@ -15,12 +15,14 @@ public class TransferSubsystem extends SubsystemBase {
     private double transferTargetRPM = Double.NaN;
     private boolean transferRunning;
     private double sampledTransferTicksPerSecond;
+    private final VoltageSubsystem voltageSubsystem;
     private final PIDFController transferPIDF =
             new PIDFController(transferKp, transferKi, transferKd, transferKf);
 
     private final double TICK_PER_REV = 145.1;
     public TransferSubsystem(RobotHardware robot) {
         this.robot = robot;
+        this.voltageSubsystem = robot.voltageSubsystem;
     }
 
     @Override
@@ -29,18 +31,53 @@ public class TransferSubsystem extends SubsystemBase {
 
     }
 
-    public void runTransfer() {
-        transferRunning = true;
-        if (transferTargetRPM <= 0.0) {
-            stopTransfer();
-            return;
+    public boolean runTransfer() {
+        if (!Double.isFinite(transferTargetRPM) || transferTargetRPM <= 0.0) {
+            transferPIDF.reset();
+            robot.transferMotor.setPower(0.0);
+            transferRunning = false;
+            return false;
         }
 
+        transferRunning = true;
         double targetNorm = transferTargetRPM / transferMaxRPM;
         double currentNorm = getTransferRPM() / transferMaxRPM;
         updatePids();
         double output = transferPIDF.calculate(currentNorm, targetNorm);
+        if (!Double.isFinite(output)) {
+            transferPIDF.reset();
+            robot.transferMotor.setPower(0.0);
+            transferRunning = false;
+            return false;
+        }
+
         robot.transferMotor.setPower(Range.clip(output, 0.0, 1.0));
+        return true;
+    }
+
+    public boolean runTransferWithVoltageCompensation() {
+        if (!Double.isFinite(transferTargetRPM) || transferTargetRPM <= 0.0) {
+            transferPIDF.reset();
+            robot.transferMotor.setPower(0.0);
+            transferRunning = false;
+            return false;
+        }
+
+        transferRunning = true;
+        double targetNorm = transferTargetRPM / transferMaxRPM;
+        double currentNorm = getTransferRPM() / transferMaxRPM;
+        updatePids();
+        double output = transferPIDF.calculate(currentNorm, targetNorm);
+        double power = output * voltageSubsystem.getCompensationFactor();
+        if (!Double.isFinite(power)) {
+            transferPIDF.reset();
+            robot.transferMotor.setPower(0.0);
+            transferRunning = false;
+            return false;
+        }
+
+        robot.transferMotor.setPower(Range.clip(power, 0.0, 1.0));
+        return true;
     }
 
     public void intakeTransfer() {
@@ -92,9 +129,11 @@ public class TransferSubsystem extends SubsystemBase {
     }
 
     public class ShootTransferAction implements Action {
+        private boolean transferValid = true;
+
         @Override
         public void loop() {
-            runTransfer();
+            transferValid = runTransfer();
         }
 
         @Override
@@ -104,7 +143,7 @@ public class TransferSubsystem extends SubsystemBase {
 
         @Override
         public boolean finished() {
-            return false;
+            return !transferValid;
         }
     }
 }

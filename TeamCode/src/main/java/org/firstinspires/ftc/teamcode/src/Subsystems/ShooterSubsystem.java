@@ -12,15 +12,15 @@ import static org.firstinspires.ftc.teamcode.src.UniversalTools.RobotActionConfi
 public class  ShooterSubsystem extends SubsystemBase {
     private boolean shooterOn = false;
     private RobotHardware robot;
-
     private double rightMotor_ticksPerSecond;
     private double rightMotor_rpmMeasured = Double.NaN;
     private double sampledVoltage = Double.NaN;
-
-    private final PIDFController rightShooterPIDF = new PIDFController(rightShooterKp, rightShooterKi, rightShooterKd, rightShooterKf);
+    private final VoltageSubsystem voltageSubsystem;
+    private final PIDFController rightShooterPIDF = new PIDFController(rightShooterKp, rightShooterKi, rightShooterKd, 0);
 
     public ShooterSubsystem(RobotHardware robot) {
         this.robot = robot;
+        this.voltageSubsystem = robot.voltageSubsystem;
     }
 
     @Override
@@ -34,35 +34,54 @@ public class  ShooterSubsystem extends SubsystemBase {
         rightMotor_rpmMeasured = Math.abs(ticksPerSecondToRPM(rightMotor_ticksPerSecond));
     }
 
-    public static double rpmToTicksPerSecond(double flywheelRPM) {
-        double motorRPM = flywheelRPM / shooterGearRatio;
+    public static double rpmToTicksPerSecond(double motorRPM) {
         return (motorRPM * shooterTicksPerRev) / 60.0;
     }
 
     /**
-     * Converts measured Encoder Ticks Per Second back to Flywheel RPM for telemetry.
-     * Flywheel RPM equals encoder ticks per second times sixty divided by ticks per revolution, then multiplied by gear ratio.
+     * Converts measured encoder ticks per second to motor RPM for telemetry.
+     * Motor RPM equals encoder ticks per second times sixty divided by ticks per revolution.
      */
     public static double ticksPerSecondToRPM(double ticksPerSecond) {
-        double motorRPM = (ticksPerSecond * 60.0) / shooterTicksPerRev;
-        return motorRPM * shooterGearRatio;
+        return (ticksPerSecond * 60.0) / shooterTicksPerRev;
     }
 
     public void runFlywheel() {
+        runFlywheel(shooterTargetVelocityRPM);
+    }
+
+    public boolean runFlywheel(double targetRPM) {
+        if (!Double.isFinite(targetRPM)) {
+            rightShooterPIDF.reset();
+            robot.rightShooterMotor.setPower(0.0);
+            shooterOn = false;
+            return false;
+        }
+
         shooterOn = true;
+        double maxRPM = maxVelocityRPM;
 
-        double maxRPMDynamic = maxVelocityRPM * sampledVoltage / REF_VOLTAGE;
-
-        double rightTargetNorm = shooterTargetVelocityRPM / maxRPMDynamic;
-        double rightCurrentNorm = (double) rightMotor_rpmMeasured / maxRPMDynamic;
+        double rightTargetNorm = targetRPM / maxRPM;
+        double rightCurrentNorm = rightMotor_rpmMeasured / maxRPM;
 
         rightTargetNorm = clamp01(rightTargetNorm);
         rightCurrentNorm = clamp01(rightCurrentNorm);
 
         ///updatePids();
 
+        rightShooterPIDF.setPIDF(rightShooterKp, rightShooterKi, rightShooterKd, 0);
         double rightOutput = rightShooterPIDF.calculate(rightCurrentNorm, rightTargetNorm);
-        robot.rightShooterMotor.setPower(Range.clip(rightOutput, 0.0, 1.0));
+        double feedforward = rightShooterKf * rightTargetNorm;
+
+        double power = (rightOutput + feedforward) * voltageSubsystem.getCompensationFactor();
+        if (!Double.isFinite(power)) {
+            rightShooterPIDF.reset();
+            robot.rightShooterMotor.setPower(0.0);
+            shooterOn = false;
+            return false;
+        }
+        robot.rightShooterMotor.setPower(Range.clip(power, 0.0, 1.0));
+        return true;
     }
 
     public void shootFlywheel() {
@@ -149,14 +168,15 @@ public class  ShooterSubsystem extends SubsystemBase {
     }
 
     public class spoolFlywheelAction implements Action {
+
         @Override
         public void loop() {
-            runFlywheel();//Constantly run flywheel pid continuously without shooting
+            runFlywheel();
         }
 
         @Override
-        public boolean finished() {
-            return true;
+        public void shutdown() {
+            stop();
         }
     }
 

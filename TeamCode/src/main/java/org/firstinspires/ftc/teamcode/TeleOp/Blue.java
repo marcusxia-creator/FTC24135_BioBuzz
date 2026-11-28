@@ -15,6 +15,7 @@ import org.firstinspires.ftc.teamcode.src.Subsystems.IntakeSubsystem;
 import org.firstinspires.ftc.teamcode.src.Subsystems.RobotDriveSubsystem;
 import org.firstinspires.ftc.teamcode.src.Subsystems.ShooterSubsystem;
 import org.firstinspires.ftc.teamcode.src.Subsystems.TransferSubsystem;
+import org.firstinspires.ftc.teamcode.src.Subsystems.VoltageSubsystem;
 import org.firstinspires.ftc.teamcode.src.UniversalTools.RobotHardware;
 
 @Config
@@ -104,6 +105,10 @@ public class Blue extends CommandOpMode {
         telemetry.addData("Shooter power", robot.rightShooterMotor.getPower());
         telemetry.addData("Shooter Encoder Position", shooter.getShooterEncoderPosition());
         telemetry.update();
+    }
+    ///helper method to select the axis from either gamepad1 or gamepad2, prioritizing gamepad1 if it has a non-zero input.
+    private static double selectAxis(double primary, double secondary) {
+        return Math.abs(primary) > 0.05 ? primary : secondary;
     }
 
     private static double loopFrequencyHz(double dt) {

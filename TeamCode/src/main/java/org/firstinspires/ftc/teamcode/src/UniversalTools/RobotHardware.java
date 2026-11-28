@@ -18,6 +18,7 @@ import org.firstinspires.ftc.teamcode.lib.IceWaddler2.src.Hardware.IWLocalizer;
 import org.firstinspires.ftc.teamcode.lib.IceWaddler2.src.Hardware.PrebuiltHardware.goBildaOdoComputer;
 import org.firstinspires.ftc.teamcode.lib.IceWaddler2.src.Math.Measurement.Scalar;
 import org.firstinspires.ftc.teamcode.src.Subsystems.DriveTrain;
+import org.firstinspires.ftc.teamcode.src.Subsystems.VoltageSubsystem;
 
 public class RobotHardware {
     public DcMotorEx frontLeftMotor;
@@ -42,6 +43,7 @@ public class RobotHardware {
     public IWLocalizer localizer;
 
     public Limelight3A limelight;
+    public VoltageSubsystem voltageSubsystem;
 
 
     public RobotHardware(HardwareMap hardwareMap) {
@@ -79,6 +81,7 @@ public class RobotHardware {
         backRightMotor.setDirection(DcMotorSimple.Direction.REVERSE);
 
         voltageSensor=hardwareMap.get(VoltageSensor.class,"Control Hub");
+        voltageSubsystem = new VoltageSubsystem(voltageSensor);
 
         odo=hardwareMap.get(GoBildaPinpointDriver.class,"pinpoint");
 

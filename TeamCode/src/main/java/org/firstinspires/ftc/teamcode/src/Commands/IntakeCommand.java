@@ -20,12 +20,13 @@ public class IntakeCommand extends CommandBase {
     private final TransferSubsystem transferSubsystem;
     private final Supplier<IntakeMode> modeSupplier;
 
-    private ElapsedTime runTime = new ElapsedTime();
+    private final ElapsedTime runTime = new ElapsedTime();
     private double SPIN_UP_SECONDS = 0.5;
     private double LOW_SPEED_SECONDS = 0.25;
-    private double MIN_SPEED_FRACTION = 0.9;
+    private double MIN_SPEED_FRACTION = 0.95;
 
     private double lowSpeedSince;
+    private boolean intakeReachedOperatingSpeed;
 
     public IntakeCommand(
             IntakeSubsystem intakeSubsystem,
@@ -39,6 +40,9 @@ public class IntakeCommand extends CommandBase {
 
     @Override
     public void initialize() {
+        runTime.reset();
+        lowSpeedSince = Double.NaN;
+        intakeReachedOperatingSpeed = false;
         switch (modeSupplier.get()) {
             case NECTAR:
                 intakeSubsystem.runRollersNectar();
@@ -66,7 +70,16 @@ public class IntakeCommand extends CommandBase {
         double measuredRPM = Math.abs(intakeSubsystem.getIntakeRPM());
         if (elapsed < SPIN_UP_SECONDS || !Double.isFinite(measuredRPM)
                 || measuredRPM >= MIN_SPEED_FRACTION * RobotActionConfig.intakeTargetRPM) {
+            if (Double.isFinite(measuredRPM)
+                    && measuredRPM >= MIN_SPEED_FRACTION * RobotActionConfig.intakeTargetRPM) {
+                intakeReachedOperatingSpeed = true;
+            }
             lowSpeedSince = Double.NaN;
+            return false;
+        }
+
+        // A lower steady-state RPM should not end intake before it has ever reached speed.
+        if (!intakeReachedOperatingSpeed) {
             return false;
         }
 

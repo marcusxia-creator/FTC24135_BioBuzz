@@ -15,6 +15,7 @@ import org.firstinspires.ftc.teamcode.src.Subsystems.IntakeSubsystem;
 import org.firstinspires.ftc.teamcode.src.Subsystems.RobotDriveSubsystem;
 import org.firstinspires.ftc.teamcode.src.Subsystems.ShooterSubsystem;
 import org.firstinspires.ftc.teamcode.src.Subsystems.TransferSubsystem;
+import org.firstinspires.ftc.teamcode.src.Subsystems.VoltageSubsystem;
 import org.firstinspires.ftc.teamcode.src.UniversalTools.RobotHardware;
 
 @Config

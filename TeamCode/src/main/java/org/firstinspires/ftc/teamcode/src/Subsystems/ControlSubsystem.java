@@ -42,7 +42,7 @@ public class ControlSubsystem extends GamepadDriver {
             ShooterSubsystem shooter,
             TransferSubsystem transfer) {
         new GamepadButton(gamepad, GamepadKeys.Button.X)
-                .whenPressed(new ShooterCommand(shooter, intake, transfer));
+                .whenPressed(new ShooterCommand(gamepad, shooter, intake, transfer));
         new GamepadButton(gamepad, GamepadKeys.Button.B)
                 .whenPressed(new InstantCommand(() -> {
                     shooter.stop();

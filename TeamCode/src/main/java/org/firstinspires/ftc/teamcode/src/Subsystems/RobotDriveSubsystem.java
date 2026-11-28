@@ -27,6 +27,7 @@ public class RobotDriveSubsystem extends SubsystemBase {
 
     private final double SWITCH_MARGIN = 6.0; //inch
     private final double STICK_DEADBAND = 0.05;
+    public static double MANUAL_TURN_SCALE = 0.6;
     public static double HEADING_DEADBAND = 1.5;
     public static double KP_TURN = 0.02;
     public static double MAX_TURN_POWER = 0.62;
@@ -52,7 +53,7 @@ public class RobotDriveSubsystem extends SubsystemBase {
     }
 
     public void mecanumDrive (double forward, double strafe, double turn, boolean ps){
-        double lerp =0.15;
+        double lerp =0.75;
 
         if (Math.abs(forward) < STICK_DEADBAND) forward = 0.0;
         if (Math.abs(strafe) < STICK_DEADBAND) strafe = 0.0;
@@ -90,7 +91,7 @@ public class RobotDriveSubsystem extends SubsystemBase {
         else {
             lastForward = lastForward + lerp*(forward - lastForward);
             lastStrafe = lastStrafe + lerp * (strafe - lastStrafe);
-            lastTurn = lastTurn + lerp * (turn - lastTurn);
+            lastTurn = lastTurn + lerp * (turn * MANUAL_TURN_SCALE - lastTurn);
 
             FLPower = lastForward + lastStrafe + lastTurn;
             FRPower = lastForward - lastStrafe - lastTurn;
