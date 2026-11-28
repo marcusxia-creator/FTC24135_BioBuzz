@@ -45,32 +45,32 @@ public class LimelightAutoCenter extends SubsystemBase {
     private int maxTagCount = 4;
 
     // =========================================================================
-    // 4 PRESET SEASON APRILTAG CLUSTERS (Memory-Efficient without String names)
+    // APRILTAG CLUSTERS
     // =========================================================================
     public enum TagCluster {
         CLUSTER_1(Map.of(
-            1, -15.0,  // Tag ID -> Offset in inches from cluster center
-            2,  -5.0,
-            3,   5.0,
-            4,  15.0
+            38, -6.5,
+            39, -2.75,
+            40, 2.75,
+            41, 6.5
         )),
         CLUSTER_2(Map.of(
-            5, -15.0,
-            6,  -5.0,
-            7,   5.0,
-            8,  15.0
+            34, -6.5,
+            35, -2.75,
+            36, 2.75,
+            37, 6.5
         )),
         CLUSTER_3(Map.of(
-            9, -15.0,
-            10, -5.0,
-            11,  5.0,
-            12, 15.0
+            45, -6.5,
+            44, -2.75,
+            43, 2.75,
+            42, 6.5
         )),
         CLUSTER_4(Map.of(
-            13, -15.0,
-            14,  -5.0,
-            15,   5.0,
-            16,  15.0
+            33, -6.5,
+            32, -2.75,
+            31, 2.75,
+            30, 6.5
         ));
 
         public final Map<Integer, Double> tagXOffsets;
@@ -146,10 +146,7 @@ public class LimelightAutoCenter extends SubsystemBase {
             }
 
             // -----------------------------------------------------------------
-            // STEP 2: Determine facing cluster WITHOUT Odometry
-            // Priority 1: Most visible tags in cluster
-            // Priority 2: Highest average vertical 'ty' angle (tilted UP side)
-            // Priority 3: Largest average target area
+            // FIND BEST CLUSTER
             // -----------------------------------------------------------------
             TagCluster bestCluster = null;
             int maxCount = 0;
@@ -227,18 +224,17 @@ public class LimelightAutoCenter extends SubsystemBase {
                     double angleRad = Math.toRadians(cameraPitchDegrees + tag.ty);
                     double tanAngle = Math.tan(angleRad);
 
-                    if (-0.1 > tanAngle || tanAngle > 0.1) { // Valid non-zero vertical angle
+                    if (-0.1 > tanAngle || tanAngle > 0.1) { /// Valid non-zero vertical angle
                         double distanceInches = (targetHeightInches - cameraHeightInches) / tanAngle;
                         distanceToCenterInches = Math.abs(distanceInches);
 
                         double angularOffsetDegrees = Math.toDegrees(Math.atan2(tag.xOffset, distanceToCenterInches));
                         txToCenter = tag.tx - angularOffsetDegrees;
-                        isCenterValid = true;
                     } else {
                         // Fallback when angle approaches 0
                         txToCenter = 0.0;
-                        isCenterValid = true;
                     }
+                    isCenterValid = true;
 
                 } else {
                     txToCenter = 0.0;
