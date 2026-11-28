@@ -6,7 +6,7 @@ import com.seattlesolvers.solverslib.command.SubsystemBase;
 import org.firstinspires.ftc.teamcode.lib.CommandBase.Action;
 import org.firstinspires.ftc.teamcode.src.UniversalTools.RobotHardware;
 import static org.firstinspires.ftc.teamcode.src.UniversalTools.RobotActionConfig.*;
-
+///0.7 power = 640 RPM
 public class IntakeSubsystem extends SubsystemBase {
     private static final double INTAKE_STARTUP_GRACE_SECONDS = 0.5;
     private final RobotHardware robot;

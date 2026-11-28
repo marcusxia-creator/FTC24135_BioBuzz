@@ -1,8 +1,6 @@
 package org.firstinspires.ftc.teamcode.src.Commands;
 
 import com.seattlesolvers.solverslib.command.CommandBase;
-import com.seattlesolvers.solverslib.gamepad.GamepadEx;
-import com.seattlesolvers.solverslib.gamepad.GamepadKeys;
 
 import org.firstinspires.ftc.teamcode.src.Subsystems.IntakeSubsystem;
 import org.firstinspires.ftc.teamcode.src.Subsystems.ShooterSubsystem;
@@ -14,14 +12,11 @@ public class ShooterCommand extends CommandBase {
     private final ShooterSubsystem shooterSubsystem;
     private final IntakeSubsystem intakeSubsystem;
     private final TransferSubsystem transferSubsystem;
-    private final GamepadEx gamepad;
 
     public ShooterCommand(
-            GamepadEx gamepad,
             ShooterSubsystem shooterSubsystem,
             IntakeSubsystem intakeSubsystem,
             TransferSubsystem transferSubsystem) {
-        this.gamepad = gamepad;
         this.shooterSubsystem = shooterSubsystem;
         this.intakeSubsystem = intakeSubsystem;
         this.transferSubsystem = transferSubsystem;
@@ -44,10 +39,11 @@ public class ShooterCommand extends CommandBase {
             transferSubsystem.stopTransfer();
             return;
         }
-        if (gamepad.wasJustPressed(GamepadKeys.Button.Y)) {
-            intakeSubsystem.runShooterIntake();
-            transferSubsystem.setTransferTargetRPM(RobotActionConfig.transferTargetRPM);
-            transferSubsystem.runTransfer();
+        intakeSubsystem.runShooterIntake();
+        transferSubsystem.setTransferTargetRPM(RobotActionConfig.transferTargetRPM);
+        if (!transferSubsystem.runTransfer()) {
+            intakeSubsystem.stop();
+            transferSubsystem.stopTransfer();
         }
     }
 

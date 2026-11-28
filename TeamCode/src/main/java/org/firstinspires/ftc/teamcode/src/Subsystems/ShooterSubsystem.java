@@ -15,6 +15,8 @@ public class  ShooterSubsystem extends SubsystemBase {
     private double rightMotor_ticksPerSecond;
     private double rightMotor_rpmMeasured = Double.NaN;
     private double sampledVoltage = Double.NaN;
+    private double shooterTargetRPM = Double.NaN;
+    private boolean flywheelControlValid = true;
     private final VoltageSubsystem voltageSubsystem;
     private final PIDFController rightShooterPIDF = new PIDFController(rightShooterKp, rightShooterKi, rightShooterKd, 0);
 
@@ -27,6 +29,9 @@ public class  ShooterSubsystem extends SubsystemBase {
     public void periodic() {
         sampleShooterSpeed();
         sampledVoltage = robot.voltageSensor.getVoltage();
+        if (shooterOn) {
+            updateFlywheelPower();
+        }
     }
 
     private void sampleShooterSpeed() {
@@ -55,13 +60,24 @@ public class  ShooterSubsystem extends SubsystemBase {
             rightShooterPIDF.reset();
             robot.rightShooterMotor.setPower(0.0);
             shooterOn = false;
+            flywheelControlValid = false;
             return false;
         }
 
+        shooterTargetRPM = targetRPM;
         shooterOn = true;
+        return flywheelControlValid;
+    }
+
+    private void updateFlywheelPower() {
+        if (!Double.isFinite(shooterTargetRPM)) {
+            stopFlywheelForInvalidControl();
+            return;
+        }
+
         double maxRPM = maxVelocityRPM;
 
-        double rightTargetNorm = targetRPM / maxRPM;
+        double rightTargetNorm = shooterTargetRPM / maxRPM;
         double rightCurrentNorm = rightMotor_rpmMeasured / maxRPM;
 
         rightTargetNorm = clamp01(rightTargetNorm);
@@ -75,13 +91,18 @@ public class  ShooterSubsystem extends SubsystemBase {
 
         double power = (rightOutput + feedforward) * voltageSubsystem.getCompensationFactor();
         if (!Double.isFinite(power)) {
-            rightShooterPIDF.reset();
-            robot.rightShooterMotor.setPower(0.0);
-            shooterOn = false;
-            return false;
+            stopFlywheelForInvalidControl();
+            return;
         }
         robot.rightShooterMotor.setPower(Range.clip(power, 0.0, 1.0));
-        return true;
+        flywheelControlValid = true;
+    }
+
+    private void stopFlywheelForInvalidControl() {
+        rightShooterPIDF.reset();
+        robot.rightShooterMotor.setPower(0.0);
+        shooterOn = false;
+        flywheelControlValid = false;
     }
 
     public void shootFlywheel() {
@@ -162,6 +183,8 @@ public class  ShooterSubsystem extends SubsystemBase {
     }
     public void stop() {
         shooterOn = false;
+        shooterTargetRPM = Double.NaN;
+        flywheelControlValid = true;
         rightShooterPIDF.reset();
         robot.rightShooterMotor.setPower(0);
         closePollenGate();
